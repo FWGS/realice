@@ -299,7 +299,6 @@ Q3OBJ = \
 	$(B)/client/snd_mixa.o \
 	$(B)/client/matha.o \
 	$(B)/client/ftol.o \
-	$(B)/client/snapvector.o \
 
 $(B)/$(PLATFORM)quake3 : $(Q3OBJ) $(Q3POBJ)
 	$(CC)  -o $@ $(Q3OBJ) $(Q3POBJ) $(GLLDFLAGS) $(LDFLAGS)

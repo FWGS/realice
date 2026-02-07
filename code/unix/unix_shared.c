@@ -138,8 +138,6 @@ int Sys_XTimeToSysTime (unsigned long xtime)
 }
 #endif
 
-//#if 0 // bk001215 - see snapvector.nasm for replacement
-#if (defined __APPLE__) // rcg010206 - using this for PPC builds...
 long fastftol( float f ) { // bk001213 - from win32/win_shared.c
   //static int tmp;
   //	__asm fld f
@@ -154,8 +152,6 @@ void Sys_SnapVector( float *v ) { // bk001213 - see win32/win_shared.c
   v[1] = rint(v[1]);
   v[2] = rint(v[2]);
 }
-#endif
-
 
 void	Sys_Mkdir( const char *path )
 {
