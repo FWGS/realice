@@ -1404,7 +1404,7 @@ void GLimp_Init( void )
 
   r_previousglDriver = ri.Cvar_Get( "r_previousglDriver", "", CVAR_ROM );
 
-  InitSig();
+  // InitSig();
 
   // Hack here so that if the UI 
   if ( *r_previousglDriver->string )
@@ -1542,7 +1542,7 @@ void GLimp_Init( void )
   GLW_InitExtensions();
   GLW_InitGamma();
 
-  InitSig(); // not clear why this is at begin & end of function
+  // InitSig(); // not clear why this is at begin & end of function
 
   return;
 }

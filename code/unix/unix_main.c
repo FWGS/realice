@@ -56,7 +56,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "linux_local.h" // bk001204
 
 // Structure containing functions exported from refresh DLL
-refexport_t re;
+extern refexport_t re;
 
 unsigned  sys_frame_time;
 

@@ -148,13 +148,6 @@ int		max_polys;
 cvar_t	*r_maxpolyverts;
 int		max_polyverts;
 
-void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-
-void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
-
 static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 {
 	if ( shouldBeIntegral )
