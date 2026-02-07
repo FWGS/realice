@@ -60,9 +60,6 @@ Q3UIDIR=$(MOUNT_DIR)/q3_ui
 JPDIR=$(MOUNT_DIR)/jpeg-6
 SPLNDIR=$(MOUNT_DIR)/splines
 
-# extract version info
-VERSION=$(shell ./extract_ver.pl)
-
 #############################################################################
 # SETUP AND BUILD -- LINUX
 #############################################################################
@@ -711,9 +708,3 @@ clean-debug:
 
 clean-release:
 	$(MAKE) clean2 B=$(BR) CFLAGS="$(DEBUG_CFLAGS)"
-
-# TTimo: for the setups it's easier to shell out to a script
-
-setup: release
-	./build_setup.sh $(VERSION)
-
