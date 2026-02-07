@@ -626,6 +626,7 @@ Q3UIOBJ = \
         $(B)/baseq3/ui/ui_sppostgame.o \
         $(B)/baseq3/ui/ui_spskill.o \
         $(B)/baseq3/ui/ui_startserver.o \
+        $(B)/baseq3/ui/ui_syscalls.o \
         $(B)/baseq3/ui/ui_team.o \
         $(B)/baseq3/ui/ui_teamorders.o \
         $(B)/baseq3/ui/ui_video.o \
@@ -675,7 +676,7 @@ $(B)/baseq3/ui/ui_spskill.o : $(Q3UIDIR)/ui_spskill.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/ui_startserver.o : $(Q3UIDIR)/ui_startserver.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/ui_team.o : $(Q3UIDIR)/ui_team.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/ui_teamorders.o : $(Q3UIDIR)/ui_teamorders.c; $(DO_SHLIB_CC)
-$(B)/baseq3/ui/ui_syscalls.o : $(Q3UIDIR)/ui_syscalls.c; $(DO_SHLIB_CC)
+$(B)/baseq3/ui/ui_syscalls.o : $(UIDIR)/ui_syscalls.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/ui_video.o : $(Q3UIDIR)/ui_video.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/q_math.o : $(GDIR)/q_math.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/q_shared.o : $(GDIR)/q_shared.c; $(DO_SHLIB_CC)
