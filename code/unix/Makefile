@@ -295,10 +295,7 @@ Q3OBJ = \
 	$(B)/client/linux_qgl.o \
 	$(B)/client/linux_glimp.o \
 	$(B)/client/linux_joystick.o \
-	$(B)/client/linux_snd.o \
-	$(B)/client/snd_mixa.o \
-	$(B)/client/matha.o \
-	$(B)/client/ftol.o \
+	$(B)/client/linux_snd.o
 
 $(B)/$(PLATFORM)quake3 : $(Q3OBJ) $(Q3POBJ)
 	$(CC)  -o $@ $(Q3OBJ) $(Q3POBJ) $(GLLDFLAGS) $(LDFLAGS)
