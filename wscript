@@ -34,7 +34,7 @@ def build(bld):
 	bld.shlib(source = cgameobjs, target='baseq3/cgamei386', includes='qcommon', use='M')
 
 	fgameobjs = bld.path.ant_glob('game/*.c')
-	bld.shlib(source = fgameobjs, target='baseq3/gamei386', includes='qcommon', use='M')
+	bld.shlib(source = fgameobjs, target='baseq3/qagamei386', includes='qcommon', use='M')
 
 	uiobjs = bld.path.ant_glob('q3_ui/*.c ui/ui_syscalls.c game/bg_misc.c game/q_math.c game/q_shared.c')
 	bld.shlib(source = uiobjs, target='baseq3/uii386', includes='qcommon', use='M')
