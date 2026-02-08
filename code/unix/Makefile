@@ -288,7 +288,6 @@ Q3OBJ = \
 	$(B)/client/unix_main.o \
 	$(B)/client/unix_net.o \
 	$(B)/client/unix_shared.o \
-	$(B)/client/linux_common.o \
 	$(B)/client/linux_qgl.o \
 	$(B)/client/linux_glimp.o \
 	$(B)/client/linux_joystick.o \
@@ -428,7 +427,6 @@ $(B)/client/unix_qgl.o : $(UDIR)/unix_qgl.c; $(DO_CC)  $(GL_CFLAGS)
 $(B)/client/unix_main.o : $(UDIR)/unix_main.c; $(DO_CC)
 $(B)/client/unix_net.o : $(UDIR)/unix_net.c; $(DO_CC)
 $(B)/client/unix_shared.o : $(UDIR)/unix_shared.c; $(DO_CC)
-$(B)/client/linux_common.o : $(UDIR)/linux_common.c; $(DO_CC)
 $(B)/client/linux_glimp.o : $(UDIR)/linux_glimp.c; $(DO_CC)  $(GL_CFLAGS)
 $(B)/client/linux_glimp_smp.o : $(UDIR)/linux_glimp.c; $(DO_SMP_CC)  $(GL_CFLAGS)
 $(B)/client/linux_joystick.o : $(UDIR)/linux_joystick.c; $(DO_CC)
