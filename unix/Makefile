@@ -67,15 +67,10 @@ SPLNDIR=$(MOUNT_DIR)/splines
 ## Defaults
 
 ARCH=i386
-DLL_ONLY=true
 
 # bk001205: no mo'  -I/usr/include/glide, no FX
 # bk001205: no mo'  -Dstricmp=strcasecmp, see q_shared.h
 BASE_CFLAGS =  -pipe -fsigned-char -m32
-# rcg010216: DLL_ONLY for PPC
-ifeq ($(strip $(DLL_ONLY)),true)
-  BASE_CFLAGS += -DDLL_ONLY
-endif
 
 # bk001204 - need -O for -Wall for uninitialized
 # bk001205 - took out -O to get assertions (NDEBUG)
