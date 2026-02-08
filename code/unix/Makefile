@@ -99,7 +99,7 @@ ARFLAGS=ar rv
 RANLIB=ranlib
 
 THREAD_LDFLAGS=-lpthread
-LDFLAGS=-ldl -lm -m32
+LDFLAGS=-ldl -lm -m32 -Wl,--no-undefined
 GLLDFLAGS=-L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm
 
 TARGETS=\
