@@ -326,26 +326,6 @@ void trap_SetCDKey( char *buf ) {
 	syscall( UI_SET_CDKEY, buf );
 }
 
-int trap_PC_AddGlobalDefine( char *define ) {
-	return syscall( UI_PC_ADD_GLOBAL_DEFINE, define );
-}
-
-int trap_PC_LoadSource( const char *filename ) {
-	return syscall( UI_PC_LOAD_SOURCE, filename );
-}
-
-int trap_PC_FreeSource( int handle ) {
-	return syscall( UI_PC_FREE_SOURCE, handle );
-}
-
-int trap_PC_ReadToken( int handle, pc_token_t *pc_token ) {
-	return syscall( UI_PC_READ_TOKEN, handle, pc_token );
-}
-
-int trap_PC_SourceFileAndLine( int handle, char *filename, int *line ) {
-	return syscall( UI_PC_SOURCE_FILE_AND_LINE, handle, filename, line );
-}
-
 void trap_S_StopBackgroundTrack( void ) {
 	syscall( UI_S_STOPBACKGROUNDTRACK );
 }

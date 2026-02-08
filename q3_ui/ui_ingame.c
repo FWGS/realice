@@ -37,8 +37,6 @@ INGAME MENU
 #define INGAME_MENU_VERTICAL_SPACING	28
 
 #define ID_TEAM					10
-#define ID_ADDBOTS				11
-#define ID_REMOVEBOTS			12
 #define ID_SETUP				13
 #define ID_SERVERINFO			14
 #define ID_LEAVEARENA			15
@@ -57,8 +55,6 @@ typedef struct {
 	menutext_s		server;
 	menutext_s		leave;
 	menutext_s		restart;
-	menutext_s		addbots;
-	menutext_s		removebots;
 	menutext_s		teamorders;
 	menutext_s		quit;
 	menutext_s		resume;
@@ -131,14 +127,6 @@ void InGame_Event( void *ptr, int notification ) {
 		UI_ServerInfoMenu();
 		break;
 
-	case ID_ADDBOTS:
-		UI_AddBotsMenu();
-		break;
-
-	case ID_REMOVEBOTS:
-		UI_RemoveBotsMenu();
-		break;
-
 	case ID_TEAMORDERS:
 		UI_TeamOrdersMenu();
 		break;
@@ -187,34 +175,6 @@ void InGame_MenuInit( void ) {
 	s_ingame.team.string				= "START";
 	s_ingame.team.color					= color_red;
 	s_ingame.team.style					= UI_CENTER|UI_SMALLFONT;
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.addbots.generic.type		= MTYPE_PTEXT;
-	s_ingame.addbots.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.addbots.generic.x			= 320;
-	s_ingame.addbots.generic.y			= y;
-	s_ingame.addbots.generic.id			= ID_ADDBOTS;
-	s_ingame.addbots.generic.callback	= InGame_Event; 
-	s_ingame.addbots.string				= "ADD BOTS";
-	s_ingame.addbots.color				= color_red;
-	s_ingame.addbots.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
-		s_ingame.addbots.generic.flags |= QMF_GRAYED;
-	}
-
-	y += INGAME_MENU_VERTICAL_SPACING;
-	s_ingame.removebots.generic.type		= MTYPE_PTEXT;
-	s_ingame.removebots.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS;
-	s_ingame.removebots.generic.x			= 320;
-	s_ingame.removebots.generic.y			= y;
-	s_ingame.removebots.generic.id			= ID_REMOVEBOTS;
-	s_ingame.removebots.generic.callback	= InGame_Event; 
-	s_ingame.removebots.string				= "REMOVE BOTS";
-	s_ingame.removebots.color				= color_red;
-	s_ingame.removebots.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
-		s_ingame.removebots.generic.flags |= QMF_GRAYED;
-	}
 
 	y += INGAME_MENU_VERTICAL_SPACING;
 	s_ingame.teamorders.generic.type		= MTYPE_PTEXT;
@@ -309,8 +269,6 @@ void InGame_MenuInit( void ) {
 
 	Menu_AddItem( &s_ingame.menu, &s_ingame.frame );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.team );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.addbots );
-	Menu_AddItem( &s_ingame.menu, &s_ingame.removebots );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.teamorders );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.setup );
 	Menu_AddItem( &s_ingame.menu, &s_ingame.server );

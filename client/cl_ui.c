@@ -22,10 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-#include "../game/botlib.h"
-
-extern	botlib_export_t	*botlib_export;
-
 vm_t *uivm;
 
 /*
@@ -1062,17 +1058,6 @@ int CL_UISystemCalls( int *args ) {
 
 	case UI_CEIL:
 		return FloatAsInt( ceil( VMF(1) ) );
-
-	case UI_PC_ADD_GLOBAL_DEFINE:
-		return botlib_export->PC_AddGlobalDefine( VMA(1) );
-	case UI_PC_LOAD_SOURCE:
-		return botlib_export->PC_LoadSourceHandle( VMA(1) );
-	case UI_PC_FREE_SOURCE:
-		return botlib_export->PC_FreeSourceHandle( args[1] );
-	case UI_PC_READ_TOKEN:
-		return botlib_export->PC_ReadTokenHandle( args[1], VMA(2) );
-	case UI_PC_SOURCE_FILE_AND_LINE:
-		return botlib_export->PC_SourceFileAndLine( args[1], VMA(2), VMA(3) );
 
 	case UI_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();

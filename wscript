@@ -24,11 +24,11 @@ def configure(conf):
 	conf.check(lib='m')
 
 def build(bld):
-	botlibobjs = bld.path.ant_glob('botlib/*.c')
-	bld.stlib(source = botlibobjs, target='bot', includes='botlib', defines='BOTLIB')
+#	botlibobjs = bld.path.ant_glob('botlib/*.c')
+#	bld.stlib(source = botlibobjs, target='bot', includes='botlib', defines='BOTLIB')
 
 	q3objs = bld.path.ant_glob('client/*.c jpeg-6/*.c qcommon/*.c renderer/*.c server/*.c unix/*.c game/q_math.c game/q_shared.c')
-	bld.program(source = q3objs, target='linuxquake3', includes='qcommon/', use='X11 XEXT XXF86DGA XXF86VM bot M')
+	bld.program(source = q3objs, target='linuxquake3', includes='qcommon/', use='X11 XEXT XXF86DGA XXF86VM M')
 
 	cgameobjs = bld.path.ant_glob('cgame/*.c game/q_math.c game/q_shared.c game/bg_misc.c game/bg_pmove.c game/bg_slidemove.c')
 	bld.shlib(source = cgameobjs, target='baseq3/cgamei386', includes='qcommon', use='M')

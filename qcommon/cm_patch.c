@@ -1609,15 +1609,9 @@ CM_DrawDebugSurface
 Called from the renderer
 ==================
 */
-#ifndef BSPC
-void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
-#endif
-
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *points) ) {
 	static cvar_t	*cv;
-#ifndef BSPC
 	static cvar_t	*cv2;
-#endif
 	const patchCollide_t	*pc;
 	facet_t			*facet;
 	winding_t		*w;
@@ -1628,28 +1622,18 @@ void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *poin
 	//vec3_t mins = {0, 0, 0}, maxs = {0, 0, 0};
 	vec3_t v1, v2;
 
-#ifndef BSPC
 	if ( !cv2 )
 	{
 		cv2 = Cvar_Get( "r_debugSurface", "0", 0 );
 	}
 
-	if (cv2->integer != 1)
-	{
-		BotDrawDebugPolygons(drawPoly, cv2->integer);
-		return;
-	}
-#endif
-
 	if ( !debugPatchCollide ) {
 		return;
 	}
 
-#ifndef BSPC
 	if ( !cv ) {
 		cv = Cvar_Get( "cm_debugSize", "2", 0 );
 	}
-#endif
 	pc = debugPatchCollide;
 
 	for ( i = 0, facet = pc->facets ; i < pc->numFacets ; i++, facet++ ) {
