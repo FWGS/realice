@@ -199,7 +199,6 @@ Q3OBJ = \
 	$(B)/client/q_shared.o \
 	$(B)/client/unzip.o \
 	$(B)/client/vm.o \
-	$(B)/client/vm_interpreted.o \
 	$(B)/client/be_aas_bspq3.o \
 	$(B)/client/be_aas_cluster.o \
 	$(B)/client/be_aas_debug.o \
@@ -439,7 +438,6 @@ $(B)/client/ftol.o : $(UDIR)/ftol.nasm; $(DO_NASM)
 $(B)/client/snapvector.o : $(UDIR)/snapvector.nasm; $(DO_NASM)
 $(B)/client/unzip.o : $(CMDIR)/unzip.c; $(DO_CC)
 $(B)/client/vm.o : $(CMDIR)/vm.c; $(DO_CC)
-$(B)/client/vm_interpreted.o : $(CMDIR)/vm_interpreted.c; $(DO_CC)
 
 #############################################################################
 ## BASEQ3 CGAME
