@@ -67,10 +67,12 @@ typedef struct {
 
 
 typedef struct {
-	int			checkcount;				// to avoid repeated testings
-	int			surfaceFlags;
-	int			contents;
-	struct patchCollide_s	*pc;
+	int                   checkcount;				// to avoid repeated testings
+	int                   surfaceFlags;
+	int                   contents;
+
+	int                   subdivisions; // fakk2
+	struct patchCollide_s *pc;
 } cPatch_t;
 
 
@@ -188,7 +190,7 @@ cmodel_t	*CM_ClipHandleToModel( clipHandle_t handle );
 
 // cm_patch.c
 
-struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points );
+struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points, float subdivisions );
 void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
 qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchCollide_s *pc );
 void CM_ClearLevelPatches( void );

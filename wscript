@@ -11,7 +11,7 @@ def options(opt):
 
 def configure(conf):
 	conf.load('compiler_c clang_compilation_database')
-	conf.env.append_unique('CFLAGS', ['-fsigned-char', '-m32'])
+	conf.env.append_unique('CFLAGS', ['-fsigned-char', '-m32', '-g'])
 	conf.env.append_unique('LINKFLAGS', ['-m32', '-Wl,--no-undefined'])
 
 	if conf.env.cshlib_PATTERN[0:3] == 'lib':

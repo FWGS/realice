@@ -1830,9 +1830,13 @@ static void CG_ShotgunPellet( vec3_t start, vec3_t end, int skipNum ) {
 			// SURF_NOIMPACT will not make a flame puff or a mark
 			return;
 		}
+
+#if 0
 		if ( tr.surfaceFlags & SURF_METALSTEPS ) {
 			CG_MissileHitWall( WP_SHOTGUN, 0, tr.endpos, tr.plane.normal, IMPACTSOUND_METAL );
-		} else {
+		} else
+#endif
+		{
 			CG_MissileHitWall( WP_SHOTGUN, 0, tr.endpos, tr.plane.normal, IMPACTSOUND_DEFAULT );
 		}
 	}

@@ -61,7 +61,7 @@ properly.
 
 
 #define	MAX_FACETS			1024
-#define	MAX_PATCH_PLANES	2048
+#define	MAX_PATCH_PLANES	4096
 
 typedef struct {
 	float	plane[4];
@@ -100,4 +100,4 @@ typedef struct {
 #define	WRAP_POINT_EPSILON	0.1
 
 
-struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points );
+struct patchCollide_s	*CM_GeneratePatchCollide(int width, int height, vec3_t *points , float subdivisions);

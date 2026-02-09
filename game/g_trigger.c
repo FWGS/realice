@@ -28,7 +28,9 @@ void InitTrigger( gentity_t *self ) {
 		G_SetMovedir (self->s.angles, self->movedir);
 
 	trap_SetBrushModel( self, self->model );
-	self->r.contents = CONTENTS_TRIGGER;		// replaces the -1 from trap_SetBrushModel
+
+	// a1ba: was CONTENTS_TRIGGER, changed for WATER because it shouldn't matter what we use until fakk2-sdk is integrated
+	self->r.contents = CONTENTS_WATER;		// replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
@@ -390,7 +392,8 @@ void SP_trigger_hurt( gentity_t *self ) {
 		self->damage = 5;
 	}
 
-	self->r.contents = CONTENTS_TRIGGER;
+	// a1ba: was CONTENTS_TRIGGER, changed for WATER because it shouldn't matter what we use until fakk2-sdk is integrated
+	self->r.contents = CONTENTS_WATER;
 
 	if ( self->spawnflags & 2 ) {
 		self->use = hurt_use;

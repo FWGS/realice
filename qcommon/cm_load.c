@@ -93,7 +93,7 @@ void CMod_LoadShaders( lump_t *l ) {
 
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in)) {
-		Com_Error (ERR_DROP, "CMod_LoadShaders: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name );
 	}
 	count = l->filelen / sizeof(*in);
 
@@ -109,6 +109,9 @@ void CMod_LoadShaders( lump_t *l ) {
 	for ( i=0 ; i<count ; i++, in++, out++ ) {
 		out->contentFlags = LittleLong( out->contentFlags );
 		out->surfaceFlags = LittleLong( out->surfaceFlags );
+
+		// FIXME: not byteswapped in original code
+		// out->subdivisions = LittleLong( out->subdivisions );
 	}
 }
 
@@ -319,7 +322,7 @@ void CMod_LoadPlanes (lump_t *l)
 	
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name );
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -327,7 +330,7 @@ void CMod_LoadPlanes (lump_t *l)
 	cm.planes = Hunk_Alloc( ( BOX_PLANES + count ) * sizeof( *cm.planes ), h_high );
 	cm.numPlanes = count;
 
-	out = cm.planes;	
+	out = cm.planes;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -494,13 +497,13 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 
 	in = (void *)(cmod_base + surfs->fileofs);
 	if (surfs->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name);
 	cm.numSurfaces = count = surfs->filelen / sizeof(*in);
 	cm.surfaces = Hunk_Alloc( cm.numSurfaces * sizeof( cm.surfaces[0] ), h_high );
 
 	dv = (void *)(cmod_base + verts->fileofs);
 	if (verts->filelen % sizeof(*dv))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name );
 
 	// scan through all the surfaces, but only load patches,
 	// not planar faces
@@ -508,7 +511,13 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 		if ( LittleLong( in->surfaceType ) != MST_PATCH ) {
 			continue;		// ignore other surfaces
 		}
-		// FIXME: check for non-colliding patches
+
+		shaderNum = LittleLong( in->shaderNum );
+		if(( cm.shaders[shaderNum].contentFlags & (CONTENTS_SOLID|MASK_CLIP)) == 0 )
+		{
+			cm.surfaces[i] = NULL;
+			continue;
+		}
 
 		cm.surfaces[ i ] = patch = Hunk_Alloc( sizeof( *patch ), h_high );
 
@@ -530,9 +539,12 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 		shaderNum = LittleLong( in->shaderNum );
 		patch->contents = cm.shaders[shaderNum].contentFlags;
 		patch->surfaceFlags = cm.shaders[shaderNum].surfaceFlags;
+		patch->subdivisions = cm.shaders[shaderNum].subdivisions;
+		if( patch->subdivisions < 0x10 )
+			patch->subdivisions = 0x10;
 
 		// create the internal facet structure
-		patch->pc = CM_GeneratePatchCollide( width, height, points );
+		patch->pc = CM_GeneratePatchCollide( width, height, points, patch->subdivisions );
 	}
 }
 
@@ -605,11 +617,8 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	//
 	// load the file
 	//
-#ifndef BSPC
+	// TODO: fakk uses FS_FOpenFileRead
 	length = FS_ReadFile( name, (void **)&buf );
-#else
-	length = LoadQuakeFile((quakefile_t *) name, (void **)&buf);
-#endif
 
 	if ( !buf ) {
 		Com_Error (ERR_DROP, "Couldn't load %s", name);
@@ -632,17 +641,17 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 
 	// load into heap
 	CMod_LoadShaders( &header.lumps[LUMP_SHADERS] );
-	CMod_LoadLeafs (&header.lumps[LUMP_LEAFS]);
+	CMod_LoadPlanes (&header.lumps[LUMP_PLANES]);
+	CMod_LoadPatches( &header.lumps[LUMP_SURFACES], &header.lumps[LUMP_DRAWVERTS] );
 	CMod_LoadLeafBrushes (&header.lumps[LUMP_LEAFBRUSHES]);
 	CMod_LoadLeafSurfaces (&header.lumps[LUMP_LEAFSURFACES]);
-	CMod_LoadPlanes (&header.lumps[LUMP_PLANES]);
+	CMod_LoadLeafs (&header.lumps[LUMP_LEAFS]);
+	CMod_LoadNodes (&header.lumps[LUMP_NODES]);
 	CMod_LoadBrushSides (&header.lumps[LUMP_BRUSHSIDES]);
 	CMod_LoadBrushes (&header.lumps[LUMP_BRUSHES]);
 	CMod_LoadSubmodels (&header.lumps[LUMP_MODELS]);
-	CMod_LoadNodes (&header.lumps[LUMP_NODES]);
 	CMod_LoadEntityString (&header.lumps[LUMP_ENTITIES]);
 	CMod_LoadVisibility( &header.lumps[LUMP_VISIBILITY] );
-	CMod_LoadPatches( &header.lumps[LUMP_SURFACES], &header.lumps[LUMP_DRAWVERTS] );
 
 	// we are NOT freeing the file, because it is cached for the ref
 	FS_FreeFile (buf);

@@ -155,7 +155,7 @@ Returns true if the given quadratic curve is not flat enough for our
 collision detection purposes
 =================
 */
-static qboolean	CM_NeedsSubdivision( vec3_t a, vec3_t b, vec3_t c ) {
+static qboolean	CM_NeedsSubdivision( vec3_t a, vec3_t b, vec3_t c, float subdivisions ) {
 	vec3_t		cmid;
 	vec3_t		lmid;
 	vec3_t		delta;
@@ -176,7 +176,7 @@ static qboolean	CM_NeedsSubdivision( vec3_t a, vec3_t b, vec3_t c ) {
 	VectorSubtract( cmid, lmid, delta );
 	dist = VectorLength( delta );
 	
-	return dist >= SUBDIVIDE_DISTANCE;
+	return dist >= subdivisions;
 }
 
 /*
@@ -286,7 +286,7 @@ all the aproximating points are within SUBDIVIDE_DISTANCE
 from the true curve
 =================
 */
-static void CM_SubdivideGridColumns( cGrid_t *grid ) {
+static void CM_SubdivideGridColumns( cGrid_t *grid, float subdivisions ) {
 	int		i, j, k;
 
 	for ( i = 0 ; i < grid->width - 2 ;  ) {
@@ -298,7 +298,7 @@ static void CM_SubdivideGridColumns( cGrid_t *grid ) {
 		// first see if we can collapse the aproximating collumn away
 		//
 		for ( j = 0 ; j < grid->height ; j++ ) {
-			if ( CM_NeedsSubdivision( grid->points[i][j], grid->points[i+1][j], grid->points[i+2][j] ) ) {
+			if ( CM_NeedsSubdivision( grid->points[i][j], grid->points[i+1][j], grid->points[i+2][j], subdivisions ) ) {
 				break;
 			}
 		}
@@ -1145,14 +1145,13 @@ collision detection with a patch mesh.
 Points is packed as concatenated rows.
 ===================
 */
-struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points ) {
+struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points, float subdivisions ) {
 	patchCollide_t	*pf;
 	MAC_STATIC cGrid_t			grid;
 	int				i, j;
 
 	if ( width <= 2 || height <= 2 || !points ) {
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)",
-			width, height, points );
+		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)", width, height, points );
 	}
 
 	if ( !(width & 1) || !(height & 1) ) {
@@ -1176,13 +1175,13 @@ struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *p
 
 	// subdivide the grid
 	CM_SetGridWrapWidth( &grid );
-	CM_SubdivideGridColumns( &grid );
+	CM_SubdivideGridColumns( &grid, subdivisions );
 	CM_RemoveDegenerateColumns( &grid );
 
 	CM_TransposeGrid( &grid );
 
 	CM_SetGridWrapWidth( &grid );
-	CM_SubdivideGridColumns( &grid );
+	CM_SubdivideGridColumns( &grid, subdivisions );
 	CM_RemoveDegenerateColumns( &grid );
 
 	// we now have a grid of points exactly on the curve

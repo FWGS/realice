@@ -286,44 +286,6 @@ inline static float LittleFloat (const float *l) { return FloatSwap(l); }
 
 #endif
 
-//======================= FreeBSD DEFINES =====================
-#ifdef __FreeBSD__ // rb010123
-
-#define stricmp strcasecmp
-
-#define MAC_STATIC
-#define ID_INLINE inline 
-
-#ifdef __i386__
-#define CPUSTRING       "freebsd-i386"
-#elif defined __axp__
-#define CPUSTRING       "freebsd-alpha"
-#else
-#define CPUSTRING       "freebsd-other"
-#endif
-
-#define	PATH_SEP '/'
-
-// bk010116 - omitted Q3STATIC (see Linux above), broken target
-
-#if !idppc
-static short BigShort( short l) { return ShortSwap(l); }
-#define LittleShort
-static int BigLong(int l) { LongSwap(l); }
-#define LittleLong
-static float BigFloat(const float *l) { FloatSwap(l); }
-#define LittleFloat
-#else
-#define BigShort
-static short LittleShort(short l) { return ShortSwap(l); }
-#define BigLong
-static int LittleLong (int l) { return LongSwap(l); }
-#define BigFloat
-static float LittleFloat (const float *l) { return FloatSwap(l); }
-#endif
-
-#endif
-
 //=============================================================
 
 typedef unsigned char 		byte;
@@ -335,6 +297,17 @@ typedef int		sfxHandle_t;
 typedef int		fileHandle_t;
 typedef int		clipHandle_t;
 
+// a1ba: useful macros...
+#define Q_max( a, b ) (( a ) > ( b ) ? ( a ) : ( b ))
+#define Q_min( a, b ) (( a ) < ( b ) ? ( a ) : ( b ))
+#define bound( min, num, max ) ((num) >= (min) ? ((num) < (max) ? (num) : (max)) : (min))
+
+#define BIT( n )   ( 1U << ( n ))
+#define BIT64( n ) ( 1ULL << ( n ))
+
+#define SetBits( bit_vector, bits )   (( bit_vector ) |= ( bits ))
+#define ClearBits( bit_vector, bits ) (( bit_vector ) &= ~( bits ))
+#define FBitSet( bit_vector, bits )   (( bit_vector ) & ( bits ))
 
 #ifndef NULL
 #define NULL ((void *)0)

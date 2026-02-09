@@ -268,9 +268,11 @@ void	G_TouchTriggers( gentity_t *ent ) {
 		if ( !hit->touch && !ent->touch ) {
 			continue;
 		}
+#if 0
 		if ( !( hit->r.contents & CONTENTS_TRIGGER ) ) {
 			continue;
 		}
+#endif
 
 		// ignore most entities if a spectator
 		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
@@ -715,9 +717,11 @@ void ClientThink_real( gentity_t *ent ) {
 	if ( pm.ps->pm_type == PM_DEAD ) {
 		pm.tracemask = MASK_PLAYERSOLID & ~CONTENTS_BODY;
 	}
+#if 0
 	else if ( ent->r.svFlags & SVF_BOT ) {
 		pm.tracemask = MASK_PLAYERSOLID | CONTENTS_BOTCLIP;
 	}
+#endif
 	else {
 		pm.tracemask = MASK_PLAYERSOLID;
 	}

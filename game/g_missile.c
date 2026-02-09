@@ -180,8 +180,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 	if ( other->takedamage && other->client ) {
 		G_AddEvent( ent, EV_MISSILE_HIT, DirToByte( trace->plane.normal ) );
 		ent->s.otherEntityNum = other->s.number;
+#if 0
 	} else if( trace->surfaceFlags & SURF_METALSTEPS ) {
 		G_AddEvent( ent, EV_MISSILE_MISS_METAL, DirToByte( trace->plane.normal ) );
+#endif
 	} else {
 		G_AddEvent( ent, EV_MISSILE_MISS, DirToByte( trace->plane.normal ) );
 	}

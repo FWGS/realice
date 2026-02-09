@@ -1321,6 +1321,8 @@ infoParm_t	infoParms[] = {
 	{"lava",		1,	0,	CONTENTS_LAVA },		// very damaging
 	{"playerclip",	1,	0,	CONTENTS_PLAYERCLIP },
 	{"monsterclip",	1,	0,	CONTENTS_MONSTERCLIP },
+	{"cameraclip",  1,	0,	CONTENTS_CAMERACLIP },
+	{"weaponclip",  1,	0,	CONTENTS_WEAPONCLIP },
 	{"nodrop",		1,	0,	CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
 	{"nonsolid",	1,	SURF_NONSOLID,	0},						// clears the solid flag
 
@@ -1330,14 +1332,10 @@ infoParm_t	infoParms[] = {
 	{"detail",		0,	0,	CONTENTS_DETAIL },		// don't include in structural bsp
 	{"structural",	0,	0,	CONTENTS_STRUCTURAL },	// force into structural bsp even if trnas
 	{"areaportal",	1,	0,	CONTENTS_AREAPORTAL },	// divides areas
-	{"clusterportal", 1,0,  CONTENTS_CLUSTERPORTAL },	// for bots
-	{"donotenter",  1,  0,  CONTENTS_DONOTENTER },		// for bots
 
 	{"fog",			1,	0,	CONTENTS_FOG},			// carves surfaces entering
 	{"sky",			0,	SURF_SKY,		0 },		// emit light from an environment map
-	{"lightfilter",	0,	SURF_LIGHTFILTER, 0 },		// filter light going through it
 	{"alphashadow",	0,	SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
-	{"hint",		0,	SURF_HINT,		0 },		// use as a primary splitter
 
 	// server attributes
 	{"slick",		0,	SURF_SLICK,		0 },
@@ -1345,16 +1343,21 @@ infoParm_t	infoParms[] = {
 	{"nomarks",		0,	SURF_NOMARKS,	0 },		// don't make impact marks, but still explode
 	{"ladder",		0,	SURF_LADDER,	0 },
 	{"nodamage",	0,	SURF_NODAMAGE,	0 },
-	{"metalsteps",	0,	SURF_METALSTEPS,0 },
-	{"flesh",		0,	SURF_FLESH,		0 },
 	{"nosteps",		0,	SURF_NOSTEPS,	0 },
+
+	{"wood", 0, SURF_TYPE_WOOD, 0 },
+	{"metal", 0, SURF_TYPE_METAL, 0 },
+	{"rock", 0, SURF_TYPE_ROCK, 0 },
+	{"dirt", 0, SURF_TYPE_DIRT, 0 },
+	{"grill", 0, SURF_TYPE_GRILL, 0 },
+	{"organic", 0, SURF_TYPE_ORGANIC, 0 },
 
 	// drawsurf attributes
 	{"nodraw",		0,	SURF_NODRAW,	0 },	// don't generate a drawsurface (or a lightmap)
-	{"pointlight",	0,	SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
+	{"castshadow",	0,	SURF_CASTSHADOW, 0 },
 	{"nolightmap",	0,	SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
 	{"nodlight",	0,	SURF_NODLIGHT, 0 },		// don't ever add dynamic lights
-	{"dust",		0,	SURF_DUST, 0}			// leave a dust trail when walking on this surface
+	{"hint",		0,	SURF_HINT, 0},
 };
 
 

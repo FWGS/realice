@@ -891,9 +891,11 @@ static int PM_FootstepForSurface( void ) {
 	if ( pml.groundTrace.surfaceFlags & SURF_NOSTEPS ) {
 		return 0;
 	}
+#if 0
 	if ( pml.groundTrace.surfaceFlags & SURF_METALSTEPS ) {
 		return EV_FOOTSTEP_METAL;
 	}
+#endif
 	return EV_FOOTSTEP;
 }
 

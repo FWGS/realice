@@ -270,7 +270,8 @@ void RespawnItem( gentity_t *ent ) {
 			;
 	}
 
-	ent->r.contents = CONTENTS_TRIGGER;
+	// a1ba: was CONTENTS_TRIGGER, changed for WATER because it shouldn't matter what we use until fakk2-sdk is integrated
+	ent->r.contents = CONTENTS_WATER;
 	ent->s.eFlags &= ~EF_NODRAW;
 	ent->r.svFlags &= ~SVF_NOCLIENT;
 	trap_LinkEntity (ent);
@@ -470,7 +471,9 @@ gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity ) {
 	dropped->item = item;
 	VectorSet (dropped->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS);
 	VectorSet (dropped->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS);
-	dropped->r.contents = CONTENTS_TRIGGER;
+
+	// a1ba: was CONTENTS_TRIGGER, changed for WATER because it shouldn't matter what we use until fakk2-sdk is integrated
+	dropped->r.contents = CONTENTS_WATER;
 
 	dropped->touch = Touch_Item;
 
@@ -551,7 +554,8 @@ void FinishSpawningItem( gentity_t *ent ) {
 	ent->s.modelindex = ent->item - bg_itemlist;		// store item number in modelindex
 	ent->s.modelindex2 = 0; // zero indicates this isn't a dropped item
 
-	ent->r.contents = CONTENTS_TRIGGER;
+	// a1ba: was CONTENTS_TRIGGER, changed for WATER because it shouldn't matter what we use until fakk2-sdk is integrated
+	ent->r.contents = CONTENTS_WATER;
 	ent->touch = Touch_Item;
 	// useing an item causes it to respawn
 	ent->use = Use_Item;

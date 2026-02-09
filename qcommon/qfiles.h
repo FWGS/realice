@@ -299,7 +299,6 @@ typedef struct {
 	int			ofsEnd;				// end of file
 } md4Header_t;
 
-
 /*
 ==============================================================================
 
@@ -309,96 +308,120 @@ typedef struct {
 */
 
 
-#define BSP_IDENT	(('P'<<24)+('S'<<16)+('B'<<8)+'I')
-		// little-endian "IBSP"
+#define BSP_HEADER (( 'K' << 24 ) + ( 'K' << 16 ) + ( 'A' << 8 ) + 'F' )
+// little-endian "FAKK"
 
-#define BSP_VERSION			46
+#define BSP_VERSION 12
 
 
 // there shouldn't be any problem with increasing these values at the
 // expense of more memory allocation in the utilities
-#define	MAX_MAP_MODELS		0x400
-#define	MAX_MAP_BRUSHES		0x8000
-#define	MAX_MAP_ENTITIES	0x800
-#define	MAX_MAP_ENTSTRING	0x40000
-#define	MAX_MAP_SHADERS		0x400
+#define MAX_MAP_MODELS    0x400
+#define MAX_MAP_BRUSHES   0x8000
+#define MAX_MAP_ENTITIES  0x800
+#define MAX_MAP_ENTSTRING 0x40000
+#define MAX_MAP_SHADERS   0x400
 
-#define	MAX_MAP_AREAS		0x100	// MAX_MAP_AREA_BYTES in q_shared must match!
-#define	MAX_MAP_FOGS		0x100
-#define	MAX_MAP_PLANES		0x20000
-#define	MAX_MAP_NODES		0x20000
-#define	MAX_MAP_BRUSHSIDES	0x20000
-#define	MAX_MAP_LEAFS		0x20000
-#define	MAX_MAP_LEAFFACES	0x20000
-#define	MAX_MAP_LEAFBRUSHES 0x40000
-#define	MAX_MAP_PORTALS		0x20000
-#define	MAX_MAP_LIGHTING	0x800000
-#define	MAX_MAP_LIGHTGRID	0x800000
-#define	MAX_MAP_VISIBILITY	0x200000
+#define MAX_MAP_SHADERSTRING 0x4000
+#define MAX_MAP_NUM_SHADERS  4096
 
-#define	MAX_MAP_DRAW_SURFS	0x20000
-#define	MAX_MAP_DRAW_VERTS	0x80000
-#define	MAX_MAP_DRAW_INDEXES	0x80000
+#define MAX_MAP_AREAS          0x100            // MAX_MAP_AREA_BYTES in q_shared must match!
+#define MAX_MAP_FOGS           0x100
+#define MAX_MAP_PLANES         0x20000
+#define MAX_MAP_NODES          0x20000
+#define MAX_MAP_BRUSHSIDES     0x20000
+#define MAX_MAP_LEAFS          0x20000
+#define MAX_MAP_LEAFFACES      0x20000
+#define MAX_MAP_LEAFBRUSHES    0x40000
+#define MAX_MAP_PORTALS        0x20000
+#define MAX_MAP_LIGHTING       0x800000
+#define MAX_MAP_LIGHTGRID      0x800000
+#define MAX_MAP_VISIBILITY     0x200000
+#define MAX_MAP_SPHERE_LIGHTS 0x400
 
+#define MAX_MAP_DRAW_SURFS   0x20000
+#define MAX_MAP_DRAW_VERTS   0x80000
+#define MAX_MAP_DRAW_INDEXES 0x80000
+
+#define MAX_MAP_LIGHTDEFS MAX_MAP_DRAW_SURFS
+
+#define MAX_MAP_BOUNDS 8192
+#define MIN_MAP_BOUNDS ( -MAX_MAP_BOUNDS )
+#define MAP_SIZE       ( MAX_MAP_BOUNDS - MIN_MAP_BOUNDS )
 
 // key / value pair sizes in the entities lump
-#define	MAX_KEY				32
-#define	MAX_VALUE			1024
+#define MAX_KEY   32
+#define MAX_VALUE 1024
 
 // the editor uses these predefined yaw angles to orient entities up or down
-#define	ANGLE_UP			-1
-#define	ANGLE_DOWN			-2
+#define ANGLE_UP   -1
+#define ANGLE_DOWN -2
 
-#define	LIGHTMAP_WIDTH		128
-#define	LIGHTMAP_HEIGHT		128
+#define DEFAULT_CURVE_SUBDIVISIONS  4
+#define DEFAULT_LIGHTMAP_RESOLUTION 32
+#define MIN_LIGHTMAP_RESOLUTION     4
+#define MAX_LIGHTMAP_RESOLUTION     128
 
-#define MAX_WORLD_COORD		( 128*1024 )
-#define MIN_WORLD_COORD		( -128*1024 )
-#define WORLD_SIZE			( MAX_WORLD_COORD - MIN_WORLD_COORD )
+#define LIGHTMAP_WIDTH  128
+#define LIGHTMAP_HEIGHT 128
 
 //=============================================================================
 
+// in game version of lump
+typedef struct
+{
+	void *buffer;
+	int  length;
+} gamelump_t;
 
 typedef struct {
 	int		fileofs, filelen;
 } lump_t;
 
-#define	LUMP_ENTITIES		0
-#define	LUMP_SHADERS		1
-#define	LUMP_PLANES			2
-#define	LUMP_NODES			3
-#define	LUMP_LEAFS			4
-#define	LUMP_LEAFSURFACES	5
-#define	LUMP_LEAFBRUSHES	6
-#define	LUMP_MODELS			7
-#define	LUMP_BRUSHES		8
-#define	LUMP_BRUSHSIDES		9
-#define	LUMP_DRAWVERTS		10
-#define	LUMP_DRAWINDEXES	11
-#define	LUMP_FOGS			12
-#define	LUMP_SURFACES		13
-#define	LUMP_LIGHTMAPS		14
-#define	LUMP_LIGHTGRID		15
-#define	LUMP_VISIBILITY		16
-#define	HEADER_LUMPS		17
+#define LUMP_SHADERS      0
+#define LUMP_PLANES       1
+#define LUMP_LIGHTMAPS    2
+#define LUMP_SURFACES     3
+#define LUMP_DRAWVERTS    4
+#define LUMP_DRAWINDEXES  5
+#define LUMP_LEAFBRUSHES  6
+#define LUMP_LEAFSURFACES 7
+#define LUMP_LEAFS        8
+#define LUMP_NODES        9
+#define LUMP_BRUSHSIDES   10
+#define LUMP_BRUSHES      11
+#define LUMP_FOGS         12
+#define LUMP_MODELS       13
+#define LUMP_ENTITIES     14
+#define LUMP_VISIBILITY   15
+#define LUMP_LIGHTGRID    16
+#define LUMP_ENTLIGHTS    17
+#define LUMP_ENTLIGHTSVIS 18
+#define LUMP_LIGHTDEFS    19
+#define HEADER_LUMPS      20
 
-typedef struct {
-	int			ident;
-	int			version;
+typedef struct
+{
+	int    ident;
+	int    version;
+	int    checksum;
 
-	lump_t		lumps[HEADER_LUMPS];
+	lump_t lumps[HEADER_LUMPS];
 } dheader_t;
 
-typedef struct {
-	float		mins[3], maxs[3];
-	int			firstSurface, numSurfaces;
-	int			firstBrush, numBrushes;
+typedef struct
+{
+	float mins[3], maxs[3];
+	int   firstSurface, numSurfaces;
+	int   firstBrush, numBrushes;
 } dmodel_t;
 
-typedef struct {
-	char		shader[MAX_QPATH];
-	int			surfaceFlags;
-	int			contentFlags;
+typedef struct
+{
+	char shader[MAX_QPATH];
+	int  surfaceFlags;
+	int  contentFlags;
+	int  subdivisions;
 } dshader_t;
 
 // planes x^1 is allways the opposite of plane x
@@ -454,6 +477,16 @@ typedef struct {
 	byte		color[4];
 } drawVert_t;
 
+typedef struct
+{
+	vec3_t xyz;
+	float  st[2];
+	int    collapseMap;
+	float  lodExtra;  // depending on the vertexNumber, will be 0 - minLOD, 1 - lodScale or 2 - lodBias
+	vec3_t normal;
+	byte   color[4];
+} drawSoupVert_t;
+
 typedef enum {
 	MST_BAD,
 	MST_PLANAR,
@@ -462,27 +495,136 @@ typedef enum {
 	MST_FLARE
 } mapSurfaceType_t;
 
-typedef struct {
-	int			shaderNum;
-	int			fogNum;
-	int			surfaceType;
+typedef struct
+{
+	int    shaderNum;
+	int    fogNum;
+	int    surfaceType;
 
-	int			firstVert;
-	int			numVerts;
+	int    firstVert;
+	int    numVerts;
 
-	int			firstIndex;
-	int			numIndexes;
+	int    firstIndex;
+	int    numIndexes;
 
-	int			lightmapNum;
-	int			lightmapX, lightmapY;
-	int			lightmapWidth, lightmapHeight;
+	int    lightmapNum;
+	int    lightmapX, lightmapY;
+	int    lightmapWidth, lightmapHeight;
 
-	vec3_t		lightmapOrigin;
-	vec3_t		lightmapVecs[3];	// for patches, [0] and [1] are lodbounds
+	vec3_t lightmapOrigin;
+	vec3_t lightmapVecs[3]; // for patches, [0] and [1] are lodbounds
 
-	int			patchWidth;
-	int			patchHeight;
+	int    patchWidth;
+	int    patchHeight;
+
+	float  subdivisions;
 } dsurface_t;
+
+// the light grid may not contain the entire bounds of the world, to
+// allow q3test2 like levels that float in the middle of a giant sky box
+// to not waste huge amounts of time and space
+typedef struct
+{
+	vec3_t origin;
+	vec3_t axis;
+	int    bounds[3];
+} dlightGrid_t;
+
+typedef struct
+{
+	int      lightIntensity;
+	int      lightAngle;
+	int      lightmapResolution;
+	qboolean twoSided;
+	qboolean lightLinear;
+	vec3_t   lightColor;
+	float    lightFalloff;
+	float    backsplashFraction;
+	float    backsplashDistance;
+	float    lightSubdivide;
+	qboolean autosprite;
+} dlightdef_t;
+
+typedef struct
+{
+	vec3_t   origin;
+	vec3_t   color;
+	float    intensity;
+	int      leaf;
+
+	qboolean needs_trace;
+	qboolean spot_light;
+	vec3_t   spot_dir;
+	float    spot_radiusbydistance;
+} mapspherel_t;
+
+//
+// Q3RADIANT defines
+//
+#define MAX_BRUSH_SIZE 16384
+
+/*
+==============================================================================
+
+  .WAL texture file format
+
+==============================================================================
+*/
+
+
+#define  MIPLEVELS 4
+typedef struct miptex_s
+{
+	char     name[32];
+	unsigned width, height;
+	unsigned offsets[MIPLEVELS];   // four mip maps stored
+	char     animname[32];         // next frame in animation chain
+	int      flags;
+	int      contents;
+	int      value;
+} miptex_t;
+
+
+/*
+==============================================================================
+LIGHTING DEFINITIONS
+==============================================================================
+*/
+#define LIGHTING_GRIDSIZE_X        192
+#define LIGHTING_GRIDSIZE_Y        192
+#define LIGHTING_GRIDSIZE_Z        320
+#define LIGHTING_GRIDSIZE          { LIGHTING_GRIDSIZE_X, LIGHTING_GRIDSIZE_Y, LIGHTING_GRIDSIZE_Z }
+#define LIGHTING_POINTSCALE        7500
+#define LIGHTING_LINEARSCALE       ( 1.0f / 8000.0f )
+#define LIGHTING_SUNDIRECTION      { 0.45, 0.3, 0.9 }
+#define LIGHTING_SUNCOLOR          { 100, 100, 92 }
+#define LIGHTING_DEFAULT_INTENSITY 300.0f
+#define LIGHTING_AREASCALE         0.25
+#define LIGHTING_FORMFACTORSCALE   3
+
+#define LIGHTING_SPOTRADIUS   64
+#define LIGHTING_SPOTDISTANCE 64
+#define LIGHTING_RADIUSBYDISTANCE( rad, dist ) (((( rad ) + 16 ) / ( dist )))
+#define LIGHTING_SUNLIGHT( dot, sunColor, dest )							     \
+	{												     \
+		float sunlight_scale = 2 * ( dot );							     \
+		if( sunlight_scale > 1 ) sunlight_scale = 1;						     \
+		VectorMA(( dest ), ( sunlight_scale + ( 1 - sunlight_scale ) / 4 ), ( sunColor ), ( dest )); \
+	}
+#define LIGHTING_LINEARPOINTLIGHT( dot, photons, linearscale, distance, falloff ) \
+	(( dot ) * ( photons ) * ( linearscale ) - (( distance ) / ( falloff )))
+#define LIGHTING_POINTLIGHT( dot, photons, distance ) \
+	(( dot ) * ( photons ) / (( distance ) * ( distance )))
+
+#define LIGHTING_DISTANCE_AT_POWER( lightintensity, power ) sqrt( LIGHTING_POINTSCALE * ( lightintensity ) / ( power ))
+
+typedef enum
+{
+	emit_point,
+	emit_area,
+	emit_spotlight,
+	emit_sun
+} emittype_t;
 
 
 #endif
