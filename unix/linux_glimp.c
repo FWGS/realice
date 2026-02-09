@@ -383,7 +383,7 @@ static void install_grabs(void)
                GrabModeAsync, GrabModeAsync,
                win,
                None,
-               CurrentTime);
+			   CurrentTime);
 
   XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
                      &mouse_threshold);
@@ -1713,7 +1713,7 @@ void IN_Init(void) {
 	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
 	
 	// developer feature, allows to break without loosing mouse pointer
-	in_nograb = Cvar_Get ("in_nograb", "0", 0);
+	in_nograb = Cvar_Get ("in_nograb", "1", 0);
 
   // bk001130 - from cvs.17 (mkv), joystick variables
   in_joystick = Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE|CVAR_LATCH);

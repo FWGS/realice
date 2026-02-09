@@ -955,14 +955,11 @@ void CM_AddFacetBevels( facet_t *facet ) {
 	}
 	FreeWinding( w );
 
-#ifndef BSPC
 	//add opposite plane
 	facet->borderPlanes[facet->numBorders] = facet->surfacePlane;
 	facet->borderNoAdjust[facet->numBorders] = 0;
 	facet->borderInward[facet->numBorders] = qtrue;
 	facet->numBorders++;
-#endif //BSPC
-
 }
 
 typedef enum {
@@ -980,7 +977,7 @@ CM_PatchCollideFromGrid
 static void CM_PatchCollideFromGrid( cGrid_t *grid, patchCollide_t *pf ) {
 	int				i, j;
 	float			*p1, *p2, *p3;
-	MAC_STATIC int				gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2];
+	int				gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2];
 	facet_t			*facet;
 	int				borders[4];
 	int				noAdjust[4];
@@ -1147,7 +1144,7 @@ Points is packed as concatenated rows.
 */
 struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points, float subdivisions ) {
 	patchCollide_t	*pf;
-	MAC_STATIC cGrid_t			grid;
+	cGrid_t			grid;
 	int				i, j;
 
 	if ( width <= 2 || height <= 2 || !points ) {
@@ -1236,15 +1233,11 @@ void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollid
 	int			i, j, k;
 	float		offset;
 	float		d1, d2;
-#ifndef BSPC
 	static cvar_t *cv;
-#endif //BSPC
 
-#ifndef BSPC
 	if ( !cm_playerCurveClip->integer || !tw->isPoint ) {
 		return;
 	}
-#endif
 
 	// determine the trace's relationship to all planes
 	planes = pc->planes;
@@ -1295,7 +1288,6 @@ void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollid
 		}
 		if ( j == facet->numBorders ) {
 			// we hit this facet
-#ifndef BSPC
 			if (!cv) {
 				cv = Cvar_Get( "r_debugSurfaceUpdate", "1", 0 );
 			}
@@ -1303,7 +1295,6 @@ void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollid
 				debugPatchCollide = pc;
 				debugFacet = facet;
 			}
-#endif //BSPC
 			planes = &pc->planes[facet->surfacePlane];
 
 			// calculate intersection with a slight pushoff
@@ -1380,9 +1371,7 @@ void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *
 	facet_t	*facet;
 	float plane[4], bestplane[4];
 	vec3_t startp, endp;
-#ifndef BSPC
 	static cvar_t *cv;
-#endif //BSPC
 
 	if (tw->isPoint) {
 		CM_TracePointThroughPatchCollide( tw, pc );
@@ -1477,7 +1466,6 @@ void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *
 				if (enterFrac < 0) {
 					enterFrac = 0;
 				}
-#ifndef BSPC
 				if (!cv) {
 					cv = Cvar_Get( "r_debugSurfaceUpdate", "1", 0 );
 				}
@@ -1485,7 +1473,6 @@ void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *
 					debugPatchCollide = pc;
 					debugFacet = facet;
 				}
-#endif //BSPC
 
 				tw->trace.fraction = enterFrac;
 				VectorCopy( bestplane, tw->trace.plane.normal );

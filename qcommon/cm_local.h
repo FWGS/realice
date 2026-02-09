@@ -67,8 +67,8 @@ typedef struct {
 
 
 typedef struct {
-	int                   checkcount;				// to avoid repeated testings
-	int                   surfaceFlags;
+	int	                  checkcount;				// to avoid repeated testings
+	int	                  surfaceFlags;
 	int                   contents;
 
 	int                   subdivisions; // fakk2

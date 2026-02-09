@@ -24,10 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // this file is only included when building a dll
 // syscalls.asm is included instead when building a qvm
-#ifdef Q3_VM
-#error "Do not use in VM build"
-#endif
-
 static int (QDECL *syscall)( int arg, ... ) = (int (QDECL *)( int, ...))-1;
 
 void dllEntry( int (QDECL *syscallptr)( int arg,... ) ) {

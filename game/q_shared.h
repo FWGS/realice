@@ -72,12 +72,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
  **********************************************************************/
 
-#ifdef Q3_VM
-
-#include "bg_lib.h"
-
-#else
-
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -87,8 +81,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <time.h>
 #include <ctype.h>
 #include <limits.h>
-
-#endif
 
 #ifdef _WIN32
 
@@ -128,8 +120,6 @@ float	FloatSwap (const float *f);
 
 #ifdef WIN32
 
-#define	MAC_STATIC
-
 #undef QDECL
 #define	QDECL	__cdecl
 
@@ -165,7 +155,6 @@ static ID_INLINE float BigFloat(const float *l) { FloatSwap(l); }
 
 #if defined(MACOS_X)
 
-#define MAC_STATIC
 #define __cdecl
 #define __declspec(x)
 #define stricmp strcasecmp
@@ -181,31 +170,6 @@ static ID_INLINE float BigFloat(const float *l) { FloatSwap(l); }
 
 #define	PATH_SEP	'/'
 
-#define __rlwimi(out, in, shift, maskBegin, maskEnd) asm("rlwimi %0,%1,%2,%3,%4" : "=r" (out) : "r" (in), "i" (shift), "i" (maskBegin), "i" (maskEnd))
-#define __dcbt(addr, offset) asm("dcbt %0,%1" : : "b" (addr), "r" (offset))
-
-static inline unsigned int __lwbrx(register void *addr, register int offset) {
-    register unsigned int word;
-    
-    asm("lwbrx %0,%2,%1" : "=r" (word) : "r" (addr), "b" (offset));
-    return word;
-}
-
-static inline unsigned short __lhbrx(register void *addr, register int offset) {
-    register unsigned short halfword;
-    
-    asm("lhbrx %0,%2,%1" : "=r" (halfword) : "r" (addr), "b" (offset));
-    return halfword;
-}
-
-static inline float __fctiw(register float f) {
-    register float fi;
-    
-    asm("fctiw %0,%1" : "=f" (fi) : "f" (f));
-
-    return fi;
-}
-
 #define BigShort
 static inline short LittleShort(short l) { return ShortSwap(l); }
 #define BigLong
@@ -220,7 +184,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 #ifdef __MACOS__
 
 #include <MacTypes.h>
-#define	MAC_STATIC
 #define ID_INLINE inline 
 
 #define	CPUSTRING	"MacOS-PPC"
@@ -247,7 +210,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 // bk001205 - from Makefile
 #define stricmp strcasecmp
 
-#define	MAC_STATIC // bk: FIXME
 #define ID_INLINE inline 
 
 #ifdef __i386__
@@ -259,14 +221,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 #endif
 
 #define	PATH_SEP '/'
-
-// bk001205 - try
-#ifdef Q3_STATIC
-#define	GAME_HARD_LINKED
-#define	CGAME_HARD_LINKED
-#define	UI_HARD_LINKED
-#define	BOTLIB_HARD_LINKED
-#endif
 
 #if !idppc
 inline static short BigShort( short l) { return ShortSwap(l); }
@@ -408,7 +362,7 @@ typedef enum {
 #define UI_INVERSE		0x00002000
 #define UI_PULSE		0x00004000
 
-#if defined(_DEBUG) && !defined(BSPC)
+#if defined(_DEBUG)
 	#define HUNK_DEBUG
 #endif
 
