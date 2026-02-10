@@ -312,6 +312,7 @@ typedef struct {
 // little-endian "FAKK"
 
 #define BSP_VERSION 12
+#define BSP_ALICE_VERSION 0x2a
 
 
 // there shouldn't be any problem with increasing these values at the

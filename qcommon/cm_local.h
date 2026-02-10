@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 #include "cm_polylib.h"
 
-#define	MAX_SUBMODELS			256
-#define	BOX_MODEL_HANDLE		255
-#define CAPSULE_MODEL_HANDLE	254
+#define	MAX_SUBMODELS			384 // fakk2 increased
+#define	BOX_MODEL_HANDLE		383 // fakk2 changed
+#define CAPSULE_MODEL_HANDLE	382 // FIXME: seems to be not present in fakk2
 
 
 typedef struct {

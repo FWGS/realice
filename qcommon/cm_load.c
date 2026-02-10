@@ -109,7 +109,7 @@ void CMod_LoadSubmodels( lump_t *l ) {
 
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "CMod_LoadSubmodels: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name );
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -137,17 +137,27 @@ void CMod_LoadSubmodels( lump_t *l ) {
 
 		// make a "leaf" just to hold the model's brushes and surfaces
 		out->leaf.numLeafBrushes = LittleLong( in->numBrushes );
-		indexes = Hunk_Alloc( out->leaf.numLeafBrushes * 4, h_high );
-		out->leaf.firstLeafBrush = indexes - cm.leafbrushes;
-		for ( j = 0 ; j < out->leaf.numLeafBrushes ; j++ ) {
-			indexes[j] = LittleLong( in->firstBrush ) + j;
+		if( out->leaf.numLeafBrushes == 0 )
+			out->leaf.firstLeafBrush = -1;
+		else
+		{
+			indexes = Hunk_Alloc( out->leaf.numLeafBrushes * 4, h_high );
+			out->leaf.firstLeafBrush = indexes - cm.leafbrushes;
+			for ( j = 0 ; j < out->leaf.numLeafBrushes ; j++ ) {
+				indexes[j] = LittleLong( in->firstBrush ) + j;
+			}
 		}
 
 		out->leaf.numLeafSurfaces = LittleLong( in->numSurfaces );
-		indexes = Hunk_Alloc( out->leaf.numLeafSurfaces * 4, h_high );
-		out->leaf.firstLeafSurface = indexes - cm.leafsurfaces;
-		for ( j = 0 ; j < out->leaf.numLeafSurfaces ; j++ ) {
-			indexes[j] = LittleLong( in->firstSurface ) + j;
+		if( out->leaf.numLeafSurfaces == 0 )
+			out->leaf.firstLeafSurface = -1;
+		else
+		{
+			indexes = Hunk_Alloc( out->leaf.numLeafSurfaces * 4, h_high );
+			out->leaf.firstLeafSurface = indexes - cm.leafsurfaces;
+			for ( j = 0 ; j < out->leaf.numLeafSurfaces ; j++ ) {
+				indexes[j] = LittleLong( in->firstSurface ) + j;
+			}
 		}
 	}
 }
@@ -167,7 +177,7 @@ void CMod_LoadNodes( lump_t *l ) {
 	
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name );
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -220,7 +230,7 @@ void CMod_LoadBrushes( lump_t *l ) {
 
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in)) {
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name );
 	}
 	count = l->filelen / sizeof(*in);
 
@@ -258,7 +268,7 @@ void CMod_LoadLeafs (lump_t *l)
 	
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name);
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
@@ -342,7 +352,7 @@ void CMod_LoadLeafBrushes (lump_t *l)
 	
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name);
 	count = l->filelen / sizeof(*in);
 
 	cm.leafbrushes = Hunk_Alloc( (count + BOX_BRUSHES) * sizeof( *cm.leafbrushes ), h_high );
@@ -369,7 +379,7 @@ void CMod_LoadLeafSurfaces( lump_t *l )
 	
 	in = (void *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name);
 	count = l->filelen / sizeof(*in);
 
 	cm.leafsurfaces = Hunk_Alloc( count * sizeof( *cm.leafsurfaces ), h_high );
@@ -397,7 +407,7 @@ void CMod_LoadBrushSides (lump_t *l)
 
 	in = (void *)(cmod_base + l->fileofs);
 	if ( l->filelen % sizeof(*in) ) {
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		Com_Error (ERR_DROP, "CM_LoadMap: funny lump size in %s", cm.name);
 	}
 	count = l->filelen / sizeof(*in);
 
@@ -610,9 +620,9 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 		((int *)&header)[i] = LittleLong ( ((int *)&header)[i]);
 	}
 
-	if ( header.version != BSP_VERSION ) {
-		Com_Error (ERR_DROP, "CM_LoadMap: %s has wrong version number (%i should be %i)"
-		, name, header.version, BSP_VERSION );
+	if ( header.version != BSP_VERSION && header.version != BSP_ALICE_VERSION ) {
+		Com_Error (ERR_DROP, "CM_LoadMap: %s has wrong version number (%i should be %i or %i)"
+		, name, header.version, BSP_VERSION, BSP_ALICE_VERSION );
 	}
 
 	cmod_base = (byte *)buf;
