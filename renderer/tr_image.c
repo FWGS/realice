@@ -1804,6 +1804,36 @@ void SaveJPG(char * filename, int quality, int image_width, int image_height, un
 
 //===================================================================
 
+static void LoadFTX( const char *name, byte **pic, int *width, int *height, int *unknown ) {
+	int ret;
+	fileHandle_t f;
+
+	*pic = NULL;
+
+	// TODO: ri.FS_FopenFileRead
+	ret = FS_FOpenFileRead( name, &f, qtrue );
+
+	if (ret <= 0)
+		return;
+
+	// TODO: ri.FS_Read
+	ftx_t ftx_header;
+	FS_Read( &ftx_header, sizeof( ftx_header ), f );
+	ftx_header.width = LittleLong( ftx_header.width );
+	ftx_header.height = LittleLong( ftx_header.height );
+	ftx_header.has_alpha = LittleLong( ftx_header.has_alpha );
+
+	*width = ftx_header.width;
+	*height = ftx_header.height;
+	*unknown = ftx_header.has_alpha;
+
+	*pic = ri.Malloc( ftx_header.width * ftx_header.height * 4 );
+	FS_Read( *pic, ftx_header.width * ftx_header.height * 4, f );
+
+	// TODO: ri.FS_FCloseFile
+	FS_FCloseFile( f );
+}
+
 /*
 =================
 R_LoadImage
@@ -1812,31 +1842,54 @@ Loads any of the supported image types into a cannonical
 32 bit format.
 =================
 */
-void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
+void R_LoadImage( const char *name, byte **pic, int *width, int *height, int *unknown ) {
 	int		len;
 
 	*pic = NULL;
 	*width = 0;
 	*height = 0;
+	*unknown = 0;
 
 	len = strlen(name);
 	if (len<5) {
 		return;
 	}
 
-	if ( !Q_stricmp( name+len-4, ".tga" ) ) {
-	  LoadTGA( name, pic, width, height );            // try tga first
-    if (!*pic) {                                    //
-		  char altname[MAX_QPATH];                      // try jpg in place of tga 
-      strcpy( altname, name );                      
-      len = strlen( altname );                  
-      altname[len-3] = 'j';
-      altname[len-2] = 'p';
-      altname[len-1] = 'g';
-			LoadJPG( altname, pic, width, height );
+	if ( !Q_stricmp( name+len-4, ".tga" ))
+	{
+		// try ftx first
+		char altname[MAX_QPATH];
+		strcpy( altname, name );
+		len = strlen( altname );
+		altname[len-3] = 'f';
+		altname[len-2] = 't';
+		altname[len-1] = 'x';
+		LoadFTX( altname, pic, width, height, unknown );
+		if (!*pic) {
+			LoadTGA( name, pic, width, height ); // if it fails, try tga
+
+			// keep compatibility with Quake 3 for now
+			if (!*pic) {
+				if (Q_isupper( name[len-3] ))
+				{
+					altname[len-3] = 'J';
+					altname[len-2] = 'P';
+					altname[len-1] = 'G';
+				}
+				else
+				{
+					altname[len-3] = 'j';
+					altname[len-2] = 'p';
+					altname[len-1] = 'g';
+				}
+				LoadJPG( altname, pic, width, height );
+			}
 		}
-  } else if ( !Q_stricmp(name+len-4, ".pcx") ) {
-    LoadPCX32( name, pic, width, height );
+	} else if ( !Q_stricmp(name+len-4, ".gst") ) {
+		ri.Printf( PRINT_ALL, "TODO: implement .gst reading for %s\n", name );
+		// LoadGHOST( name, pic, width, height );
+	} else if ( !Q_stricmp(name+len-4, ".pcx") ) {
+		LoadPCX32( name, pic, width, height );
 	} else if ( !Q_stricmp( name+len-4, ".bmp" ) ) {
 		LoadBMP( name, pic, width, height );
 	} else if ( !Q_stricmp( name+len-4, ".jpg" ) ) {
@@ -1858,6 +1911,7 @@ image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	int		width, height;
 	byte	*pic;
 	long	hash;
+	int has_alpha;
 
 	if (!name) {
 		return NULL;
@@ -1889,20 +1943,28 @@ image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	//
 	// load the pic from disk
 	//
-	R_LoadImage( name, &pic, &width, &height );
+	R_LoadImage( name, &pic, &width, &height, &has_alpha );
 	if ( pic == NULL ) {                                    // if we dont get a successful load
-	  char altname[MAX_QPATH];                              // copy the name
-    int len;                                              //  
-    strcpy( altname, name );                              //
-    len = strlen( altname );                              // 
-    altname[len-3] = toupper(altname[len-3]);             // and try upper case extension for unix systems
-    altname[len-2] = toupper(altname[len-2]);             //
-    altname[len-1] = toupper(altname[len-1]);             //
-		ri.Printf( PRINT_ALL, "trying %s...\n", altname );    // 
-	  R_LoadImage( altname, &pic, &width, &height );        //
-    if (pic == NULL) {                                    // if that fails
-      return NULL;                                        // bail
-    }
+		char altname[MAX_QPATH];                              // copy the name
+		int len;                                              //
+		strcpy( altname, name );                              //
+		len = strlen( altname );                              //
+		altname[len-3] = toupper(altname[len-3]);             // and try upper case extension for unix systems
+		altname[len-2] = toupper(altname[len-2]);             //
+		altname[len-1] = toupper(altname[len-1]);             //
+		ri.Printf( PRINT_ALL, "trying %s...\n", altname );    //
+		R_LoadImage( altname, &pic, &width, &height, &has_alpha );        //
+		if (pic == NULL) {                                    // if that fails
+			// a1ba: HACK! try all lowercase...
+			int i;
+			for( i = 0; i < len; i++ )
+				altname[i] = tolower(altname[i]);
+			ri.Printf( PRINT_ALL, "trying %s...\n", altname );    //
+			R_LoadImage( altname, &pic, &width, &height, &has_alpha );        //
+
+			if( pic == NULL )
+				return NULL;                                        // bail
+		}
 	}
 
 	image = R_CreateImage( ( char * ) name, pic, width, height, mipmap, allowPicmip, glWrapClampMode );

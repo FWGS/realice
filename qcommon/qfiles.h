@@ -100,7 +100,20 @@ typedef struct _TargaHeader {
 	unsigned char	pixel_size, attributes;
 } TargaHeader;
 
+/*
+========================================================================
 
+FTX files are from FAKK2
+
+========================================================================
+*/
+typedef struct ftx_s
+{
+	int width;
+	int height;
+	int has_alpha;
+	// data follows
+} ftx_t;
 
 /*
 ========================================================================
