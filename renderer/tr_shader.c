@@ -1519,7 +1519,7 @@ static qboolean ParseShader( char **text )
 			token = COM_ParseExt( text, qfalse );
 			if ( !token[0] ) 
 			{
-				ri.Printf( PRINT_WARNING, "WARNING: missing parm for 'fogParms' keyword in shader '%s'\n", shader.name );
+				ri.Printf( PRINT_WARNING, "WARNING: missing depth for opaque parm for 'fogParms' keyword in shader '%s'\n", shader.name );
 				continue;
 			}
 			shader.fogParms.depthForOpaque = atof( token );
@@ -1574,6 +1574,57 @@ static qboolean ParseShader( char **text )
 		else if ( !Q_stricmp( token, "sort" ) )
 		{
 			ParseSort( text );
+			continue;
+		}
+		else if ( !Q_stricmp( token, "if" ))
+		{
+			// not accurate, decompiled code is garbage
+			qboolean expression_result = qfalse;
+
+			conditional = qtrue;
+
+			token = COM_ParseExt( text, qtrue );
+
+			if( !Q_stricmp( token, "mtex" ))
+			{
+				expression_result = false; //qglActiveTextureARB != 0;
+			}
+			else if( !Q_stricmp( token, "no_mtex" ))
+			{
+				expression_result = true; // qglActiveTextureARB == 0;
+			}
+			else
+			{
+				expression_result = Q_stricmp( token, "0" );
+			}
+
+			if( !expression_result )
+			{
+				skip:
+				SkipRestOfLine( text );
+
+				token = COM_ParseExt( text, qtrue );
+
+				if( token[0] == 0 )
+				{
+					ri.Printf( PRINT_WARNING, "WARNING: no matching endif in shader '%s'\n", shader.name );
+					return qfalse;
+				}
+				else if( !Q_stricmp( token, "endif" ))
+				{
+					conditional = qfalse;
+				}
+				else
+				{
+					goto skip;
+				}
+			}
+
+			continue;
+		}
+		else if( !Q_stricmp( token, "endif" ))
+		{
+			conditional = qfalse;
 			continue;
 		}
 		else
