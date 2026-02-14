@@ -141,7 +141,7 @@ static	void R_LoadLightmaps( lump_t *l ) {
 	double sumIntensity = 0;
 
     len = l->filelen;
-	if ( !len ) {
+	if( !len ) {
 		return;
 	}
 	buf = fileBase + l->fileofs;
@@ -151,18 +151,18 @@ static	void R_LoadLightmaps( lump_t *l ) {
 
 	// create all the lightmaps
 	tr.numLightmaps = len / (LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3);
-	if ( tr.numLightmaps == 1 ) {
+	if( tr.numLightmaps == 1 ) {
 		//FIXME: HACK: maps with only one lightmap turn up fullbright for some reason.
 		//this avoids this, but isn't the correct solution.
 		tr.numLightmaps++;
 	}
 
 	// if we are in r_vertexLight mode, we don't need the lightmaps at all
-	if ( r_vertexLight->integer || glConfig.hardwareType == GLHW_PERMEDIA2 ) {
+	if( r_vertexLight->integer || glConfig.hardwareType == GLHW_PERMEDIA2 ) {
 		return;
 	}
 
-	for ( i = 0 ; i < tr.numLightmaps ; i++ ) {
+	for( i = 0 ; i < tr.numLightmaps ; i++ ) {
 		// expand the 24 bit on-disk to 32 bit
 		buf_p = buf + i * LIGHTMAP_SIZE*LIGHTMAP_SIZE * 3;
 
@@ -202,7 +202,7 @@ static	void R_LoadLightmaps( lump_t *l ) {
 			}
 		}
 		tr.lightmaps[i] = R_CreateImage( va("*lightmap%d",i), image, 
-			LIGHTMAP_SIZE, LIGHTMAP_SIZE, qfalse, qfalse, GL_CLAMP );
+			LIGHTMAP_SIZE, LIGHTMAP_SIZE, qfalse, qfalse, qfalse, qfalse, GL_CLAMP );
 	}
 
 	if ( r_lightmap->integer == 2 )	{
@@ -285,7 +285,7 @@ static shader_t *ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 		lightmapNum = LIGHTMAP_WHITEIMAGE;
 	}
 
-	shader = R_FindShader( dsh->shader, lightmapNum, qtrue );
+	shader = R_FindShader( dsh->shader, lightmapNum, qtrue, qtrue, qtrue );
 
 	// if the shader had errors, just use default shader
 	if ( shader->defaultShader ) {
@@ -1526,7 +1526,7 @@ R_LoadFogs
 
 =================
 */
-static	void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump ) {
+static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump ) {
 	int			i;
 	fog_t		*out;
 	dfog_t		*fogs;
@@ -1606,7 +1606,7 @@ static	void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump ) {
 		out->bounds[1][2] = s_worldData.planes[ planeNum ].dist;
 
 		// get information from the shader for fog parameters
-		shader = R_FindShader( fogs->shader, LIGHTMAP_NONE, qtrue );
+		shader = R_FindShader( fogs->shader, LIGHTMAP_NONE, qtrue, qtrue, qtrue );
 
 		out->parms = shader->fogParms;
 
@@ -1678,86 +1678,6 @@ void R_LoadLightGrid( lump_t *l ) {
 	for ( i = 0 ; i < numGridPoints ; i++ ) {
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8], &w->lightGridData[i*8] );
 		R_ColorShiftLightingBytes( &w->lightGridData[i*8+3], &w->lightGridData[i*8+3] );
-	}
-}
-
-/*
-================
-R_LoadEntities
-================
-*/
-void R_LoadEntities( lump_t *l ) {
-	char *p, *token, *s;
-	char keyname[MAX_TOKEN_CHARS];
-	char value[MAX_TOKEN_CHARS];
-	world_t	*w;
-
-	w = &s_worldData;
-	w->lightGridSize[0] = 64;
-	w->lightGridSize[1] = 64;
-	w->lightGridSize[2] = 128;
-
-	p = (char *)(fileBase + l->fileofs);
-
-	// store for reference by the cgame
-	w->entityString = ri.Hunk_Alloc( l->filelen + 1, h_low );
-	strcpy( w->entityString, p );
-	w->entityParsePoint = w->entityString;
-
-	token = COM_ParseExt( &p, qtrue );
-	if (!*token || *token != '{') {
-		return;
-	}
-
-	// only parse the world spawn
-	while ( 1 ) {	
-		// parse key
-		token = COM_ParseExt( &p, qtrue );
-
-		if ( !*token || *token == '}' ) {
-			break;
-		}
-		Q_strncpyz(keyname, token, sizeof(keyname));
-
-		// parse value
-		token = COM_ParseExt( &p, qtrue );
-
-		if ( !*token || *token == '}' ) {
-			break;
-		}
-		Q_strncpyz(value, token, sizeof(value));
-
-		// check for remapping of shaders for vertex lighting
-		s = "vertexremapshader";
-		if (!Q_strncmp(keyname, s, strlen(s)) ) {
-			s = strchr(value, ';');
-			if (!s) {
-				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in vertexshaderremap '%s'\n", value );
-				break;
-			}
-			*s++ = 0;
-			if (r_vertexLight->integer) {
-				R_RemapShader(value, s, "0");
-			}
-			continue;
-		}
-		// check for remapping of shaders
-		s = "remapshader";
-		if (!Q_strncmp(keyname, s, strlen(s)) ) {
-			s = strchr(value, ';');
-			if (!s) {
-				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in shaderremap '%s'\n", value );
-				break;
-			}
-			*s++ = 0;
-			R_RemapShader(value, s, "0");
-			continue;
-		}
-		// check for a different grid size
-		if (!Q_stricmp(keyname, "gridsize")) {
-			sscanf(value, "%f %f %f", &w->lightGridSize[0], &w->lightGridSize[1], &w->lightGridSize[2] );
-			continue;
-		}
 	}
 }
 
@@ -1849,7 +1769,6 @@ void RE_LoadWorldMap( const char *name ) {
 	R_LoadNodesAndLeafs (&header->lumps[LUMP_NODES], &header->lumps[LUMP_LEAFS]);
 	R_LoadSubmodels (&header->lumps[LUMP_MODELS]);
 	R_LoadVisibility( &header->lumps[LUMP_VISIBILITY] );
-	R_LoadEntities( &header->lumps[LUMP_ENTITIES] );
 	R_LoadLightGrid( &header->lumps[LUMP_LIGHTGRID] );
 
 	s_worldData.dataSize = (byte *)ri.Hunk_Alloc(0, h_low) - startMarker;

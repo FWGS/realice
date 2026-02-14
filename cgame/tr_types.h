@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	RF_DEPTHHACK		8		// for view weapon Z crunching
 #define	RF_NOSHADOW			64		// don't add stencil shadows
 
+// #define RF_DEPTHHACK 4 (fakk 2 defines it that way)
+
 #define RF_LIGHTING_ORIGIN	128		// use refEntity->lightingOrigin instead of refEntity->origin
 									// for lighting.  This allows entities to sink into the floor
 									// with their origin going solid, and allows all parts of a

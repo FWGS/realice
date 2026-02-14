@@ -1652,13 +1652,13 @@ void CIN_DrawCinematic (int handle) {
                             }
                     }
                 }
-		re.DrawStretchRaw( x, y, w, h, 256, 256, (byte *)buf2, handle, qtrue);
+		re.DrawStretchRaw( x, y, w, h, 256, 256, (byte *)buf2);
 		cinTable[handle].dirty = qfalse;
 		Hunk_FreeTempMemory(buf2);
 		return;
 	}
 
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle].drawX, cinTable[handle].drawY, buf, handle, cinTable[handle].dirty);
+	re.DrawStretchRaw( x, y, w, h, cinTable[handle].drawX, cinTable[handle].drawY, buf );
 	cinTable[handle].dirty = qfalse;
 }
 
@@ -1716,25 +1716,6 @@ void SCR_StopCinematic(void) {
 }
 
 void CIN_UploadCinematic(int handle) {
-	if (handle >= 0 && handle < MAX_VIDEO_HANDLES) {
-		if (!cinTable[handle].buf) {
-			return;
-		}
-		if (cinTable[handle].playonwalls <= 0 && cinTable[handle].dirty) {
-			if (cinTable[handle].playonwalls == 0) {
-				cinTable[handle].playonwalls = -1;
-			} else {
-				if (cinTable[handle].playonwalls == -1) {
-					cinTable[handle].playonwalls = -2;
-				} else {
-					cinTable[handle].dirty = qfalse;
-				}
-			}
-		}
-		re.UploadCinematic( 256, 256, 256, 256, cinTable[handle].buf, handle, cinTable[handle].dirty);
-		if (cl_inGameVideo->integer == 0 && cinTable[handle].playonwalls == 1) {
-			cinTable[handle].playonwalls--;
-		}
-	}
+	// not present in FAKK2
 }
 

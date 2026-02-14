@@ -217,12 +217,6 @@ R_BindAnimatedImage
 static void R_BindAnimatedImage( textureBundle_t *bundle ) {
 	int		index;
 
-	if ( bundle->isVideoMap ) {
-		ri.CIN_RunCinematic(bundle->videoMapHandle);
-		ri.CIN_UploadCinematic(bundle->videoMapHandle);
-		return;
-	}
-
 	if ( bundle->numImageAnimations <= 1 ) {
 		GL_Bind( bundle->image[0] );
 		return;
@@ -230,7 +224,7 @@ static void R_BindAnimatedImage( textureBundle_t *bundle ) {
 
 	// it is necessary to do this messy calc to make sure animations line up
 	// exactly with waveforms of the same frequency
-	index = myftol( tess.shaderTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
+	index = myftol( backEnd.refdef.floatTime * bundle->imageAnimationSpeed * FUNCTABLE_SIZE );
 	index >>= FUNCTABLE_SIZE2;
 
 	if ( index < 0 ) {
@@ -313,23 +307,14 @@ to overflow.
 */
 void RB_BeginSurface( shader_t *shader, int fogNum ) {
 
-	shader_t *state = (shader->remappedShader) ? shader->remappedShader : shader;
-
 	tess.numIndexes = 0;
 	tess.numVertexes = 0;
-	tess.shader = state;
+	tess.shader = shader;
 	tess.fogNum = fogNum;
 	tess.dlightBits = 0;		// will be OR'd in by surface functions
-	tess.xstages = state->stages;
-	tess.numPasses = state->numUnfoggedPasses;
-	tess.currentStageIteratorFunc = state->optimalStageIteratorFunc;
-
-	tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
-	if (tess.shader->clampTime && tess.shaderTime >= tess.shader->clampTime) {
-		tess.shaderTime = tess.shader->clampTime;
-	}
-
-
+	tess.xstages = shader->stages;
+	tess.numPasses = shader->numUnfoggedPasses;
+	tess.currentStageIteratorFunc = shader->optimalStageIteratorFunc;
 }
 
 /*
@@ -362,6 +347,37 @@ static void DrawMultitextured( shaderCommands_t *input, int stage ) {
 	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[0] );
 	R_BindAnimatedImage( &pStage->bundle[0] );
 
+	if (pStage->stateBits & GLS_MULTITEXTURE_ENV)
+	{
+		glState.cntnvblendmode = pStage->multitextureEnv;
+		glState.cntTexEnvExt = GLS_MULTITEXTURE_ENV;
+
+		if (pStage->multitextureEnv == MT_ENV_ADD)
+		{
+			qglTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE0);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, 0);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_ONE_MINUS_SRC_COLOR);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_TEXTURE1);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE3_RGB_NV, 0);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND3_RGB_NV, GL_ONE_MINUS_SRC_COLOR);
+		}
+		else if (pStage->multitextureEnv == MT_ENV_MODULATE)
+		{
+			qglTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE0);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE1);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+		}
+		else
+		{
+			ri.Printf(3, "Unknown MT mode for: %s\n", input->shader);
+		}
+	}
+
 	//
 	// lightmap/secondary pass
 	//
@@ -369,10 +385,30 @@ static void DrawMultitextured( shaderCommands_t *input, int stage ) {
 	qglEnable( GL_TEXTURE_2D );
 	qglEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-	if ( r_lightmap->integer ) {
+	if ( r_lightmap->integer && tess.xstages[1]->bundle[1].isLightmap )
+	{
 		GL_TexEnv( GL_REPLACE );
-	} else {
-		GL_TexEnv( tess.shader->multitextureEnv );
+	}
+	else if (pStage->stateBits & GLS_MULTITEXTURE_ENV)
+	{
+		glState.cntTexEnvExt = GLS_MULTITEXTURE_ENV;
+
+		GL_TexEnv(GL_COMBINE);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_SRC_ALPHA);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_ALPHA);
+	}
+	else if( pStage->multitextureEnv == MT_ENV_MODULATE )
+		GL_TexEnv( GL_MODULATE );
+	else if( pStage->multitextureEnv == MT_ENV_ADD )
+		GL_TexEnv( GL_ADD );
+	else
+	{
+		ri.Printf( 3, "Unknown MT mode for: %s\n", input->shader->name );
 	}
 
 	qglTexCoordPointer( 2, GL_FLOAT, 0, input->svars.texcoords[1] );
@@ -381,11 +417,11 @@ static void DrawMultitextured( shaderCommands_t *input, int stage ) {
 
 	R_DrawElements( input->numIndexes, input->indexes );
 
+	qglDisable( GL_TEXTURE_2D );
 	//
 	// disable texturing on TEXTURE1, then select TEXTURE0
 	//
-	//qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	qglDisable( GL_TEXTURE_2D );
+	qglDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
 	GL_SelectTexture( 0 );
 }
@@ -608,43 +644,6 @@ static void ProjectDlightTexture( void ) {
 	}
 }
 
-
-/*
-===================
-RB_FogPass
-
-Blends a fog texture on top of everything else
-===================
-*/
-static void RB_FogPass( void ) {
-	fog_t		*fog;
-	int			i;
-
-	qglEnableClientState( GL_COLOR_ARRAY );
-	qglColorPointer( 4, GL_UNSIGNED_BYTE, 0, tess.svars.colors );
-
-	qglEnableClientState( GL_TEXTURE_COORD_ARRAY);
-	qglTexCoordPointer( 2, GL_FLOAT, 0, tess.svars.texcoords[0] );
-
-	fog = tr.world->fogs + tess.fogNum;
-
-	for ( i = 0; i < tess.numVertexes; i++ ) {
-		* ( int * )&tess.svars.colors[i] = fog->colorInt;
-	}
-
-	RB_CalcFogTexCoords( ( float * ) tess.svars.texcoords[0] );
-
-	GL_Bind( tr.fogImage );
-
-	if ( tess.shader->fogPass == FP_EQUAL ) {
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA | GLS_DEPTHFUNC_EQUAL );
-	} else {
-		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-	}
-
-	R_DrawElements( tess.numIndexes, tess.indexes );
-}
-
 /*
 ===============
 ComputeColors
@@ -672,7 +671,7 @@ static void ComputeColors( shaderStage_t *pStage )
 		case CGEN_EXACT_VERTEX:
 			Com_Memcpy( tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof( tess.vertexColors[0] ) );
 			break;
-		case CGEN_CONST:
+		case CGEN_CONSTANT:
 			for ( i = 0; i < tess.numVertexes; i++ ) {
 				*(int *)tess.svars.colors[i] = *(int *)pStage->constantColor;
 			}
@@ -713,17 +712,6 @@ static void ComputeColors( shaderStage_t *pStage )
 				}
 			}
 			break;
-		case CGEN_FOG:
-			{
-				fog_t		*fog;
-
-				fog = tr.world->fogs + tess.fogNum;
-
-				for ( i = 0; i < tess.numVertexes; i++ ) {
-					* ( int * )&tess.svars.colors[i] = fog->colorInt;
-				}
-			}
-			break;
 		case CGEN_WAVEFORM:
 			RB_CalcWaveColor( &pStage->rgbWave, ( unsigned char * ) tess.svars.colors );
 			break;
@@ -753,7 +741,7 @@ static void ComputeColors( shaderStage_t *pStage )
 		}
 		break;
 	case AGEN_CONST:
-		if ( pStage->rgbGen != CGEN_CONST ) {
+		if ( pStage->rgbGen != CGEN_CONSTANT ) {
 			for ( i = 0; i < tess.numVertexes; i++ ) {
 				tess.svars.colors[i][3] = pStage->constantColor[3];
 			}
@@ -982,7 +970,7 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input )
 			//
 			// set state
 			//
-			if ( pStage->bundle[0].vertexLightmap && ( (r_vertexLight->integer && !r_uiFullScreen->integer) || glConfig.hardwareType == GLHW_PERMEDIA2 ) && r_lightmap->integer )
+			if ( pStage->bundle[0].vertexLightmap && ( r_vertexLight->integer || glConfig.hardwareType == GLHW_PERMEDIA2 ) && r_lightmap->integer )
 			{
 				GL_Bind( tr.whiteImage );
 			}
@@ -1044,7 +1032,7 @@ void RB_StageIteratorGeneric( void )
 	// to avoid compiling those arrays since they will change
 	// during multipass rendering
 	//
-	if ( tess.numPasses > 1 || input->shader->multitextureEnv )
+	if ( tess.numPasses > 1 || ( tess.xstages && tess.xstages[0]->multitextureEnv ))
 	{
 		setArraysOnce = qfalse;
 		qglDisableClientState (GL_COLOR_ARRAY);
@@ -1088,16 +1076,8 @@ void RB_StageIteratorGeneric( void )
 	// 
 	// now do any dynamic lighting needed
 	//
-	if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE
-		&& !(tess.shader->surfaceFlags & (SURF_NODLIGHT | SURF_SKY) ) ) {
+	if( tess.dlightBits && tess.dlightMap == 0 && tess.shader->sort <= SS_OPAQUE ) {
 		ProjectDlightTexture();
-	}
-
-	//
-	// now do fog
-	//
-	if ( tess.fogNum && tess.shader->fogPass ) {
-		RB_FogPass();
 	}
 
 	// 
@@ -1179,13 +1159,6 @@ void RB_StageIteratorVertexLitTexture( void )
 	//
 	if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE ) {
 		ProjectDlightTexture();
-	}
-
-	//
-	// now do fog
-	//
-	if ( tess.fogNum && tess.shader->fogPass ) {
-		RB_FogPass();
 	}
 
 	// 
@@ -1284,13 +1257,6 @@ void RB_StageIteratorLightmappedMultitexture( void ) {
 	//
 	if ( tess.dlightBits && tess.shader->sort <= SS_OPAQUE ) {
 		ProjectDlightTexture();
-	}
-
-	//
-	// now do fog
-	//
-	if ( tess.fogNum && tess.shader->fogPass ) {
-		RB_FogPass();
 	}
 
 	//

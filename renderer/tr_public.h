@@ -70,12 +70,11 @@ typedef struct {
 	void	(*RenderScene)( const refdef_t *fd );
 
 	void	(*SetColor)( const float *rgba );	// NULL = 1,1,1,1
-	void	(*DrawStretchPic) ( float x, float y, float w, float h, 
+	void	(*DrawStretchPic) ( float x, float y, float w, float h,
 		float s1, float t1, float s2, float t2, qhandle_t hShader );	// 0 = white
 
 	// Draw images for cinematic rendering, pass as 32 bit rgba
-	void	(*DrawStretchRaw) (int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty);
-	void	(*UploadCinematic) (int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty);
+	void (*DrawStretchRaw)( int x, int y, int w, int h, int cols, int rows, const byte *data );
 
 	void	(*BeginFrame)( stereoFrame_t stereoFrame );
 
@@ -150,12 +149,6 @@ typedef struct {
 	void	(*FS_FreeFileList)( char **filelist );
 	void	(*FS_WriteFile)( const char *qpath, const void *buffer, int size );
 	qboolean (*FS_FileExists)( const char *file );
-
-	// cinematic stuff
-	void	(*CIN_UploadCinematic)(int handle);
-	int		(*CIN_PlayCinematic)( const char *arg0, int xpos, int ypos, int width, int height, int bits);
-	e_status (*CIN_RunCinematic) (int handle);
-
 } refimport_t;
 
 

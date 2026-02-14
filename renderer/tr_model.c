@@ -30,6 +30,11 @@ static qboolean R_LoadMD4 (model_t *mod, void *buffer, const char *name );
 
 model_t	*loadmodel;
 
+// FIXME: not technically declared in this file??
+int r_sequencenumber;
+qboolean r_registration_active;
+
+
 /*
 ** R_GetModelByHandle
 */
@@ -323,7 +328,7 @@ static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *mod_
         for ( j = 0 ; j < surf->numShaders ; j++, shader++ ) {
             shader_t	*sh;
 
-            sh = R_FindShader( shader->name, LIGHTMAP_NONE, qtrue );
+			sh = R_FindShader( shader->name, LIGHTMAP_NONE, qtrue, qtrue, qtrue );
 			if ( sh->defaultShader ) {
 				shader->shaderIndex = 0;
 			} else {
@@ -462,7 +467,7 @@ static qboolean R_LoadMD4( model_t *mod, void *buffer, const char *mod_name ) {
 			Q_strlwr( surf->name );
 		
 			// register the shaders
-			sh = R_FindShader( surf->shader, LIGHTMAP_NONE, qtrue );
+			sh = R_FindShader( surf->shader, LIGHTMAP_NONE, qtrue, qtrue, qtrue );
 			if ( sh->defaultShader ) {
 				surf->shaderIndex = 0;
 			} else {
@@ -534,6 +539,8 @@ void RE_BeginRegistration( glconfig_t *glconfigOut ) {
 
 	R_SyncRenderThread();
 
+	r_sequencenumber++;
+	r_registration_active = qtrue;
 	tr.viewCluster = -1;		// force markleafs to regenerate
 	R_ClearFlares();
 	RE_ClearScene();

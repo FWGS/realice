@@ -222,7 +222,7 @@ void CG_ShaderStateChanged(void) {
 				strncpy(timeOffset, t, o-t);
 				timeOffset[o-t] = 0;
 				o++;
-				trap_R_RemapShader( originalShader, newShader, timeOffset );
+				// trap_R_RemapShader( originalShader, newShader, timeOffset );
 			}
 		} else {
 			break;
@@ -888,12 +888,6 @@ static void CG_ServerCommand( void ) {
 	if ( !strcmp( cmd, "map_restart" ) ) {
 		CG_MapRestart();
 		return;
-	}
-
-  if ( Q_stricmp (cmd, "remapShader") == 0 ) {
-		if (trap_Argc() == 4) {
-			trap_R_RemapShader(CG_Argv(1), CG_Argv(2), CG_Argv(3));
-		}
 	}
 
 	// loaddeferred can be both a servercmd and a consolecmd

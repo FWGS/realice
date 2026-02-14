@@ -324,8 +324,8 @@ typedef struct {
 #define BSP_HEADER (( 'K' << 24 ) + ( 'K' << 16 ) + ( 'A' << 8 ) + 'F' )
 // little-endian "FAKK"
 
-#define BSP_VERSION 12
-#define BSP_ALICE_VERSION 0x2a
+#define BSP_VERSION       12
+#define BSP_ALICE_VERSION 42
 
 
 // there shouldn't be any problem with increasing these values at the

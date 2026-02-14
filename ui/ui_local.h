@@ -994,7 +994,6 @@ e_status		trap_CIN_RunCinematic (int handle);
 void			trap_CIN_DrawCinematic (int handle);
 void			trap_CIN_SetExtents (int handle, int x, int y, int w, int h);
 int				trap_RealTime(qtime_t *qtime);
-void			trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 qboolean		trap_VerifyCDKey( const char *key, const char *chksum);
 
 void			trap_SetPbClStatus( int status );

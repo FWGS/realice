@@ -35,7 +35,6 @@ int			r_firstScenePoly;
 
 int			r_numpolyverts;
 
-
 /*
 ====================
 R_ToggleSmpFrame

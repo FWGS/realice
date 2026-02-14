@@ -233,67 +233,6 @@ void	R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	cmd->viewParms = tr.viewParms;
 }
 
-
-/*
-=============
-RE_SetColor
-
-Passing NULL will set the color to white
-=============
-*/
-void	RE_SetColor( const float *rgba ) {
-	setColorCommand_t	*cmd;
-
-  if ( !tr.registered ) {
-    return;
-  }
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_SET_COLOR;
-	if ( !rgba ) {
-		static float colorWhite[4] = { 1, 1, 1, 1 };
-
-		rgba = colorWhite;
-	}
-
-	cmd->color[0] = rgba[0];
-	cmd->color[1] = rgba[1];
-	cmd->color[2] = rgba[2];
-	cmd->color[3] = rgba[3];
-}
-
-
-/*
-=============
-RE_StretchPic
-=============
-*/
-void RE_StretchPic ( float x, float y, float w, float h, 
-					  float s1, float t1, float s2, float t2, qhandle_t hShader ) {
-	stretchPicCommand_t	*cmd;
-
-  if (!tr.registered) {
-    return;
-  }
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_STRETCH_PIC;
-	cmd->shader = R_GetShaderByHandle( hShader );
-	cmd->x = x;
-	cmd->y = y;
-	cmd->w = w;
-	cmd->h = h;
-	cmd->s1 = s1;
-	cmd->t1 = t1;
-	cmd->s2 = s2;
-	cmd->t2 = t2;
-}
-
-
 /*
 ====================
 RE_BeginFrame

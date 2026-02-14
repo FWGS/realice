@@ -138,13 +138,11 @@ float	FloatSwap (const float *f);
 #endif
 #endif
 
-#define ID_INLINE __inline 
-
-static ID_INLINE short BigShort( short l) { return ShortSwap(l); }
+static inline short BigShort( short l) { return ShortSwap(l); }
 #define LittleShort
-static ID_INLINE int BigLong(int l) { LongSwap(l); }
+static inline int BigLong(int l) { LongSwap(l); }
 #define LittleLong
-static ID_INLINE float BigFloat(const float *l) { FloatSwap(l); }
+static inline float BigFloat(const float *l) { FloatSwap(l); }
 #define LittleFloat
 
 #define	PATH_SEP '\\'
@@ -158,7 +156,6 @@ static ID_INLINE float BigFloat(const float *l) { FloatSwap(l); }
 #define __cdecl
 #define __declspec(x)
 #define stricmp strcasecmp
-#define ID_INLINE inline 
 
 #ifdef __ppc__
 #define CPUSTRING	"MacOSX-ppc"
@@ -184,7 +181,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 #ifdef __MACOS__
 
 #include <MacTypes.h>
-#define ID_INLINE inline 
 
 #define	CPUSTRING	"MacOS-PPC"
 
@@ -209,8 +205,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 
 // bk001205 - from Makefile
 #define stricmp strcasecmp
-
-#define ID_INLINE inline 
 
 #ifdef __i386__
 #define	CPUSTRING	"linux-i386"
@@ -553,18 +547,6 @@ void ByteToDir( int b, vec3_t dir );
 
 #endif
 
-#ifdef __LCC__
-#ifdef VectorCopy
-#undef VectorCopy
-// this is a little hack to get more efficient copies in our interpreter
-typedef struct {
-	float	v[3];
-} vec3struct_t;
-#define VectorCopy(a,b)	(*(vec3struct_t *)b=*(vec3struct_t *)a)
-#define ID_INLINE static
-#endif
-#endif
-
 #define VectorClear(a)			((a)[0]=(a)[1]=(a)[2]=0)
 #define VectorNegate(a,b)		((b)[0]=-(a)[0],(b)[1]=-(a)[1],(b)[2]=-(a)[2])
 #define VectorSet(v, x, y, z)	((v)[0]=(x), (v)[1]=(y), (v)[2]=(z))
@@ -588,30 +570,29 @@ float RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
 void ClearBounds( vec3_t mins, vec3_t maxs );
 void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
 
-#ifndef __LCC__
-static ID_INLINE int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
+static inline int VectorCompare( const vec3_t v1, const vec3_t v2 ) {
 	if (v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) {
 		return 0;
 	}			
 	return 1;
 }
 
-static ID_INLINE vec_t VectorLength( const vec3_t v ) {
+static inline vec_t VectorLength( const vec3_t v ) {
 	return (vec_t)sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
-static ID_INLINE vec_t VectorLengthSquared( const vec3_t v ) {
+static inline vec_t VectorLengthSquared( const vec3_t v ) {
 	return (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
-static ID_INLINE vec_t Distance( const vec3_t p1, const vec3_t p2 ) {
+static inline vec_t Distance( const vec3_t p1, const vec3_t p2 ) {
 	vec3_t	v;
 
 	VectorSubtract (p2, p1, v);
 	return VectorLength( v );
 }
 
-static ID_INLINE vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
+static inline vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
 	vec3_t	v;
 
 	VectorSubtract (p2, p1, v);
@@ -620,7 +601,7 @@ static ID_INLINE vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 ) {
 
 // fast vector normalize routine that does not check to make sure
 // that length != 0, nor does it return length, uses rsqrt approximation
-static ID_INLINE void VectorNormalizeFast( vec3_t v )
+static inline void VectorNormalizeFast( vec3_t v )
 {
 	float ilength;
 
@@ -631,36 +612,17 @@ static ID_INLINE void VectorNormalizeFast( vec3_t v )
 	v[2] *= ilength;
 }
 
-static ID_INLINE void VectorInverse( vec3_t v ){
+static inline void VectorInverse( vec3_t v ){
 	v[0] = -v[0];
 	v[1] = -v[1];
 	v[2] = -v[2];
 }
 
-static ID_INLINE void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross ) {
+static inline void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross ) {
 	cross[0] = v1[1]*v2[2] - v1[2]*v2[1];
 	cross[1] = v1[2]*v2[0] - v1[0]*v2[2];
 	cross[2] = v1[0]*v2[1] - v1[1]*v2[0];
 }
-
-#else
-int VectorCompare( const vec3_t v1, const vec3_t v2 );
-
-vec_t VectorLength( const vec3_t v );
-
-vec_t VectorLengthSquared( const vec3_t v );
-
-vec_t Distance( const vec3_t p1, const vec3_t p2 );
-
-vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 );
- 
-void VectorNormalizeFast( vec3_t v );
-
-void VectorInverse( vec3_t v );
-
-void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
-
-#endif
 
 vec_t VectorNormalize (vec3_t v);		// returns vector length
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
@@ -721,7 +683,6 @@ void	COM_BeginParseSession( const char *name );
 int		COM_GetCurrentParseLine( void );
 char	*COM_Parse( char **data_p );
 char	*COM_ParseExt( char **data_p, qboolean allowLineBreak );
-int		COM_Compress( char *data_p );
 void	COM_ParseError( char *format, ... );
 void	COM_ParseWarning( char *format, ... );
 //int		COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );

@@ -293,10 +293,6 @@ int		trap_R_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int e
 	return syscall( CG_R_LERPTAG, tag, mod, startFrame, endFrame, PASSFLOAT(frac), tagName );
 }
 
-void	trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset ) {
-	syscall( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
-}
-
 void		trap_GetGlconfig( glconfig_t *glconfig ) {
 	syscall( CG_GETGLCONFIG, glconfig );
 }

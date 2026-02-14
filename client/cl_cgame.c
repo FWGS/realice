@@ -662,10 +662,6 @@ int CL_CgameSystemCalls( int *args ) {
 	  CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
 	  return 0;
 
-	case CG_R_REMAP_SHADER:
-		re.RemapShader( VMA(1), VMA(2), VMA(3) );
-		return 0;
-
 /*
 	case CG_LOADCAMERA:
 		return loadCamera(VMA(1));

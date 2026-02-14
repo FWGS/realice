@@ -363,11 +363,6 @@ void trap_CIN_SetExtents (int handle, int x, int y, int w, int h) {
   syscall(UI_CIN_SETEXTENTS, handle, x, y, w, h);
 }
 
-
-void	trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset ) {
-	syscall( UI_R_REMAP_SHADER, oldShader, newShader, timeOffset );
-}
-
 qboolean trap_VerifyCDKey( const char *key, const char *chksum) {
 	return syscall( UI_VERIFY_CDKEY, key, chksum);
 }

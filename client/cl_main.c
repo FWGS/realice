@@ -725,9 +725,6 @@ void CL_Disconnect( qboolean showMainMenu ) {
 		return;
 	}
 
-	// shutting down the client so enter full screen ui mode
-	Cvar_Set("r_uiFullScreen", "1");
-
 	if ( clc.demorecording ) {
 		CL_StopRecord_f ();
 	}
@@ -1344,9 +1341,6 @@ void CL_DownloadsComplete( void ) {
 	if ( cls.state != CA_LOADING ) {
 		return;
 	}
-
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set("r_uiFullScreen", "0");
 
 	// flush client memory and start loading stuff
 	// this will also (re)load the UI
@@ -2215,11 +2209,6 @@ void CL_InitRef( void ) {
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
 
-	// cinematic stuff
-
-	ri.CIN_UploadCinematic = CIN_UploadCinematic;
-	ri.CIN_PlayCinematic = CIN_PlayCinematic;
-	ri.CIN_RunCinematic = CIN_RunCinematic;
 
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 

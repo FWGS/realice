@@ -596,9 +596,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			if ( entityNum != ENTITYNUM_WORLD ) {
 				backEnd.currentEntity = &backEnd.refdef.entities[entityNum];
 				backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
-				// we have to reset the shaderTime as well otherwise image animations start
-				// from the wrong frame
-				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 
 				// set up the transformation matrix
 				R_RotateForEntity( backEnd.currentEntity, &backEnd.viewParms, &backEnd.or );
@@ -616,9 +613,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 				backEnd.currentEntity = &tr.worldEntity;
 				backEnd.refdef.floatTime = originalTime;
 				backEnd.or = backEnd.viewParms.world;
-				// we have to reset the shaderTime as well otherwise image animations on
-				// the world (like water) continue with the wrong frame
-				tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
 				R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.or );
 			}
 
@@ -719,189 +713,50 @@ Stretches a raw 32 bit power of 2 bitmap image over the given screen rectangle.
 Used for cinematics.
 =============
 */
-void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty) {
-	int			i, j;
-	int			start, end;
+void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data )
+{
+	int	i, j;
 
-	if ( !tr.registered ) {
-		return;
-	}
 	R_SyncRenderThread();
 
-	// we definately want to sync every frame for the cinematics
-	qglFinish();
-
-	start = end = 0;
-	if ( r_speeds->integer ) {
-		start = ri.Milliseconds();
-	}
-
 	// make sure rows and cols are powers of 2
-	for ( i = 0 ; ( 1 << i ) < cols ; i++ ) {
-	}
-	for ( j = 0 ; ( 1 << j ) < rows ; j++ ) {
-	}
-	if ( ( 1 << i ) != cols || ( 1 << j ) != rows) {
-		ri.Error (ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows);
+	for( i = 0; ( 1 << i ) < cols; i++ );
+	for( j = 0; ( 1 << j ) < rows; j++ );
+
+	if(( 1 << i ) != cols || ( 1 << j ) != rows )
+	{
+		ri.Error( ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows );
 	}
 
-	GL_Bind( tr.scratchImage[client] );
+	GL_Bind( tr.scratchImage );
 
 	// if the scratchImage isn't in the format we want, specify it as a new texture
-	if ( cols != tr.scratchImage[client]->width || rows != tr.scratchImage[client]->height ) {
-		tr.scratchImage[client]->width = tr.scratchImage[client]->uploadWidth = cols;
-		tr.scratchImage[client]->height = tr.scratchImage[client]->uploadHeight = rows;
-		qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+	if( cols != tr.scratchImage->width || rows != tr.scratchImage->height )
+	{
+		tr.scratchImage->width = tr.scratchImage->uploadWidth = cols;
+		tr.scratchImage->height = tr.scratchImage->uploadHeight = rows;
+		qglTexImage2D( GL_TEXTURE_2D, 0, 3, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
-	} else {
-		if (dirty) {
-			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
-			// it and don't try and do a texture compression
-			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
-		}
+	}
+	else
+	{
+		// otherwise, just subimage upload it so that drivers can tell we are going to be changing
+		// it and don't try and do a texture compression
+		qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
 	}
 
-	if ( r_speeds->integer ) {
-		end = ri.Milliseconds();
-		ri.Printf( PRINT_ALL, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
-	}
-
-	RB_SetGL2D();
-
-	qglColor3f( tr.identityLight, tr.identityLight, tr.identityLight );
-
-	qglBegin (GL_QUADS);
-	qglTexCoord2f ( 0.5f / cols,  0.5f / rows );
-	qglVertex2f (x, y);
-	qglTexCoord2f ( ( cols - 0.5f ) / cols ,  0.5f / rows );
-	qglVertex2f (x+w, y);
-	qglTexCoord2f ( ( cols - 0.5f ) / cols, ( rows - 0.5f ) / rows );
-	qglVertex2f (x+w, y+h);
-	qglTexCoord2f ( 0.5f / cols, ( rows - 0.5f ) / rows );
-	qglVertex2f (x, y+h);
-	qglEnd ();
+	qglBegin( GL_QUADS );
+	qglTexCoord2f( 0.5f / cols,  0.5f / rows );
+	qglVertex2f( x, y );
+	qglTexCoord2f(( cols - 0.5f ) / cols ,  0.5f / rows );
+	qglVertex2f( x + w, y );
+	qglTexCoord2f(( cols - 0.5f ) / cols, ( rows - 0.5f ) / rows );
+	qglVertex2f( x + w, y + h );
+	qglTexCoord2f( 0.5f / cols, ( rows - 0.5f ) / rows );
+	qglVertex2f( x, y + h );
+	qglEnd();
 }
-
-void RE_UploadCinematic (int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty) {
-
-	GL_Bind( tr.scratchImage[client] );
-
-	// if the scratchImage isn't in the format we want, specify it as a new texture
-	if ( cols != tr.scratchImage[client]->width || rows != tr.scratchImage[client]->height ) {
-		tr.scratchImage[client]->width = tr.scratchImage[client]->uploadWidth = cols;
-		tr.scratchImage[client]->height = tr.scratchImage[client]->uploadHeight = rows;
-		qglTexImage2D( GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-		qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
-	} else {
-		if (dirty) {
-			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
-			// it and don't try and do a texture compression
-			qglTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data );
-		}
-	}
-}
-
-
-/*
-=============
-RB_SetColor
-
-=============
-*/
-const void	*RB_SetColor( const void *data ) {
-	const setColorCommand_t	*cmd;
-
-	cmd = (const setColorCommand_t *)data;
-
-	backEnd.color2D[0] = cmd->color[0] * 255;
-	backEnd.color2D[1] = cmd->color[1] * 255;
-	backEnd.color2D[2] = cmd->color[2] * 255;
-	backEnd.color2D[3] = cmd->color[3] * 255;
-
-	return (const void *)(cmd + 1);
-}
-
-/*
-=============
-RB_StretchPic
-=============
-*/
-const void *RB_StretchPic ( const void *data ) {
-	const stretchPicCommand_t	*cmd;
-	shader_t *shader;
-	int		numVerts, numIndexes;
-
-	cmd = (const stretchPicCommand_t *)data;
-
-	if ( !backEnd.projection2D ) {
-		RB_SetGL2D();
-	}
-
-	shader = cmd->shader;
-	if ( shader != tess.shader ) {
-		if ( tess.numIndexes ) {
-			RB_EndSurface();
-		}
-		backEnd.currentEntity = &backEnd.entity2D;
-		RB_BeginSurface( shader, 0 );
-	}
-
-	RB_CHECKOVERFLOW( 4, 6 );
-	numVerts = tess.numVertexes;
-	numIndexes = tess.numIndexes;
-
-	tess.numVertexes += 4;
-	tess.numIndexes += 6;
-
-	tess.indexes[ numIndexes ] = numVerts + 3;
-	tess.indexes[ numIndexes + 1 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 2 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 3 ] = numVerts + 2;
-	tess.indexes[ numIndexes + 4 ] = numVerts + 0;
-	tess.indexes[ numIndexes + 5 ] = numVerts + 1;
-
-	*(int *)tess.vertexColors[ numVerts ] =
-		*(int *)tess.vertexColors[ numVerts + 1 ] =
-		*(int *)tess.vertexColors[ numVerts + 2 ] =
-		*(int *)tess.vertexColors[ numVerts + 3 ] = *(int *)backEnd.color2D;
-
-	tess.xyz[ numVerts ][0] = cmd->x;
-	tess.xyz[ numVerts ][1] = cmd->y;
-	tess.xyz[ numVerts ][2] = 0;
-
-	tess.texCoords[ numVerts ][0][0] = cmd->s1;
-	tess.texCoords[ numVerts ][0][1] = cmd->t1;
-
-	tess.xyz[ numVerts + 1 ][0] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 1 ][1] = cmd->y;
-	tess.xyz[ numVerts + 1 ][2] = 0;
-
-	tess.texCoords[ numVerts + 1 ][0][0] = cmd->s2;
-	tess.texCoords[ numVerts + 1 ][0][1] = cmd->t1;
-
-	tess.xyz[ numVerts + 2 ][0] = cmd->x + cmd->w;
-	tess.xyz[ numVerts + 2 ][1] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 2 ][2] = 0;
-
-	tess.texCoords[ numVerts + 2 ][0][0] = cmd->s2;
-	tess.texCoords[ numVerts + 2 ][0][1] = cmd->t2;
-
-	tess.xyz[ numVerts + 3 ][0] = cmd->x;
-	tess.xyz[ numVerts + 3 ][1] = cmd->y + cmd->h;
-	tess.xyz[ numVerts + 3 ][2] = 0;
-
-	tess.texCoords[ numVerts + 3 ][0][0] = cmd->s1;
-	tess.texCoords[ numVerts + 3 ][0][1] = cmd->t2;
-
-	return (const void *)(cmd + 1);
-}
-
 
 /*
 =============
@@ -960,15 +815,14 @@ was there.  This is used to test for texture thrashing.
 Also called by RE_EndRegistration
 ===============
 */
-void RB_ShowImages( void ) {
+void RB_ShowImages( qboolean quiet )
+{
 	int		i;
 	image_t	*image;
 	float	x, y, w, h;
 	int		start, end;
 
-	if ( !backEnd.projection2D ) {
-		RB_SetGL2D();
-	}
+	RB_SetGL2D();
 
 	qglClear( GL_COLOR_BUFFER_BIT );
 
@@ -977,7 +831,7 @@ void RB_ShowImages( void ) {
 	start = ri.Milliseconds();
 
 	for ( i=0 ; i<tr.numImages ; i++ ) {
-		image = tr.images[i];
+		image = &tr.images[i];
 
 		w = glConfig.vidWidth / 20;
 		h = glConfig.vidHeight / 15;
@@ -1006,7 +860,8 @@ void RB_ShowImages( void ) {
 	qglFinish();
 
 	end = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
+	if( !quiet )
+		ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
 
 }
 
@@ -1027,7 +882,7 @@ const void	*RB_SwapBuffers( const void *data ) {
 
 	// texture swapping test
 	if ( r_showImages->integer ) {
-		RB_ShowImages();
+		RB_ShowImages( qfalse );
 	}
 
 	cmd = (const swapBuffersCommand_t *)data;
@@ -1085,14 +940,11 @@ void RB_ExecuteRenderCommands( const void *data ) {
 
 	while ( 1 ) {
 		switch ( *(const int *)data ) {
-		case RC_SET_COLOR:
-			data = RB_SetColor( data );
-			break;
-		case RC_STRETCH_PIC:
-			data = RB_StretchPic( data );
-			break;
 		case RC_DRAW_SURFS:
 			data = RB_DrawSurfs( data );
+			break;
+		case RC_SPRITE_SURFS:
+			// TODO: RB_SpriteSurfs( data );
 			break;
 		case RC_DRAW_BUFFER:
 			data = RB_DrawBuffer( data );
@@ -1100,16 +952,14 @@ void RB_ExecuteRenderCommands( const void *data ) {
 		case RC_SWAP_BUFFERS:
 			data = RB_SwapBuffers( data );
 			break;
-		case RC_SCREENSHOT:
-			data = RB_TakeScreenshotCmd( data );
-			break;
 
 		case RC_END_OF_LIST:
-		default:
 			// stop rendering on this thread
 			t2 = ri.Milliseconds ();
 			backEnd.pc.msec = t2 - t1;
 			return;
+		default:
+			ri.Printf( 1, "Unknown render command %i", *(const int *)data );
 		}
 	}
 

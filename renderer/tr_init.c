@@ -95,7 +95,6 @@ cvar_t	*r_drawBuffer;
 cvar_t  *r_glDriver;
 cvar_t	*r_lightmap;
 cvar_t	*r_vertexLight;
-cvar_t	*r_uiFullScreen;
 cvar_t	*r_shadows;
 cvar_t	*r_flares;
 cvar_t	*r_mode;
@@ -147,6 +146,10 @@ cvar_t	*r_maxpolys;
 int		max_polys;
 cvar_t	*r_maxpolyverts;
 int		max_polyverts;
+
+// a1ba: not defined in this file, technically
+// also not initialized anywhere???
+qboolean qglTextureEnvCombineExists;
 
 static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 {
@@ -422,44 +425,10 @@ void RB_TakeScreenshotJPEG( int x, int y, int width, int height, char *fileName 
 
 /*
 ==================
-RB_TakeScreenshotCmd
-==================
-*/
-const void *RB_TakeScreenshotCmd( const void *data ) {
-	const screenshotCommand_t	*cmd;
-	
-	cmd = (const screenshotCommand_t *)data;
-	
-	if (cmd->jpeg)
-		RB_TakeScreenshotJPEG( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName);
-	else
-		RB_TakeScreenshot( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName);
-	
-	return (const void *)(cmd + 1);	
-}
-
-/*
-==================
 R_TakeScreenshot
 ==================
 */
-void R_TakeScreenshot( int x, int y, int width, int height, char *name, qboolean jpeg ) {
-	static char	fileName[MAX_OSPATH]; // bad things if two screenshots per frame?
-	screenshotCommand_t	*cmd;
-
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_SCREENSHOT;
-
-	cmd->x = x;
-	cmd->y = y;
-	cmd->width = width;
-	cmd->height = height;
-	Q_strncpyz( fileName, name, sizeof(fileName) );
-	cmd->fileName = fileName;
-	cmd->jpeg = jpeg;
+void R_TakeScreenshot( int x, int y, int width, int height, char *name ) {
 }
 
 /* 
@@ -635,65 +604,12 @@ void R_ScreenShot_f (void) {
 		lastNumber++;
 	}
 
-	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, qfalse );
+	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname );
 
 	if ( !silent ) {
 		ri.Printf (PRINT_ALL, "Wrote %s\n", checkname);
 	}
-} 
-
-void R_ScreenShotJPEG_f (void) {
-	char		checkname[MAX_OSPATH];
-	static	int	lastNumber = -1;
-	qboolean	silent;
-
-	if ( !strcmp( ri.Cmd_Argv(1), "levelshot" ) ) {
-		R_LevelShot();
-		return;
-	}
-
-	if ( !strcmp( ri.Cmd_Argv(1), "silent" ) ) {
-		silent = qtrue;
-	} else {
-		silent = qfalse;
-	}
-
-	if ( ri.Cmd_Argc() == 2 && !silent ) {
-		// explicit filename
-		Com_sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", ri.Cmd_Argv( 1 ) );
-	} else {
-		// scan for a free filename
-
-		// if we have saved a previous screenshot, don't scan
-		// again, because recording demo avis can involve
-		// thousands of shots
-		if ( lastNumber == -1 ) {
-			lastNumber = 0;
-		}
-		// scan for a free number
-		for ( ; lastNumber <= 9999 ; lastNumber++ ) {
-			R_ScreenshotFilenameJPEG( lastNumber, checkname );
-
-      if (!ri.FS_FileExists( checkname ))
-      {
-        break; // file doesn't exist
-      }
-		}
-
-		if ( lastNumber == 10000 ) {
-			ri.Printf (PRINT_ALL, "ScreenShot: Couldn't create a file\n"); 
-			return;
- 		}
-
-		lastNumber++;
-	}
-
-	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, qtrue );
-
-	if ( !silent ) {
-		ri.Printf (PRINT_ALL, "Wrote %s\n", checkname);
-	}
-} 
+}
 
 //============================================================================
 
@@ -816,10 +732,10 @@ void GfxInfo_f( void )
 	ri.Printf( PRINT_ALL, "texturemode: %s\n", r_textureMode->string );
 	ri.Printf( PRINT_ALL, "picmip: %d\n", r_picmip->integer );
 	ri.Printf( PRINT_ALL, "texture bits: %d\n", r_texturebits->integer );
-	ri.Printf( PRINT_ALL, "multitexture: %s\n", enablestrings[qglActiveTextureARB != 0] );
-	ri.Printf( PRINT_ALL, "compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ] );
-	ri.Printf( PRINT_ALL, "texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0] );
-	ri.Printf( PRINT_ALL, "compressed textures: %s\n", enablestrings[glConfig.textureCompression!=TC_NONE] );
+	ri.Printf( PRINT_ALL, "multitexture: %s\n", qglActiveTextureARB != 0 ? "enabled" : "disabled" );
+	ri.Printf( PRINT_ALL, "compiled vertex arrays: %s\n", qglLockArraysEXT != 0 ? "enabled" : "disabled" );
+	ri.Printf( PRINT_ALL, "texenv add: %s\n", glConfig.textureEnvAddAvailable != 0 ? "enabled" : "disabled" );
+	ri.Printf( PRINT_ALL, "compressed textures: %s\n", glConfig.textureCompression != TC_NONE ? "enabled" : "disabled" );
 	if ( r_vertexLight->integer || glConfig.hardwareType == GLHW_PERMEDIA2 )
 	{
 		ri.Printf( PRINT_ALL, "HACK: using vertex lightmap approximation\n" );
@@ -885,7 +801,6 @@ void R_Register( void )
 	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_vertexLight = ri.Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH );
-	r_uiFullScreen = ri.Cvar_Get( "r_uifullscreen", "0", 0);
 	r_subdivisions = ri.Cvar_Get ("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH);
 #if (defined(MACOS_X) || defined(__linux__)) && defined(SMP)
   // Default to using SMP on Mac OS X or Linux if we have multiple processors
@@ -994,8 +909,25 @@ void R_Register( void )
 	ri.Cmd_AddCommand( "modellist", R_Modellist_f );
 	ri.Cmd_AddCommand( "modelist", R_ModeList_f );
 	ri.Cmd_AddCommand( "screenshot", R_ScreenShot_f );
-	ri.Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	ri.Cmd_AddCommand( "gfxinfo", GfxInfo_f );
+}
+
+void R_InitExtensions( void )
+{
+	if( !qglTextureEnvCombineExists )
+		return;
+
+	glState.cntTexEnvExt = 0;
+	glState.cntnvblendmode = 0;
+	qglTexEnvf( GL_TEXTURE_ENV, GL_COMBINE_RGB,   GL_INTERPOLATE );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_SOURCE0_RGB,   GL_PRIMARY_COLOR );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_OPERAND0_RGB,  GL_SRC_COLOR );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_SOURCE1_RGB,   GL_TEXTURE );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_OPERAND1_RGB,  GL_SRC_COLOR );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_SOURCE2_RGB,   GL_PRIMARY_COLOR );
+	qglTexEnvf( GL_TEXTURE_ENV, GL_OPERAND2_RGB,  GL_SRC_ALPHA );
+
 }
 
 /*
@@ -1079,9 +1011,11 @@ void R_Init( void ) {
 
 	InitOpenGL();
 
+	R_InitExtensions();
+
 	R_InitImages();
 
-	R_InitShaders();
+	R_StartupShaders();
 
 	R_InitSkins();
 
@@ -1141,13 +1075,23 @@ RE_EndRegistration
 Touch all images to make sure they are resident
 =============
 */
-void RE_EndRegistration( void ) {
+void RE_EndRegistration( void )
+{
+	r_registration_active = qfalse;
 	R_SyncRenderThread();
-	if (!Sys_LowPhysicalMemory()) {
-		RB_ShowImages();
-	}
+	RB_ShowImages( qtrue );
 }
 
+void RE_SetColor( const float *rgba )
+{
+	// stub
+}
+
+void RE_StretchPic ( float x, float y, float w, float h,
+					  float s1, float t1, float s2, float t2, qhandle_t hShader )
+{
+	// stub
+}
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -1199,10 +1143,8 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.SetColor = RE_SetColor;
 	re.DrawStretchPic = RE_StretchPic;
 	re.DrawStretchRaw = RE_StretchRaw;
-	re.UploadCinematic = RE_UploadCinematic;
 
 	re.RegisterFont = RE_RegisterFont;
-	re.RemapShader = R_RemapShader;
 	re.GetEntityToken = R_GetEntityToken;
 	re.inPVS = R_inPVS;
 
