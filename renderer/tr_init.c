@@ -1189,18 +1189,12 @@ refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp )
 	re.ClearScene = RE_ClearScene;
 	re.AddRefEntityToScene = RE_AddRefEntityToScene;
 	re.AddPolyToScene = RE_AddPolyToScene;
-	re.LightForPoint = R_LightForPoint;
 	re.AddLightToScene = RE_AddLightToScene;
-	re.AddAdditiveLightToScene = RE_AddAdditiveLightToScene;
 	re.RenderScene = RE_RenderScene;
 
 	re.SetColor = RE_SetColor;
 	re.DrawStretchPic = RE_StretchPic;
 	re.DrawStretchRaw = RE_StretchRaw;
-
-	re.RegisterFont = RE_RegisterFont;
-	re.GetEntityToken = R_GetEntityToken;
-	re.inPVS = R_inPVS;
 
 	return &re;
 }

@@ -1889,28 +1889,6 @@ void R_LoadLightGrid( lump_t *l )
 
 /*
 =================
-R_GetEntityToken
-=================
-*/
-qboolean R_GetEntityToken( char *buffer, int size )
-{
-	const char *s;
-
-	s = COM_Parse( &s_worldData.entityParsePoint );
-	Q_strncpyz( buffer, s, size );
-	if( !s_worldData.entityParsePoint || !s[0] )
-	{
-		s_worldData.entityParsePoint = s_worldData.entityString;
-		return qfalse;
-	}
-	else
-	{
-		return qtrue;
-	}
-}
-
-/*
-=================
 RE_LoadWorldMap
 
 Called directly from cgame

@@ -26,134 +26,104 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define REF_API_VERSION 8
 
-//
-// these are the functions exported by the refresh module
-//
-typedef struct
+typedef struct refexport_s
 {
-	// called before the library is unloaded
-	// if the system is just reconfiguring, pass destroyWindow = qfalse,
-	// which will keep the screen from flashing to the desktop.
-	void (*Shutdown)( qboolean destroyWindow );
-
-	// All data that will be used in a level should be
-	// registered before rendering any frames to prevent disk hits,
-	// but they can still be registered at a later time
-	// if necessary.
-	//
-	// BeginRegistration makes any existing media pointers invalid
-	// and returns the current gl configuration, including screen width
-	// and height, which can be used by the client to intelligently
-	// size display elements
-	void (*BeginRegistration)( glconfig_t *config );
-	qhandle_t (*RegisterModel)( const char *name );
-	qhandle_t (*RegisterSkin)( const char *name );
-	qhandle_t (*RegisterShader)( const char *name );
-	qhandle_t (*RegisterShaderNoMip)( const char *name );
-	void (*LoadWorld)( const char *name );
-
-	// the vis data is a large enough block of data that we go to the trouble
-	// of sharing it with the clipmodel subsystem
-	void (*SetWorldVisData)( const byte *vis );
-
-	// EndRegistration will draw a tiny polygon with each texture, forcing
-	// them to be loaded into card memory
-	void (*EndRegistration)( void );
-
-	// a scene is built up by calls to R_ClearScene and the various R_Add functions.
-	// Nothing is drawn until R_RenderScene is called.
-	void (*ClearScene)( void );
-	void (*AddRefEntityToScene)( const refEntity_t *re );
-	void (*AddPolyToScene)( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num );
-	int (*LightForPoint)( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
-	void (*AddLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
-	void (*AddAdditiveLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
-	void (*RenderScene)( const refdef_t *fd );
-
-	void (*SetColor)( const float *rgba );                                                                                   // NULL = 1,1,1,1
-	void (*DrawStretchPic)( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ); // 0 = white
-
-	// Draw images for cinematic rendering, pass as 32 bit rgba
-	void (*DrawStretchRaw)( int x, int y, int w, int h, int cols, int rows, const byte *data );
-
-	void (*BeginFrame)( stereoFrame_t stereoFrame );
-
-	// if the pointers are not NULL, timing info will be returned
-	void (*EndFrame)( int *frontEndMsec, int *backEndMsec );
-
-
-	int (*MarkFragments)( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-
-	int (*LerpTag)( orientation_t *tag, qhandle_t model, int startFrame, int endFrame, float frac, const char *tagName );
-	void (*ModelBounds)( qhandle_t model, vec3_t mins, vec3_t maxs );
-
-#ifdef __USEA3D
-	void (*A3D_RenderGeometry)( void *pVoidA3D, void *pVoidGeom, void *pVoidMat, void *pVoidGeomStatus );
-#endif
-	void (*RegisterFont)( const char *fontName, int pointSize, fontInfo_t *font );
-	void (*RemapShader)( const char *oldShader, const char *newShader, const char *offsetTime );
-	qboolean (*GetEntityToken)( char *buffer, int size );
-	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
+	void          (*Shutdown)( qboolean destroyWindow );
+	void          (*BeginRegistration)( glconfig_t *config );
+	qhandle_t     (*RegisterModel)( const char *name );
+	qhandle_t     (*RegisterSkin)( const char *name );
+	qhandle_t     (*RegisterShader)( const char *name );
+	qhandle_t     (*RegisterShaderNoMip)( const char *name );
+	qhandle_t     (*RefreshShaderNoMip)( const char *name );
+	void          (*EndRegistration)( void );
+	void          (*SetWorldVisData)( const byte *vis );
+	void          (*LoadWorld)( const char *name );
+	void          (*ClearScene)( void );
+	void          (*AddRefEntityToScene)( const refEntity_t *re );
+	void          (*AddRefSpriteToScene)( const refEntity_t *re );
+	void          (*AddPolyToScene)( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num );
+	void          (*AddLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
+	void          (*RenderScene)( const refdef_t *fd );
+	refEntity_t  *(*GetRenderEntity)( int entityNumber );
+	void          (*SavePerformanceCounter)( void );
+	void          (*SetColor)( const float *rgba );
+	void          (*Set2DWindow)( int x, int y, int w, int h, float left, float right, float bottom, float top, float n, float f );
+	void          (*DrawStretchPic)( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader ); // 0 = white
+	void          (*DrawTilePic)( float x, float y, float w, float h, qhandle_t hShader );
+	void          (*DrawTilePicOffset)( float x, float y, float w, float h, qhandle_t hShader, int offsetX, int offsetY );
+	void          (*DrawStretchRaw)( int x, int y, int w, int h, int cols, int rows, const byte *data );
+	void          (*DebugLine)( vec3_t start, vec3_t end, float r, float g, float b, float alpha );
+	void          (*DrawBox)( float x, float y, float width, float height );
+	void          (*AddBox)( float x, float y, float width, float height );
+	void          (*BeginFrame)( stereoFrame_t stereoFrame );
+	void          (*Scissor)( int x, int y, int width, int height );
+	void          (*DrawLineLoop)( vec2_t *points, int count, int stipple_factor, int stipple_mask );
+	void          (*EndFrame)( int *frontEndMsec, int *backEndMsec );
+	int           (*MarkFragments)( int numPoints, const vec3_t *points, const vec3_t projection, int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
+	int           (*LerpTag)( orientation_t *tag, qhandle_t model, int startFrame, int endFrame, float frac, const char *tagName );
+	void          (*ModelBounds)( qhandle_t model, vec3_t mins, vec3_t maxs );
+	float         (*ModelRadius)( qhandle_t model );
+	int           (*TIKI_GetHandle)( qhandle_t handle );
+	void          (*TIKI_FlushAll)( void );
+	void          (*DrawString)( fontheader_t *font, const char *text, float x, float y, int maxlen );
+	float         (*GetFontHeight)( fontheader_t *font );
+	float         (*GetFontStringWidth)( fontheader_t *font, const char *s );
+	fontheader_t *(*LoadFont)( const char *name );
+	void          (*SwipeBegin)( float thistime, float life, qhandle_t shader );
+	void          (*SwipePoint)( vec3_t point1, vec3_t point2, float time );
+	void          (*SwipeEnd)( void );
+	void          (*SetRenderTime)( int t );
+	float         (*NoiseGet4f)( float x, float y, float z, float t );
+	qboolean      (*SetMode)( int mode, glconfig_t *glConfig );
+	qboolean      (*SetFullscreen)( qboolean fullscreen, glconfig_t *glConfig );
+	int           (*GetShaderWidth)( qhandle_t handle );
+	int           (*GetShaderHeight)( qhandle_t handle );
+	const char   *(*GetGraphicsInfo)( void );
 } refexport_t;
 
-//
-// these are the functions imported by the refresh module
-//
-typedef struct
+typedef struct refimport_s
 {
-	// print message on the local console
-	void( QDECL * Printf )( int printLevel, const char *fmt, ... );
-
-	// abort the game
-	void( QDECL * Error )( int errorLevel, const char *fmt, ... );
-
-	// milliseconds should only be used for profiling, never
-	// for anything game related.  Get time from the refdef
+	void (*Printf)( int printLevel, const char *fmt, ... );
+	void (*Error)( int errorLevel, const char *fmt, ... );
 	int (*Milliseconds)( void );
-
-	// stack based memory allocation for per-level things that
-	// won't be freed
-#ifdef HUNK_DEBUG
-	void *(*Hunk_AllocDebug)( int size, ha_pref pref, char *label, char *file, int line );
-#else
-	void *(*Hunk_Alloc)( int size, ha_pref pref );
-#endif
+	void (*Hunk_Clear)( void );
+	void *(*Hunk_Alloc)( int size );
 	void *(*Hunk_AllocateTempMemory)( int size );
 	void (*Hunk_FreeTempMemory)( void *block );
-
-	// dynamic memory allocator for things that need to be freed
 	void *(*Malloc)( int bytes );
 	void (*Free)( void *buf );
-
 	cvar_t *(*Cvar_Get)( const char *name, const char *value, int flags );
 	void (*Cvar_Set)( const char *name, const char *value );
-
 	void (*Cmd_AddCommand)( const char *name, void (*cmd)( void ));
 	void (*Cmd_RemoveCommand)( const char *name );
-
 	int (*Cmd_Argc)( void );
 	char *(*Cmd_Argv)( int i );
-
 	void (*Cmd_ExecuteText)( int exec_when, const char *text );
-
-	// visualization for debugging collision detection
 	void (*CM_DrawDebugSurface)( void ( *drawPoly )( int color, int numPoints, float *points ));
-
-	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existance
+	int (*FS_FOpenFileRead)( const char *filename, fileHandle_t *file, qboolean uniqueFILE );
+	int (*FS_Read)( void *buffer, int len, fileHandle_t f );
+	void (*FS_FCloseFile)( fileHandle_t f );
+	int (*FS_Seek)( fileHandle_t f, long offset, int origin );
 	int (*FS_FileIsInPAK)( const char *name, int *pCheckSum );
 	int (*FS_ReadFile)( const char *name, void **buf );
 	void (*FS_FreeFile)( void *buf );
 	char ** (*FS_ListFiles)( const char *name, const char *extension, int *numfilesfound );
 	void (*FS_FreeFileList)( char **filelist );
 	void (*FS_WriteFile)( const char *qpath, const void *buffer, int size );
-	qboolean (*FS_FileExists)( const char *file );
+	void *(TIKI_GetAnim)( int tikihandle );
+	dtiki_t *(TIKI_GetTiki)( int tikihandle );
+	void (*TIKI_FreeTiki)( int tikihandle );
+	int (*TIKI_RegisterTiki)( const char *path );
+	void (*TIKI_CalculateBounds)( init tikihandle, float scale, vec3_t mins, vec3_t maxs );
+	float (*TIKI_GlobalRadius)( int );
+	void (*CM_BoxTrace)( trace_t *results, float *start, float *end, float *mins, float *maxs, clipHandle_t model, int brushmask, int capsule );
+	const char *(CM_EntityString)( void );
+	void (*CL_RefSetPerformanceCounters)( int total_tris, int total_verts, int total_texels, int world_tris, int world_verts, int character_lights );
+
+	void *DebugLines;
+	int *numDebugLines;
 } refimport_t;
 
-
-// this is the only function actually exported at the linker level
-// If the module can't init to a valid rendering state, NULL will be
-// returned.
 refexport_t *GetRefAPI( int apiVersion, refimport_t *rimp );
 
 #endif // __TR_PUBLIC_H

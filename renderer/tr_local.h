@@ -1280,7 +1280,6 @@ qhandle_t RE_RegisterModel( const char *name );
 qhandle_t RE_RegisterSkin( const char *name );
 void RE_Shutdown( qboolean destroyWindow );
 
-qboolean R_GetEntityToken( char *buffer, int size );
 
 model_t *R_AllocModel( void );
 
@@ -1417,7 +1416,6 @@ WORLD MAP
 
 void R_AddBrushModelSurfaces( trRefEntity_t *e );
 void R_AddWorldSurfaces( void );
-qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 
 
 /*
@@ -1445,7 +1443,6 @@ LIGHTS
 void R_DlightBmodel( bmodel_t *bmodel );
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent );
 void R_TransformDlights( int count, dlight_t * dl, orientationr_t * or );
-int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 
 
 /*
@@ -1514,7 +1511,6 @@ void RE_ClearScene( void );
 void RE_AddRefEntityToScene( const refEntity_t *ent );
 void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int num );
 void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b );
-void RE_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b );
 void RE_RenderScene( const refdef_t *fd );
 
 /*
@@ -1705,11 +1701,6 @@ void RE_StretchPic( float x, float y, float w, float h, float s1, float t1, floa
 void RE_BeginFrame( stereoFrame_t stereoFrame );
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 void SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
-
-// font stuff
-void R_InitFreeType();
-void R_DoneFreeType();
-void RE_RegisterFont( const char *fontName, int pointSize, fontInfo_t *font );
 
 
 #endif // TR_LOCAL_H

@@ -423,26 +423,3 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent )
 	ent->lightDir[1] = DotProduct( lightDir, ent->e.axis[1] );
 	ent->lightDir[2] = DotProduct( lightDir, ent->e.axis[2] );
 }
-
-/*
-=================
-R_LightForPoint
-=================
-*/
-int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir )
-{
-	trRefEntity_t ent;
-
-	// bk010103 - this segfaults with -nolight maps
-	if( tr.world->lightGridData == NULL )
-		return qfalse;
-
-	Com_Memset( &ent, 0, sizeof( ent ));
-	VectorCopy( point, ent.e.origin );
-	R_SetupEntityLightingGrid( &ent );
-	VectorCopy( ent.ambientLight, ambientLight );
-	VectorCopy( ent.directedLight, directedLight );
-	VectorCopy( ent.lightDir, lightDir );
-
-	return qtrue;
-}
