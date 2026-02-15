@@ -23,16 +23,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-extern qboolean loadCamera(const char *name);
-extern void startCamera(int time);
-extern qboolean getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
+extern qboolean loadCamera( const char *name );
+extern void startCamera( int time );
+extern qboolean getCameraInfo( int time, vec3_t *origin, vec3_t *angles );
 
 /*
 ====================
 CL_GetGameState
 ====================
 */
-void CL_GetGameState( gameState_t *gs ) {
+void CL_GetGameState( gameState_t *gs )
+{
 	*gs = cl.gameState;
 }
 
@@ -41,27 +42,30 @@ void CL_GetGameState( gameState_t *gs ) {
 CL_GetGlconfig
 ====================
 */
-void CL_GetGlconfig( glconfig_t *glconfig ) {
+void CL_GetGlconfig( glconfig_t *glconfig )
+{
 	*glconfig = cls.glconfig;
 }
-
 
 /*
 ====================
 CL_GetUserCmd
 ====================
 */
-qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd ) {
+qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd )
+{
 	// cmds[cmdNumber] is the last properly generated command
 
 	// can't return anything that we haven't created yet
-	if ( cmdNumber > cl.cmdNumber ) {
+	if( cmdNumber > cl.cmdNumber )
+	{
 		Com_Error( ERR_DROP, "CL_GetUserCmd: %i >= %i", cmdNumber, cl.cmdNumber );
 	}
 
 	// the usercmd has been overwritten in the wrapping
 	// buffer because it is too far out of date
-	if ( cmdNumber <= cl.cmdNumber - CMD_BACKUP ) {
+	if( cmdNumber <= cl.cmdNumber - CMD_BACKUP )
+	{
 		return qfalse;
 	}
 
@@ -70,25 +74,28 @@ qboolean CL_GetUserCmd( int cmdNumber, usercmd_t *ucmd ) {
 	return qtrue;
 }
 
-int CL_GetCurrentCmdNumber( void ) {
+int CL_GetCurrentCmdNumber( void )
+{
 	return cl.cmdNumber;
 }
-
 
 /*
 ====================
 CL_GetParseEntityState
 ====================
 */
-qboolean	CL_GetParseEntityState( int parseEntityNumber, entityState_t *state ) {
+qboolean CL_GetParseEntityState( int parseEntityNumber, entityState_t *state )
+{
 	// can't return anything that hasn't been parsed yet
-	if ( parseEntityNumber >= cl.parseEntitiesNum ) {
+	if( parseEntityNumber >= cl.parseEntitiesNum )
+	{
 		Com_Error( ERR_DROP, "CL_GetParseEntityState: %i >= %i",
-			parseEntityNumber, cl.parseEntitiesNum );
+			   parseEntityNumber, cl.parseEntitiesNum );
 	}
 
 	// can't return anything that has been overwritten in the circular buffer
-	if ( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES ) {
+	if( parseEntityNumber <= cl.parseEntitiesNum - MAX_PARSE_ENTITIES )
+	{
 		return qfalse;
 	}
 
@@ -101,7 +108,8 @@ qboolean	CL_GetParseEntityState( int parseEntityNumber, entityState_t *state ) {
 CL_GetCurrentSnapshotNumber
 ====================
 */
-void	CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime ) {
+void CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )
+{
 	*snapshotNumber = cl.snap.messageNum;
 	*serverTime = cl.snap.serverTime;
 }
@@ -111,28 +119,33 @@ void	CL_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime ) {
 CL_GetSnapshot
 ====================
 */
-qboolean	CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
-	clSnapshot_t	*clSnap;
-	int				i, count;
+qboolean CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot )
+{
+	clSnapshot_t *clSnap;
+	int i, count;
 
-	if ( snapshotNumber > cl.snap.messageNum ) {
+	if( snapshotNumber > cl.snap.messageNum )
+	{
 		Com_Error( ERR_DROP, "CL_GetSnapshot: snapshotNumber > cl.snapshot.messageNum" );
 	}
 
 	// if the frame has fallen out of the circular buffer, we can't return it
-	if ( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP ) {
+	if( cl.snap.messageNum - snapshotNumber >= PACKET_BACKUP )
+	{
 		return qfalse;
 	}
 
 	// if the frame is not valid, we can't return it
 	clSnap = &cl.snapshots[snapshotNumber & PACKET_MASK];
-	if ( !clSnap->valid ) {
+	if( !clSnap->valid )
+	{
 		return qfalse;
 	}
 
 	// if the entities in the frame have fallen out of their
 	// circular buffer, we can't return it
-	if ( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES ) {
+	if( cl.parseEntitiesNum - clSnap->parseEntitiesNum >= MAX_PARSE_ENTITIES )
+	{
 		return qfalse;
 	}
 
@@ -141,17 +154,19 @@ qboolean	CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 	snapshot->serverCommandSequence = clSnap->serverCommandNum;
 	snapshot->ping = clSnap->ping;
 	snapshot->serverTime = clSnap->serverTime;
-	Com_Memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ) );
+	Com_Memcpy( snapshot->areamask, clSnap->areamask, sizeof( snapshot->areamask ));
 	snapshot->ps = clSnap->ps;
 	count = clSnap->numEntities;
-	if ( count > MAX_ENTITIES_IN_SNAPSHOT ) {
+	if( count > MAX_ENTITIES_IN_SNAPSHOT )
+	{
 		Com_DPrintf( "CL_GetSnapshot: truncated %i entities to %i\n", count, MAX_ENTITIES_IN_SNAPSHOT );
 		count = MAX_ENTITIES_IN_SNAPSHOT;
 	}
 	snapshot->numEntities = count;
-	for ( i = 0 ; i < count ; i++ ) {
-		snapshot->entities[i] = 
-			cl.parseEntities[ ( clSnap->parseEntitiesNum + i ) & (MAX_PARSE_ENTITIES-1) ];
+	for( i = 0; i < count; i++ )
+	{
+		snapshot->entities[i]
+			= cl.parseEntities[ ( clSnap->parseEntitiesNum + i ) & ( MAX_PARSE_ENTITIES - 1 ) ];
 	}
 
 	// FIXME: configstring changes and server commands!!!
@@ -164,7 +179,8 @@ qboolean	CL_GetSnapshot( int snapshotNumber, snapshot_t *snapshot ) {
 CL_SetUserCmdValue
 =====================
 */
-void CL_SetUserCmdValue( int userCmdValue, float sensitivityScale ) {
+void CL_SetUserCmdValue( int userCmdValue, float sensitivityScale )
+{
 	cl.cgameUserCmdValue = userCmdValue;
 	cl.cgameSensitivity = sensitivityScale;
 }
@@ -174,7 +190,8 @@ void CL_SetUserCmdValue( int userCmdValue, float sensitivityScale ) {
 CL_AddCgameCommand
 =====================
 */
-void CL_AddCgameCommand( const char *cmdName ) {
+void CL_AddCgameCommand( const char *cmdName )
+{
 	Cmd_AddCommand( cmdName, NULL );
 }
 
@@ -183,56 +200,65 @@ void CL_AddCgameCommand( const char *cmdName ) {
 CL_CgameError
 =====================
 */
-void CL_CgameError( const char *string ) {
+void CL_CgameError( const char *string )
+{
 	Com_Error( ERR_DROP, "%s", string );
 }
-
 
 /*
 =====================
 CL_ConfigstringModified
 =====================
 */
-void CL_ConfigstringModified( void ) {
-	char		*old, *s;
-	int			i, index;
-	char		*dup;
-	gameState_t	oldGs;
-	int			len;
+void CL_ConfigstringModified( void )
+{
+	char *old, *s;
+	int  i, index;
+	char *dup;
+	gameState_t oldGs;
+	int  len;
 
-	index = atoi( Cmd_Argv(1) );
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	index = atoi( Cmd_Argv( 1 ));
+	if( index < 0 || index >= MAX_CONFIGSTRINGS )
+	{
 		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 	}
 	// get everything after "cs <num>"
-	s = Cmd_ArgsFrom(2);
+	s = Cmd_ArgsFrom( 2 );
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
-	if ( !strcmp( old, s ) ) {
-		return;		// unchanged
+	if( !strcmp( old, s ))
+	{
+		return; // unchanged
 	}
 
 	// build the new gameState_t
 	oldGs = cl.gameState;
 
-	Com_Memset( &cl.gameState, 0, sizeof( cl.gameState ) );
+	Com_Memset( &cl.gameState, 0, sizeof( cl.gameState ));
 
 	// leave the first 0 for uninitialized strings
 	cl.gameState.dataCount = 1;
-		
-	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
-		if ( i == index ) {
+
+	for( i = 0; i < MAX_CONFIGSTRINGS; i++ )
+	{
+		if( i == index )
+		{
 			dup = s;
-		} else {
+		}
+		else
+		{
 			dup = oldGs.stringData + oldGs.stringOffsets[ i ];
 		}
-		if ( !dup[0] ) {
-			continue;		// leave with the default empty string
+		if( !dup[0] )
+		{
+			continue; // leave with the default empty string
 		}
 
 		len = strlen( dup );
 
-		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
+		if( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS )
+		{
 			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
 		}
 
@@ -242,13 +268,13 @@ void CL_ConfigstringModified( void ) {
 		cl.gameState.dataCount += len + 1;
 	}
 
-	if ( index == CS_SYSTEMINFO ) {
+	if( index == CS_SYSTEMINFO )
+	{
 		// parse serverId and other cvars
 		CL_SystemInfoChanged();
 	}
 
 }
-
 
 /*
 ===================
@@ -257,23 +283,26 @@ CL_GetServerCommand
 Set up argc/argv for the given command
 ===================
 */
-qboolean CL_GetServerCommand( int serverCommandNumber ) {
-	char	*s;
-	char	*cmd;
+qboolean CL_GetServerCommand( int serverCommandNumber )
+{
+	char *s;
+	char *cmd;
 	static char bigConfigString[BIG_INFO_STRING];
-	int argc;
+	int  argc;
 
 	// if we have irretrievably lost a reliable command, drop the connection
-	if ( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS ) {
+	if( serverCommandNumber <= clc.serverCommandSequence - MAX_RELIABLE_COMMANDS )
+	{
 		// when a demo record was started after the client got a whole bunch of
 		// reliable commands then the client never got those first reliable commands
-		if ( clc.demoplaying )
+		if( clc.demoplaying )
 			return qfalse;
 		Com_Error( ERR_DROP, "CL_GetServerCommand: a reliable command was cycled out" );
 		return qfalse;
 	}
 
-	if ( serverCommandNumber > clc.serverCommandSequence ) {
+	if( serverCommandNumber > clc.serverCommandSequence )
+	{
 		Com_Error( ERR_DROP, "CL_GetServerCommand: requested a command not received" );
 		return qfalse;
 	}
@@ -285,35 +314,41 @@ qboolean CL_GetServerCommand( int serverCommandNumber ) {
 
 rescan:
 	Cmd_TokenizeString( s );
-	cmd = Cmd_Argv(0);
+	cmd = Cmd_Argv( 0 );
 	argc = Cmd_Argc();
 
-	if ( !strcmp( cmd, "disconnect" ) ) {
+	if( !strcmp( cmd, "disconnect" ))
+	{
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
-		if ( argc >= 2 )
-			Com_Error (ERR_SERVERDISCONNECT, va( "Server Disconnected - %s", Cmd_Argv( 1 ) ) );
+		if( argc >= 2 )
+			Com_Error( ERR_SERVERDISCONNECT, va( "Server Disconnected - %s", Cmd_Argv( 1 )));
 		else
-			Com_Error (ERR_SERVERDISCONNECT,"Server disconnected\n");
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected\n" );
 	}
 
-	if ( !strcmp( cmd, "bcs0" ) ) {
-		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv(1), Cmd_Argv(2) );
+	if( !strcmp( cmd, "bcs0" ))
+	{
+		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv( 1 ), Cmd_Argv( 2 ));
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "bcs1" ) ) {
-		s = Cmd_Argv(2);
-		if( strlen(bigConfigString) + strlen(s) >= BIG_INFO_STRING ) {
+	if( !strcmp( cmd, "bcs1" ))
+	{
+		s = Cmd_Argv( 2 );
+		if( strlen( bigConfigString ) + strlen( s ) >= BIG_INFO_STRING )
+		{
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 		strcat( bigConfigString, s );
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "bcs2" ) ) {
-		s = Cmd_Argv(2);
-		if( strlen(bigConfigString) + strlen(s) + 1 >= BIG_INFO_STRING ) {
+	if( !strcmp( cmd, "bcs2" ))
+	{
+		s = Cmd_Argv( 2 );
+		if( strlen( bigConfigString ) + strlen( s ) + 1 >= BIG_INFO_STRING )
+		{
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
 		strcat( bigConfigString, s );
@@ -322,18 +357,20 @@ rescan:
 		goto rescan;
 	}
 
-	if ( !strcmp( cmd, "cs" ) ) {
+	if( !strcmp( cmd, "cs" ))
+	{
 		CL_ConfigstringModified();
 		// reparse the string, because CL_ConfigstringModified may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString( s );
 		return qtrue;
 	}
 
-	if ( !strcmp( cmd, "map_restart" ) ) {
+	if( !strcmp( cmd, "map_restart" ))
+	{
 		// clear notify lines and outgoing commands before passing
 		// the restart to the cgame
 		Con_ClearNotify();
-		Com_Memset( cl.cmds, 0, sizeof( cl.cmds ) );
+		Com_Memset( cl.cmds, 0, sizeof( cl.cmds ));
 		return qtrue;
 	}
 
@@ -342,11 +379,13 @@ rescan:
 	// point of levels for the menu system to use
 	// we pass it along to the cgame to make apropriate adjustments,
 	// but we also clear the console and notify lines here
-	if ( !strcmp( cmd, "clientLevelShot" ) ) {
+	if( !strcmp( cmd, "clientLevelShot" ))
+	{
 		// don't do it if we aren't running the server locally,
 		// otherwise malicious remote servers could overwrite
 		// the existing thumbnails
-		if ( !com_sv_running->integer ) {
+		if( !com_sv_running->integer )
+		{
 			return qfalse;
 		}
 		// close the console
@@ -362,7 +401,6 @@ rescan:
 	return qtrue;
 }
 
-
 /*
 ====================
 CL_CM_LoadMap
@@ -370,8 +408,9 @@ CL_CM_LoadMap
 Just adds default parameters that cgame doesn't need to know about
 ====================
 */
-void CL_CM_LoadMap( const char *mapname ) {
-	int		checksum;
+void CL_CM_LoadMap( const char *mapname )
+{
+	int checksum;
 
 	CM_LoadMap( mapname, qtrue, &checksum );
 }
@@ -382,10 +421,12 @@ CL_ShutdonwCGame
 
 ====================
 */
-void CL_ShutdownCGame( void ) {
+void CL_ShutdownCGame( void )
+{
 	cls.keyCatchers &= ~KEYCATCH_CGAME;
 	cls.cgameStarted = qfalse;
-	if ( !cgvm ) {
+	if( !cgvm )
+	{
 		return;
 	}
 	VM_Call( cgvm, CG_SHUTDOWN );
@@ -393,8 +434,9 @@ void CL_ShutdownCGame( void ) {
 	cgvm = NULL;
 }
 
-static int	FloatAsInt( float f ) {
-	int		temp;
+static int FloatAsInt( float f )
+{
+	int temp;
 
 	*(float *)&temp = f;
 
@@ -408,45 +450,47 @@ CL_CgameSystemCalls
 The cgame module is making a system call
 ====================
 */
-#define	VMA(x) VM_ArgPtr(args[x])
-#define	VMF(x)	((float *)args)[x]
-int CL_CgameSystemCalls( int *args ) {
-	switch( args[0] ) {
+#define VMA( x ) VM_ArgPtr( args[x] )
+#define VMF( x ) ((float *)args )[x]
+int CL_CgameSystemCalls( int *args )
+{
+	switch( args[0] )
+	{
 	case CG_PRINT:
-		Com_Printf( "%s", VMA(1) );
+		Com_Printf( "%s", VMA( 1 ));
 		return 0;
 	case CG_ERROR:
-		Com_Error( ERR_DROP, "%s", VMA(1) );
+		Com_Error( ERR_DROP, "%s", VMA( 1 ));
 		return 0;
 	case CG_MILLISECONDS:
 		return Sys_Milliseconds();
 	case CG_CVAR_REGISTER:
-		Cvar_Register( VMA(1), VMA(2), VMA(3), args[4] ); 
+		Cvar_Register( VMA( 1 ), VMA( 2 ), VMA( 3 ), args[4] );
 		return 0;
 	case CG_CVAR_UPDATE:
-		Cvar_Update( VMA(1) );
+		Cvar_Update( VMA( 1 ));
 		return 0;
 	case CG_CVAR_SET:
-		Cvar_Set( VMA(1), VMA(2) );
+		Cvar_Set( VMA( 1 ), VMA( 2 ));
 		return 0;
 	case CG_CVAR_VARIABLESTRINGBUFFER:
-		Cvar_VariableStringBuffer( VMA(1), VMA(2), args[3] );
+		Cvar_VariableStringBuffer( VMA( 1 ), VMA( 2 ), args[3] );
 		return 0;
 	case CG_ARGC:
 		return Cmd_Argc();
 	case CG_ARGV:
-		Cmd_ArgvBuffer( args[1], VMA(2), args[3] );
+		Cmd_ArgvBuffer( args[1], VMA( 2 ), args[3] );
 		return 0;
 	case CG_ARGS:
-		Cmd_ArgsBuffer( VMA(1), args[2] );
+		Cmd_ArgsBuffer( VMA( 1 ), args[2] );
 		return 0;
 	case CG_FS_FOPENFILE:
-		return FS_FOpenFileByMode( VMA(1), VMA(2), args[3] );
+		return FS_FOpenFileByMode( VMA( 1 ), VMA( 2 ), args[3] );
 	case CG_FS_READ:
-		FS_Read2( VMA(1), args[2], args[3] );
+		FS_Read2( VMA( 1 ), args[2], args[3] );
 		return 0;
 	case CG_FS_WRITE:
-		FS_Write( VMA(1), args[2], args[3] );
+		FS_Write( VMA( 1 ), args[2], args[3] );
 		return 0;
 	case CG_FS_FCLOSEFILE:
 		FS_FCloseFile( args[1] );
@@ -454,16 +498,16 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_FS_SEEK:
 		return FS_Seek( args[1], args[2], args[3] );
 	case CG_SENDCONSOLECOMMAND:
-		Cbuf_AddText( VMA(1) );
+		Cbuf_AddText( VMA( 1 ));
 		return 0;
 	case CG_ADDCOMMAND:
-		CL_AddCgameCommand( VMA(1) );
+		CL_AddCgameCommand( VMA( 1 ));
 		return 0;
 	case CG_REMOVECOMMAND:
-		Cmd_RemoveCommand( VMA(1) );
+		Cmd_RemoveCommand( VMA( 1 ));
 		return 0;
 	case CG_SENDCLIENTCOMMAND:
-		CL_AddReliableCommand( VMA(1) );
+		CL_AddReliableCommand( VMA( 1 ));
 		return 0;
 	case CG_UPDATESCREEN:
 		// this is used during lengthy level loading, so pump message loop
@@ -474,217 +518,216 @@ int CL_CgameSystemCalls( int *args ) {
 		SCR_UpdateScreen();
 		return 0;
 	case CG_CM_LOADMAP:
-		CL_CM_LoadMap( VMA(1) );
+		CL_CM_LoadMap( VMA( 1 ));
 		return 0;
 	case CG_CM_NUMINLINEMODELS:
 		return CM_NumInlineModels();
 	case CG_CM_INLINEMODEL:
 		return CM_InlineModel( args[1] );
 	case CG_CM_TEMPBOXMODEL:
-		return CM_TempBoxModel( VMA(1), VMA(2), /*int capsule*/ qfalse );
+		return CM_TempBoxModel( VMA( 1 ), VMA( 2 ), /*int capsule*/ qfalse );
 	case CG_CM_TEMPCAPSULEMODEL:
-		return CM_TempBoxModel( VMA(1), VMA(2), /*int capsule*/ qtrue );
+		return CM_TempBoxModel( VMA( 1 ), VMA( 2 ), /*int capsule*/ qtrue );
 	case CG_CM_POINTCONTENTS:
-		return CM_PointContents( VMA(1), args[2] );
+		return CM_PointContents( VMA( 1 ), args[2] );
 	case CG_CM_TRANSFORMEDPOINTCONTENTS:
-		return CM_TransformedPointContents( VMA(1), args[2], VMA(3), VMA(4) );
+		return CM_TransformedPointContents( VMA( 1 ), args[2], VMA( 3 ), VMA( 4 ));
 	case CG_CM_BOXTRACE:
-		CM_BoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qfalse );
+		CM_BoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], /*int capsule*/ qfalse );
 		return 0;
 	case CG_CM_CAPSULETRACE:
-		CM_BoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], /*int capsule*/ qtrue );
+		CM_BoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_TRANSFORMEDBOXTRACE:
-		CM_TransformedBoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), /*int capsule*/ qfalse );
+		CM_TransformedBoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], VMA( 8 ), VMA( 9 ), /*int capsule*/ qfalse );
 		return 0;
 	case CG_CM_TRANSFORMEDCAPSULETRACE:
-		CM_TransformedBoxTrace( VMA(1), VMA(2), VMA(3), VMA(4), VMA(5), args[6], args[7], VMA(8), VMA(9), /*int capsule*/ qtrue );
+		CM_TransformedBoxTrace( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ), VMA( 5 ), args[6], args[7], VMA( 8 ), VMA( 9 ), /*int capsule*/ qtrue );
 		return 0;
 	case CG_CM_MARKFRAGMENTS:
-		return re.MarkFragments( args[1], VMA(2), VMA(3), args[4], VMA(5), args[6], VMA(7) );
+		return re.MarkFragments( args[1], VMA( 2 ), VMA( 3 ), args[4], VMA( 5 ), args[6], VMA( 7 ));
 	case CG_S_STARTSOUND:
-		S_StartSound( VMA(1), args[2], args[3], args[4] );
+		S_StartSound( VMA( 1 ), args[2], args[3], args[4] );
 		return 0;
 	case CG_S_STARTLOCALSOUND:
 		S_StartLocalSound( args[1], args[2] );
 		return 0;
 	case CG_S_CLEARLOOPINGSOUNDS:
-		S_ClearLoopingSounds(args[1]);
+		S_ClearLoopingSounds( args[1] );
 		return 0;
 	case CG_S_ADDLOOPINGSOUND:
-		S_AddLoopingSound( args[1], VMA(2), VMA(3), args[4] );
+		S_AddLoopingSound( args[1], VMA( 2 ), VMA( 3 ), args[4] );
 		return 0;
 	case CG_S_ADDREALLOOPINGSOUND:
-		S_AddRealLoopingSound( args[1], VMA(2), VMA(3), args[4] );
+		S_AddRealLoopingSound( args[1], VMA( 2 ), VMA( 3 ), args[4] );
 		return 0;
 	case CG_S_STOPLOOPINGSOUND:
 		S_StopLoopingSound( args[1] );
 		return 0;
 	case CG_S_UPDATEENTITYPOSITION:
-		S_UpdateEntityPosition( args[1], VMA(2) );
+		S_UpdateEntityPosition( args[1], VMA( 2 ));
 		return 0;
 	case CG_S_RESPATIALIZE:
-		S_Respatialize( args[1], VMA(2), VMA(3), args[4] );
+		S_Respatialize( args[1], VMA( 2 ), VMA( 3 ), args[4] );
 		return 0;
 	case CG_S_REGISTERSOUND:
-		return S_RegisterSound( VMA(1), args[2] );
+		return S_RegisterSound( VMA( 1 ), args[2] );
 	case CG_S_STARTBACKGROUNDTRACK:
-		S_StartBackgroundTrack( VMA(1), VMA(2) );
+		S_StartBackgroundTrack( VMA( 1 ), VMA( 2 ));
 		return 0;
 	case CG_R_LOADWORLDMAP:
-		re.LoadWorld( VMA(1) );
-		return 0; 
+		re.LoadWorld( VMA( 1 ));
+		return 0;
 	case CG_R_REGISTERMODEL:
-		return re.RegisterModel( VMA(1) );
+		return re.RegisterModel( VMA( 1 ));
 	case CG_R_REGISTERSKIN:
-		return re.RegisterSkin( VMA(1) );
+		return re.RegisterSkin( VMA( 1 ));
 	case CG_R_REGISTERSHADER:
-		return re.RegisterShader( VMA(1) );
+		return re.RegisterShader( VMA( 1 ));
 	case CG_R_REGISTERSHADERNOMIP:
-		return re.RegisterShaderNoMip( VMA(1) );
+		return re.RegisterShaderNoMip( VMA( 1 ));
 	case CG_R_REGISTERFONT:
-		re.RegisterFont( VMA(1), args[2], VMA(3));
+		re.RegisterFont( VMA( 1 ), args[2], VMA( 3 ));
 	case CG_R_CLEARSCENE:
 		re.ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( VMA(1) );
+		re.AddRefEntityToScene( VMA( 1 ));
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
-		re.AddPolyToScene( args[1], args[2], VMA(3), 1 );
+		re.AddPolyToScene( args[1], args[2], VMA( 3 ), 1 );
 		return 0;
 	case CG_R_ADDPOLYSTOSCENE:
-		re.AddPolyToScene( args[1], args[2], VMA(3), args[4] );
+		re.AddPolyToScene( args[1], args[2], VMA( 3 ), args[4] );
 		return 0;
 	case CG_R_LIGHTFORPOINT:
-		return re.LightForPoint( VMA(1), VMA(2), VMA(3), VMA(4) );
+		return re.LightForPoint( VMA( 1 ), VMA( 2 ), VMA( 3 ), VMA( 4 ));
 	case CG_R_ADDLIGHTTOSCENE:
-		re.AddLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
+		re.AddLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ));
 		return 0;
 	case CG_R_ADDADDITIVELIGHTTOSCENE:
-		re.AddAdditiveLightToScene( VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
+		re.AddAdditiveLightToScene( VMA( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ));
 		return 0;
 	case CG_R_RENDERSCENE:
-		re.RenderScene( VMA(1) );
+		re.RenderScene( VMA( 1 ));
 		return 0;
 	case CG_R_SETCOLOR:
-		re.SetColor( VMA(1) );
+		re.SetColor( VMA( 1 ));
 		return 0;
 	case CG_R_DRAWSTRETCHPIC:
-		re.DrawStretchPic( VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9] );
+		re.DrawStretchPic( VMF( 1 ), VMF( 2 ), VMF( 3 ), VMF( 4 ), VMF( 5 ), VMF( 6 ), VMF( 7 ), VMF( 8 ), args[9] );
 		return 0;
 	case CG_R_MODELBOUNDS:
-		re.ModelBounds( args[1], VMA(2), VMA(3) );
+		re.ModelBounds( args[1], VMA( 2 ), VMA( 3 ));
 		return 0;
 	case CG_R_LERPTAG:
-		return re.LerpTag( VMA(1), args[2], args[3], args[4], VMF(5), VMA(6) );
+		return re.LerpTag( VMA( 1 ), args[2], args[3], args[4], VMF( 5 ), VMA( 6 ));
 	case CG_GETGLCONFIG:
-		CL_GetGlconfig( VMA(1) );
+		CL_GetGlconfig( VMA( 1 ));
 		return 0;
 	case CG_GETGAMESTATE:
-		CL_GetGameState( VMA(1) );
+		CL_GetGameState( VMA( 1 ));
 		return 0;
 	case CG_GETCURRENTSNAPSHOTNUMBER:
-		CL_GetCurrentSnapshotNumber( VMA(1), VMA(2) );
+		CL_GetCurrentSnapshotNumber( VMA( 1 ), VMA( 2 ));
 		return 0;
 	case CG_GETSNAPSHOT:
-		return CL_GetSnapshot( args[1], VMA(2) );
+		return CL_GetSnapshot( args[1], VMA( 2 ));
 	case CG_GETSERVERCOMMAND:
 		return CL_GetServerCommand( args[1] );
 	case CG_GETCURRENTCMDNUMBER:
 		return CL_GetCurrentCmdNumber();
 	case CG_GETUSERCMD:
-		return CL_GetUserCmd( args[1], VMA(2) );
+		return CL_GetUserCmd( args[1], VMA( 2 ));
 	case CG_SETUSERCMDVALUE:
-		CL_SetUserCmdValue( args[1], VMF(2) );
+		CL_SetUserCmdValue( args[1], VMF( 2 ));
 		return 0;
 	case CG_MEMORY_REMAINING:
 		return Hunk_MemoryRemaining();
-  case CG_KEY_ISDOWN:
+	case CG_KEY_ISDOWN:
 		return Key_IsDown( args[1] );
-  case CG_KEY_GETCATCHER:
+	case CG_KEY_GETCATCHER:
 		return Key_GetCatcher();
-  case CG_KEY_SETCATCHER:
+	case CG_KEY_SETCATCHER:
 		Key_SetCatcher( args[1] );
-    return 0;
-  case CG_KEY_GETKEY:
-		return Key_GetKey( VMA(1) );
+		return 0;
+	case CG_KEY_GETKEY:
+		return Key_GetKey( VMA( 1 ));
 
 
 
 	case CG_MEMSET:
-		Com_Memset( VMA(1), args[2], args[3] );
+		Com_Memset( VMA( 1 ), args[2], args[3] );
 		return 0;
 	case CG_MEMCPY:
-		Com_Memcpy( VMA(1), VMA(2), args[3] );
+		Com_Memcpy( VMA( 1 ), VMA( 2 ), args[3] );
 		return 0;
 	case CG_STRNCPY:
-		return (int)strncpy( VMA(1), VMA(2), args[3] );
+		return (int)strncpy( VMA( 1 ), VMA( 2 ), args[3] );
 	case CG_SIN:
-		return FloatAsInt( sin( VMF(1) ) );
+		return FloatAsInt( sin( VMF( 1 )));
 	case CG_COS:
-		return FloatAsInt( cos( VMF(1) ) );
+		return FloatAsInt( cos( VMF( 1 )));
 	case CG_ATAN2:
-		return FloatAsInt( atan2( VMF(1), VMF(2) ) );
+		return FloatAsInt( atan2( VMF( 1 ), VMF( 2 )));
 	case CG_SQRT:
-		return FloatAsInt( sqrt( VMF(1) ) );
+		return FloatAsInt( sqrt( VMF( 1 )));
 	case CG_FLOOR:
-		return FloatAsInt( floor( VMF(1) ) );
+		return FloatAsInt( floor( VMF( 1 )));
 	case CG_CEIL:
-		return FloatAsInt( ceil( VMF(1) ) );
+		return FloatAsInt( ceil( VMF( 1 )));
 	case CG_ACOS:
-		return FloatAsInt( Q_acos( VMF(1) ) );
+		return FloatAsInt( Q_acos( VMF( 1 )));
 
 	case CG_S_STOPBACKGROUNDTRACK:
 		S_StopBackgroundTrack();
 		return 0;
 
 	case CG_REAL_TIME:
-		return Com_RealTime( VMA(1) );
+		return Com_RealTime( VMA( 1 ));
 	case CG_SNAPVECTOR:
-		Sys_SnapVector( VMA(1) );
+		Sys_SnapVector( VMA( 1 ));
 		return 0;
 
 	case CG_CIN_PLAYCINEMATIC:
-	  return CIN_PlayCinematic(VMA(1), args[2], args[3], args[4], args[5], args[6]);
+		return CIN_PlayCinematic( VMA( 1 ), args[2], args[3], args[4], args[5], args[6] );
 
 	case CG_CIN_STOPCINEMATIC:
-	  return CIN_StopCinematic(args[1]);
+		return CIN_StopCinematic( args[1] );
 
 	case CG_CIN_RUNCINEMATIC:
-	  return CIN_RunCinematic(args[1]);
+		return CIN_RunCinematic( args[1] );
 
 	case CG_CIN_DRAWCINEMATIC:
-	  CIN_DrawCinematic(args[1]);
-	  return 0;
-
-	case CG_CIN_SETEXTENTS:
-	  CIN_SetExtents(args[1], args[2], args[3], args[4], args[5]);
-	  return 0;
-
-/*
-	case CG_LOADCAMERA:
-		return loadCamera(VMA(1));
-
-	case CG_STARTCAMERA:
-		startCamera(args[1]);
+		CIN_DrawCinematic( args[1] );
 		return 0;
 
-	case CG_GETCAMERAINFO:
-		return getCameraInfo(args[1], VMA(2), VMA(3));
-*/
+	case CG_CIN_SETEXTENTS:
+		CIN_SetExtents( args[1], args[2], args[3], args[4], args[5] );
+		return 0;
+
+        /*
+        	case CG_LOADCAMERA:
+        		return loadCamera(VMA(1));
+
+        	case CG_STARTCAMERA:
+        		startCamera(args[1]);
+        		return 0;
+
+        	case CG_GETCAMERAINFO:
+        		return getCameraInfo(args[1], VMA(2), VMA(3));
+        */
 	case CG_GET_ENTITY_TOKEN:
-		return re.GetEntityToken( VMA(1), args[2] );
+		return re.GetEntityToken( VMA( 1 ), args[2] );
 	case CG_R_INPVS:
-		return re.inPVS( VMA(1), VMA(2) );
+		return re.inPVS( VMA( 1 ), VMA( 2 ));
 
 	default:
-	        assert(0); // bk010102
+		assert( 0 ); // bk010102
 		Com_Error( ERR_DROP, "Bad cgame system trap: %i", args[0] );
 	}
 	return 0;
 }
-
 
 /*
 ====================
@@ -693,11 +736,12 @@ CL_InitCGame
 Should only be called by CL_StartHunkUsers
 ====================
 */
-void CL_InitCGame( void ) {
-	const char			*info;
-	const char			*mapname;
-	int					t1, t2;
-	vmInterpret_t		interpret;
+void CL_InitCGame( void )
+{
+	const char    *info;
+	const char    *mapname;
+	int t1, t2;
+	vmInterpret_t interpret;
 
 	t1 = Sys_Milliseconds();
 
@@ -710,15 +754,18 @@ void CL_InitCGame( void ) {
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
 	// load the dll or bytecode
-	if ( cl_connectedToPureServer != 0 ) {
+	if( cl_connectedToPureServer != 0 )
+	{
 		// if sv_pure is set we only allow qvms to be loaded
 		interpret = VMI_COMPILED;
 	}
-	else {
+	else
+	{
 		interpret = Cvar_VariableValue( "vm_cgame" );
 	}
 	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, interpret );
-	if ( !cgvm ) {
+	if( !cgvm )
+	{
 		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
 	}
 	cls.state = CA_LOADING;
@@ -734,21 +781,21 @@ void CL_InitCGame( void ) {
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf( "CL_InitCGame: %5.2f seconds\n", (t2-t1)/1000.0 );
+	Com_Printf( "CL_InitCGame: %5.2f seconds\n", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
 	re.EndRegistration();
 
 	// make sure everything is paged in
-	if (!Sys_LowPhysicalMemory()) {
+	if( !Sys_LowPhysicalMemory())
+	{
 		Com_TouchMemory();
 	}
 
 	// clear anything that got printed
-	Con_ClearNotify ();
+	Con_ClearNotify();
 }
-
 
 /*
 ====================
@@ -757,26 +804,26 @@ CL_GameCommand
 See if the current console command is claimed by the cgame
 ====================
 */
-qboolean CL_GameCommand( void ) {
-	if ( !cgvm ) {
+qboolean CL_GameCommand( void )
+{
+	if( !cgvm )
+	{
 		return qfalse;
 	}
 
 	return VM_Call( cgvm, CG_CONSOLE_COMMAND );
 }
 
-
-
 /*
 =====================
 CL_CGameRendering
 =====================
 */
-void CL_CGameRendering( stereoFrame_t stereo ) {
+void CL_CGameRendering( stereoFrame_t stereo )
+{
 	VM_Call( cgvm, CG_DRAW_ACTIVE_FRAME, cl.serverTime, stereo, clc.demoplaying );
 	VM_Debug( 0 );
 }
-
 
 /*
 =================
@@ -798,74 +845,92 @@ or bursted delayed packets.
 =================
 */
 
-#define	RESET_TIME	500
+#define RESET_TIME 500
 
-void CL_AdjustTimeDelta( void ) {
-	int		resetTime;
-	int		newDelta;
-	int		deltaDelta;
+void CL_AdjustTimeDelta( void )
+{
+	int resetTime;
+	int newDelta;
+	int deltaDelta;
 
 	cl.newSnapshots = qfalse;
 
 	// the delta never drifts when replaying a demo
-	if ( clc.demoplaying ) {
+	if( clc.demoplaying )
+	{
 		return;
 	}
 
 	// if the current time is WAY off, just correct to the current value
-	if ( com_sv_running->integer ) {
+	if( com_sv_running->integer )
+	{
 		resetTime = 100;
-	} else {
+	}
+	else
+	{
 		resetTime = RESET_TIME;
 	}
 
 	newDelta = cl.snap.serverTime - cls.realtime;
 	deltaDelta = abs( newDelta - cl.serverTimeDelta );
 
-	if ( deltaDelta > RESET_TIME ) {
+	if( deltaDelta > RESET_TIME )
+	{
 		cl.serverTimeDelta = newDelta;
-		cl.oldServerTime = cl.snap.serverTime;	// FIXME: is this a problem for cgame?
+		cl.oldServerTime = cl.snap.serverTime; // FIXME: is this a problem for cgame?
 		cl.serverTime = cl.snap.serverTime;
-		if ( cl_showTimeDelta->integer ) {
+		if( cl_showTimeDelta->integer )
+		{
 			Com_Printf( "<RESET> " );
 		}
-	} else if ( deltaDelta > 100 ) {
+	}
+	else if( deltaDelta > 100 )
+	{
 		// fast adjust, cut the difference in half
-		if ( cl_showTimeDelta->integer ) {
+		if( cl_showTimeDelta->integer )
+		{
 			Com_Printf( "<FAST> " );
 		}
 		cl.serverTimeDelta = ( cl.serverTimeDelta + newDelta ) >> 1;
-	} else {
+	}
+	else
+	{
 		// slow drift adjust, only move 1 or 2 msec
 
 		// if any of the frames between this and the previous snapshot
 		// had to be extrapolated, nudge our sense of time back a little
 		// the granularity of +1 / -2 is too high for timescale modified frametimes
-		if ( com_timescale->value == 0 || com_timescale->value == 1 ) {
-			if ( cl.extrapolatedSnapshot ) {
+		if( com_timescale->value == 0 || com_timescale->value == 1 )
+		{
+			if( cl.extrapolatedSnapshot )
+			{
 				cl.extrapolatedSnapshot = qfalse;
 				cl.serverTimeDelta -= 2;
-			} else {
+			}
+			else
+			{
 				// otherwise, move our sense of time forward to minimize total latency
 				cl.serverTimeDelta++;
 			}
 		}
 	}
 
-	if ( cl_showTimeDelta->integer ) {
+	if( cl_showTimeDelta->integer )
+	{
 		Com_Printf( "%i ", cl.serverTimeDelta );
 	}
 }
-
 
 /*
 ==================
 CL_FirstSnapshot
 ==================
 */
-void CL_FirstSnapshot( void ) {
+void CL_FirstSnapshot( void )
+{
 	// ignore snapshots that don't have entities
-	if ( cl.snap.snapFlags & SNAPFLAG_NOT_ACTIVE ) {
+	if( cl.snap.snapFlags & SNAPFLAG_NOT_ACTIVE )
+	{
 		return;
 	}
 	cls.state = CA_ACTIVE;
@@ -880,11 +945,12 @@ void CL_FirstSnapshot( void ) {
 	// execute the contents of activeAction now
 	// this is to allow scripting a timedemo to start right
 	// after loading
-	if ( cl_activeAction->string[0] ) {
+	if( cl_activeAction->string[0] )
+	{
 		Cbuf_AddText( cl_activeAction->string );
 		Cvar_Set( "activeAction", "" );
 	}
-	
+
 	Sys_BeginProfiling();
 }
 
@@ -893,42 +959,52 @@ void CL_FirstSnapshot( void ) {
 CL_SetCGameTime
 ==================
 */
-void CL_SetCGameTime( void ) {
+void CL_SetCGameTime( void )
+{
 	// getting a valid frame message ends the connection process
-	if ( cls.state != CA_ACTIVE ) {
-		if ( cls.state != CA_PRIMED ) {
+	if( cls.state != CA_ACTIVE )
+	{
+		if( cls.state != CA_PRIMED )
+		{
 			return;
 		}
-		if ( clc.demoplaying ) {
+		if( clc.demoplaying )
+		{
 			// we shouldn't get the first snapshot on the same frame
 			// as the gamestate, because it causes a bad time skip
-			if ( !clc.firstDemoFrameSkipped ) {
+			if( !clc.firstDemoFrameSkipped )
+			{
 				clc.firstDemoFrameSkipped = qtrue;
 				return;
 			}
 			CL_ReadDemoMessage();
 		}
-		if ( cl.newSnapshots ) {
+		if( cl.newSnapshots )
+		{
 			cl.newSnapshots = qfalse;
 			CL_FirstSnapshot();
 		}
-		if ( cls.state != CA_ACTIVE ) {
+		if( cls.state != CA_ACTIVE )
+		{
 			return;
 		}
-	}	
+	}
 
 	// if we have gotten to this point, cl.snap is guaranteed to be valid
-	if ( !cl.snap.valid ) {
+	if( !cl.snap.valid )
+	{
 		Com_Error( ERR_DROP, "CL_SetCGameTime: !cl.snap.valid" );
 	}
 
 	// allow pause in single player
-	if ( sv_paused->integer && cl_paused->integer && com_sv_running->integer ) {
+	if( sv_paused->integer && cl_paused->integer && com_sv_running->integer )
+	{
 		// paused
 		return;
 	}
 
-	if ( cl.snap.serverTime < cl.oldFrameServerTime ) {
+	if( cl.snap.serverTime < cl.oldFrameServerTime )
+	{
 		Com_Error( ERR_DROP, "cl.snap.serverTime < cl.oldFrameServerTime" );
 	}
 	cl.oldFrameServerTime = cl.snap.serverTime;
@@ -936,19 +1012,25 @@ void CL_SetCGameTime( void ) {
 
 	// get our current view of time
 
-	if ( clc.demoplaying && cl_freezeDemo->integer ) {
+	if( clc.demoplaying && cl_freezeDemo->integer )
+	{
 		// cl_freezeDemo is used to lock a demo in place for single frame advances
 
-	} else {
+	}
+	else
+	{
 		// cl_timeNudge is a user adjustable cvar that allows more
-		// or less latency to be added in the interest of better 
+		// or less latency to be added in the interest of better
 		// smoothness or better responsiveness.
 		int tn;
-		
+
 		tn = cl_timeNudge->integer;
-		if (tn<-30) {
+		if( tn < -30 )
+		{
 			tn = -30;
-		} else if (tn>30) {
+		}
+		else if( tn > 30 )
+		{
 			tn = 30;
 		}
 
@@ -956,14 +1038,16 @@ void CL_SetCGameTime( void ) {
 
 		// guarantee that time will never flow backwards, even if
 		// serverTimeDelta made an adjustment or cl_timeNudge was changed
-		if ( cl.serverTime < cl.oldServerTime ) {
+		if( cl.serverTime < cl.oldServerTime )
+		{
 			cl.serverTime = cl.oldServerTime;
 		}
 		cl.oldServerTime = cl.serverTime;
 
 		// note if we are almost past the latest frame (without timeNudge),
 		// so we will try and adjust back a bit when the next snapshot arrives
-		if ( cls.realtime + cl.serverTimeDelta >= cl.snap.serverTime - 5 ) {
+		if( cls.realtime + cl.serverTimeDelta >= cl.snap.serverTime - 5 )
+		{
 			cl.extrapolatedSnapshot = qtrue;
 		}
 	}
@@ -971,11 +1055,13 @@ void CL_SetCGameTime( void ) {
 	// if we have gotten new snapshots, drift serverTimeDelta
 	// don't do this every frame, or a period of packet loss would
 	// make a huge adjustment
-	if ( cl.newSnapshots ) {
+	if( cl.newSnapshots )
+	{
 		CL_AdjustTimeDelta();
 	}
 
-	if ( !clc.demoplaying ) {
+	if( !clc.demoplaying )
+	{
 		return;
 	}
 
@@ -987,24 +1073,25 @@ void CL_SetCGameTime( void ) {
 	// no matter what speed machine it is run on,
 	// while a normal demo may have different time samples
 	// each time it is played back
-	if ( cl_timedemo->integer ) {
-		if (!clc.timeDemoStart) {
+	if( cl_timedemo->integer )
+	{
+		if( !clc.timeDemoStart )
+		{
 			clc.timeDemoStart = Sys_Milliseconds();
 		}
 		clc.timeDemoFrames++;
 		cl.serverTime = clc.timeDemoBaseTime + clc.timeDemoFrames * 50;
 	}
 
-	while ( cl.serverTime >= cl.snap.serverTime ) {
+	while( cl.serverTime >= cl.snap.serverTime )
+	{
 		// feed another messag, which should change
 		// the contents of cl.snap
 		CL_ReadDemoMessage();
-		if ( cls.state != CA_ACTIVE ) {
-			return;		// end of demo
+		if( cls.state != CA_ACTIVE )
+		{
+			return; // end of demo
 		}
 	}
 
 }
-
-
-

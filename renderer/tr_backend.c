@@ -21,11 +21,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "tr_local.h"
 
-backEndData_t	*backEndData[SMP_FRAMES];
-backEndState_t	backEnd;
+backEndData_t  *backEndData[SMP_FRAMES];
+backEndState_t backEnd;
 
 
-static float	s_flipMatrix[16] = {
+static float   s_flipMatrix[16] = {
 	// convert from our coordinate system (looking down X)
 	// to OpenGL's coordinate system (looking down -Z)
 	0, 0, -1, 0,
@@ -38,24 +38,30 @@ static float	s_flipMatrix[16] = {
 /*
 ** GL_Bind
 */
-void GL_Bind( image_t *image ) {
+void GL_Bind( image_t *image )
+{
 	int texnum;
 
-	if ( !image ) {
+	if( !image )
+	{
 		ri.Printf( PRINT_WARNING, "GL_Bind: NULL image\n" );
 		texnum = tr.defaultImage->texnum;
-	} else {
+	}
+	else
+	{
 		texnum = image->texnum;
 	}
 
-	if ( r_nobind->integer && tr.dlightImage ) {		// performance evaluation option
+	if( r_nobind->integer && tr.dlightImage ) // performance evaluation option
+	{
 		texnum = tr.dlightImage->texnum;
 	}
 
-	if ( glState.currenttextures[glState.currenttmu] != texnum ) {
+	if( glState.currenttextures[glState.currenttmu] != texnum )
+	{
 		image->frameUsed = tr.frameCount;
 		glState.currenttextures[glState.currenttmu] = texnum;
-		qglBindTexture (GL_TEXTURE_2D, texnum);
+		qglBindTexture( GL_TEXTURE_2D, texnum );
 	}
 }
 
@@ -64,52 +70,57 @@ void GL_Bind( image_t *image ) {
 */
 void GL_SelectTexture( int unit )
 {
-	if ( glState.currenttmu == unit )
+	if( glState.currenttmu == unit )
 	{
 		return;
 	}
 
-	if ( unit == 0 )
+	if( unit == 0 )
 	{
 		qglActiveTextureARB( GL_TEXTURE0_ARB );
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 		qglClientActiveTextureARB( GL_TEXTURE0_ARB );
 		GLimp_LogComment( "glClientActiveTextureARB( GL_TEXTURE0_ARB )\n" );
 	}
-	else if ( unit == 1 )
+	else if( unit == 1 )
 	{
 		qglActiveTextureARB( GL_TEXTURE1_ARB );
 		GLimp_LogComment( "glActiveTextureARB( GL_TEXTURE1_ARB )\n" );
 		qglClientActiveTextureARB( GL_TEXTURE1_ARB );
 		GLimp_LogComment( "glClientActiveTextureARB( GL_TEXTURE1_ARB )\n" );
-	} else {
+	}
+	else
+	{
 		ri.Error( ERR_DROP, "GL_SelectTexture: unit = %i", unit );
 	}
 
 	glState.currenttmu = unit;
 }
 
-
 /*
 ** GL_BindMultitexture
 */
-void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint env1 ) {
-	int		texnum0, texnum1;
+void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint env1 )
+{
+	int texnum0, texnum1;
 
 	texnum0 = image0->texnum;
 	texnum1 = image1->texnum;
 
-	if ( r_nobind->integer && tr.dlightImage ) {		// performance evaluation option
+	if( r_nobind->integer && tr.dlightImage ) // performance evaluation option
+	{
 		texnum0 = texnum1 = tr.dlightImage->texnum;
 	}
 
-	if ( glState.currenttextures[1] != texnum1 ) {
+	if( glState.currenttextures[1] != texnum1 )
+	{
 		GL_SelectTexture( 1 );
 		image1->frameUsed = tr.frameCount;
 		glState.currenttextures[1] = texnum1;
 		qglBindTexture( GL_TEXTURE_2D, texnum1 );
 	}
-	if ( glState.currenttextures[0] != texnum0 ) {
+	if( glState.currenttextures[0] != texnum0 )
+	{
 		GL_SelectTexture( 0 );
 		image0->frameUsed = tr.frameCount;
 		glState.currenttextures[0] = texnum0;
@@ -117,28 +128,29 @@ void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint 
 	}
 }
 
-
 /*
 ** GL_Cull
 */
-void GL_Cull( int cullType ) {
-	if ( glState.faceCulling == cullType ) {
+void GL_Cull( int cullType )
+{
+	if( glState.faceCulling == cullType )
+	{
 		return;
 	}
 
 	glState.faceCulling = cullType;
 
-	if ( cullType == CT_TWO_SIDED ) 
+	if( cullType == CT_TWO_SIDED )
 	{
 		qglDisable( GL_CULL_FACE );
-	} 
-	else 
+	}
+	else
 	{
 		qglEnable( GL_CULL_FACE );
 
-		if ( cullType == CT_BACK_SIDED )
+		if( cullType == CT_BACK_SIDED )
 		{
-			if ( backEnd.viewParms.isMirror )
+			if( backEnd.viewParms.isMirror )
 			{
 				qglCullFace( GL_FRONT );
 			}
@@ -149,7 +161,7 @@ void GL_Cull( int cullType ) {
 		}
 		else
 		{
-			if ( backEnd.viewParms.isMirror )
+			if( backEnd.viewParms.isMirror )
 			{
 				qglCullFace( GL_BACK );
 			}
@@ -166,7 +178,7 @@ void GL_Cull( int cullType ) {
 */
 void GL_TexEnv( int env )
 {
-	if ( env == glState.texEnv[glState.currenttmu] )
+	if( env == glState.texEnv[glState.currenttmu] )
 	{
 		return;
 	}
@@ -174,7 +186,7 @@ void GL_TexEnv( int env )
 	glState.texEnv[glState.currenttmu] = env;
 
 
-	switch ( env )
+	switch( env )
 	{
 	case GL_MODULATE:
 		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
@@ -204,7 +216,7 @@ void GL_State( unsigned long stateBits )
 {
 	unsigned long diff = stateBits ^ glState.glStateBits;
 
-	if ( !diff )
+	if( !diff )
 	{
 		return;
 	}
@@ -212,9 +224,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// check depthFunc bits
 	//
-	if ( diff & GLS_DEPTHFUNC_EQUAL )
+	if( diff & GLS_DEPTHFUNC_EQUAL )
 	{
-		if ( stateBits & GLS_DEPTHFUNC_EQUAL )
+		if( stateBits & GLS_DEPTHFUNC_EQUAL )
 		{
 			qglDepthFunc( GL_EQUAL );
 		}
@@ -227,13 +239,13 @@ void GL_State( unsigned long stateBits )
 	//
 	// check blend bits
 	//
-	if ( diff & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )
+	if( diff & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ))
 	{
 		GLenum srcFactor, dstFactor;
 
-		if ( stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ) )
+		if( stateBits & ( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS ))
 		{
-			switch ( stateBits & GLS_SRCBLEND_BITS )
+			switch( stateBits & GLS_SRCBLEND_BITS )
 			{
 			case GLS_SRCBLEND_ZERO:
 				srcFactor = GL_ZERO;
@@ -263,12 +275,12 @@ void GL_State( unsigned long stateBits )
 				srcFactor = GL_SRC_ALPHA_SATURATE;
 				break;
 			default:
-				srcFactor = GL_ONE;		// to get warning to shut up
+				srcFactor = GL_ONE; // to get warning to shut up
 				ri.Error( ERR_DROP, "GL_State: invalid src blend state bits\n" );
 				break;
 			}
 
-			switch ( stateBits & GLS_DSTBLEND_BITS )
+			switch( stateBits & GLS_DSTBLEND_BITS )
 			{
 			case GLS_DSTBLEND_ZERO:
 				dstFactor = GL_ZERO;
@@ -295,7 +307,7 @@ void GL_State( unsigned long stateBits )
 				dstFactor = GL_ONE_MINUS_DST_ALPHA;
 				break;
 			default:
-				dstFactor = GL_ONE;		// to get warning to shut up
+				dstFactor = GL_ONE; // to get warning to shut up
 				ri.Error( ERR_DROP, "GL_State: invalid dst blend state bits\n" );
 				break;
 			}
@@ -312,9 +324,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// check depthmask
 	//
-	if ( diff & GLS_DEPTHMASK_TRUE )
+	if( diff & GLS_DEPTHMASK_TRUE )
 	{
-		if ( stateBits & GLS_DEPTHMASK_TRUE )
+		if( stateBits & GLS_DEPTHMASK_TRUE )
 		{
 			qglDepthMask( GL_TRUE );
 		}
@@ -327,9 +339,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// fill/line mode
 	//
-	if ( diff & GLS_POLYMODE_LINE )
+	if( diff & GLS_POLYMODE_LINE )
 	{
-		if ( stateBits & GLS_POLYMODE_LINE )
+		if( stateBits & GLS_POLYMODE_LINE )
 		{
 			qglPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		}
@@ -342,9 +354,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// depthtest
 	//
-	if ( diff & GLS_DEPTHTEST_DISABLE )
+	if( diff & GLS_DEPTHTEST_DISABLE )
 	{
-		if ( stateBits & GLS_DEPTHTEST_DISABLE )
+		if( stateBits & GLS_DEPTHTEST_DISABLE )
 		{
 			qglDisable( GL_DEPTH_TEST );
 		}
@@ -357,9 +369,9 @@ void GL_State( unsigned long stateBits )
 	//
 	// alpha test
 	//
-	if ( diff & GLS_ATEST_BITS )
+	if( diff & GLS_ATEST_BITS )
 	{
-		switch ( stateBits & GLS_ATEST_BITS )
+		switch( stateBits & GLS_ATEST_BITS )
 		{
 		case 0:
 			qglDisable( GL_ALPHA_TEST );
@@ -385,8 +397,6 @@ void GL_State( unsigned long stateBits )
 	glState.glStateBits = stateBits;
 }
 
-
-
 /*
 ================
 RB_Hyperspace
@@ -394,10 +404,12 @@ RB_Hyperspace
 A player has predicted a teleport, but hasn't arrived yet
 ================
 */
-static void RB_Hyperspace( void ) {
-	float		c;
+static void RB_Hyperspace( void )
+{
+	float c;
 
-	if ( !backEnd.isHyperspace ) {
+	if( !backEnd.isHyperspace )
+	{
 		// do initialization shit
 	}
 
@@ -408,17 +420,17 @@ static void RB_Hyperspace( void ) {
 	backEnd.isHyperspace = qtrue;
 }
 
-
-static void SetViewportAndScissor( void ) {
-	qglMatrixMode(GL_PROJECTION);
+static void SetViewportAndScissor( void )
+{
+	qglMatrixMode( GL_PROJECTION );
 	qglLoadMatrixf( backEnd.viewParms.projectionMatrix );
-	qglMatrixMode(GL_MODELVIEW);
+	qglMatrixMode( GL_MODELVIEW );
 
 	// set the window clipping
-	qglViewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
-		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
-	qglScissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
-		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	qglViewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		     backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
+	qglScissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
+		    backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
 }
 
 /*
@@ -429,15 +441,18 @@ Any mirrored or portaled views have already been drawn, so prepare
 to actually render the visible surfaces for this view
 =================
 */
-void RB_BeginDrawingView (void) {
+void RB_BeginDrawingView( void )
+{
 	int clearBits = 0;
 
 	// sync with gl if needed
-	if ( r_finish->integer == 1 && !glState.finishCalled ) {
-		qglFinish ();
+	if( r_finish->integer == 1 && !glState.finishCalled )
+	{
+		qglFinish();
 		glState.finishCalled = qtrue;
 	}
-	if ( r_finish->integer == 0 ) {
+	if( r_finish->integer == 0 )
+	{
 		glState.finishCalled = qtrue;
 	}
 
@@ -455,22 +470,22 @@ void RB_BeginDrawingView (void) {
 	// clear relevant buffers
 	clearBits = GL_DEPTH_BUFFER_BIT;
 
-	if ( r_measureOverdraw->integer || r_shadows->integer == 2 )
+	if( r_measureOverdraw->integer || r_shadows->integer == 2 )
 	{
 		clearBits |= GL_STENCIL_BUFFER_BIT;
 	}
-	if ( r_fastsky->integer && !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
+	if( r_fastsky->integer && !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ))
 	{
-		clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
+		clearBits |= GL_COLOR_BUFFER_BIT; // FIXME: only if sky shaders have been used
 #ifdef _DEBUG
-		qglClearColor( 0.8f, 0.7f, 0.4f, 1.0f );	// FIXME: get color of sky
+		qglClearColor( 0.8f, 0.7f, 0.4f, 1.0f ); // FIXME: get color of sky
 #else
-		qglClearColor( 0.0f, 0.0f, 0.0f, 1.0f );	// FIXME: get color of sky
+		qglClearColor( 0.0f, 0.0f, 0.0f, 1.0f ); // FIXME: get color of sky
 #endif
 	}
 	qglClear( clearBits );
 
-	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
+	if(( backEnd.refdef.rdflags & RDF_HYPERSPACE ))
 	{
 		RB_Hyperspace();
 		return;
@@ -480,56 +495,59 @@ void RB_BeginDrawingView (void) {
 		backEnd.isHyperspace = qfalse;
 	}
 
-	glState.faceCulling = -1;		// force face culling to set next time
+	glState.faceCulling = -1; // force face culling to set next time
 
 	// we will only draw a sun if there was sky rendered in this view
 	backEnd.skyRenderedThisView = qfalse;
 
 	// clip to the plane of the portal
-	if ( backEnd.viewParms.isPortal ) {
-		float	plane[4];
-		double	plane2[4];
+	if( backEnd.viewParms.isPortal )
+	{
+		float  plane[4];
+		double plane2[4];
 
 		plane[0] = backEnd.viewParms.portalPlane.normal[0];
 		plane[1] = backEnd.viewParms.portalPlane.normal[1];
 		plane[2] = backEnd.viewParms.portalPlane.normal[2];
 		plane[3] = backEnd.viewParms.portalPlane.dist;
 
-		plane2[0] = DotProduct (backEnd.viewParms.or.axis[0], plane);
-		plane2[1] = DotProduct (backEnd.viewParms.or.axis[1], plane);
-		plane2[2] = DotProduct (backEnd.viewParms.or.axis[2], plane);
-		plane2[3] = DotProduct (plane, backEnd.viewParms.or.origin) - plane[3];
+		plane2[0] = DotProduct( backEnd.viewParms.or.axis[0], plane );
+		plane2[1] = DotProduct( backEnd.viewParms.or.axis[1], plane );
+		plane2[2] = DotProduct( backEnd.viewParms.or.axis[2], plane );
+		plane2[3] = DotProduct( plane, backEnd.viewParms.or.origin ) - plane[3];
 
 		qglLoadMatrixf( s_flipMatrix );
-		qglClipPlane (GL_CLIP_PLANE0, plane2);
-		qglEnable (GL_CLIP_PLANE0);
-	} else {
-		qglDisable (GL_CLIP_PLANE0);
+		qglClipPlane( GL_CLIP_PLANE0, plane2 );
+		qglEnable( GL_CLIP_PLANE0 );
+	}
+	else
+	{
+		qglDisable( GL_CLIP_PLANE0 );
 	}
 }
 
-
-#define	MAC_EVENT_PUMP_MSEC		5
+#define MAC_EVENT_PUMP_MSEC 5
 
 /*
 ==================
 RB_RenderDrawSurfList
 ==================
 */
-void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
-	shader_t		*shader, *oldShader;
-	int				fogNum, oldFogNum;
-	int				entityNum, oldEntityNum;
-	int				dlighted, oldDlighted;
-	qboolean		depthRange, oldDepthRange;
-	int				i;
-	drawSurf_t		*drawSurf;
-	int				oldSort;
-	float			originalTime;
+void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
+{
+	shader_t   *shader, *oldShader;
+	int        fogNum, oldFogNum;
+	int        entityNum, oldEntityNum;
+	int        dlighted, oldDlighted;
+	qboolean   depthRange, oldDepthRange;
+	int        i;
+	drawSurf_t *drawSurf;
+	int        oldSort;
+	float      originalTime;
 #ifdef __MACOS__
-	int				macEventTime;
+	int        macEventTime;
 
-	Sys_PumpEvents();		// crutch up the mac's limited buffer queue size
+	Sys_PumpEvents(); // crutch up the mac's limited buffer queue size
 
 	// we don't want to pump the event loop too often and waste time, so
 	// we are going to check every shader change
@@ -540,7 +558,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	originalTime = backEnd.refdef.floatTime;
 
 	// clear the z buffer, set the modelview, etc
-	RB_BeginDrawingView ();
+	RB_BeginDrawingView();
 
 	// draw everything
 	oldEntityNum = -1;
@@ -554,8 +572,10 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 	backEnd.pc.c_surfaces += numDrawSurfs;
 
-	for (i = 0, drawSurf = drawSurfs ; i < numDrawSurfs ; i++, drawSurf++) {
-		if ( drawSurf->sort == oldSort ) {
+	for( i = 0, drawSurf = drawSurfs; i < numDrawSurfs; i++, drawSurf++ )
+	{
+		if( drawSurf->sort == oldSort )
+		{
 			// fast path, same as previous sort
 			rb_surfaceTable[ *drawSurf->surface ]( drawSurf->surface );
 			continue;
@@ -567,14 +587,17 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 		// change the tess parameters if needed
 		// a "entityMergable" shader is a shader that can have surfaces from seperate
 		// entities merged into a single batch, like smoke and blood puff sprites
-		if (shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted 
-			|| ( entityNum != oldEntityNum && !shader->entityMergable ) ) {
-			if (oldShader != NULL) {
-#ifdef __MACOS__	// crutch up the mac's limited buffer queue size
-				int		t;
+		if( shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted
+		    || ( entityNum != oldEntityNum && !shader->entityMergable ))
+		{
+			if( oldShader != NULL )
+			{
+#ifdef __MACOS__ // crutch up the mac's limited buffer queue size
+				int t;
 
 				t = ri.Milliseconds();
-				if ( t > macEventTime ) {
+				if( t > macEventTime )
+				{
 					macEventTime = t + MAC_EVENT_PUMP_MSEC;
 					Sys_PumpEvents();
 				}
@@ -590,10 +613,12 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 		//
 		// change the modelview matrix if needed
 		//
-		if ( entityNum != oldEntityNum ) {
+		if( entityNum != oldEntityNum )
+		{
 			depthRange = qfalse;
 
-			if ( entityNum != ENTITYNUM_WORLD ) {
+			if( entityNum != ENTITYNUM_WORLD )
+			{
 				backEnd.currentEntity = &backEnd.refdef.entities[entityNum];
 				backEnd.refdef.floatTime = originalTime - backEnd.currentEntity->e.shaderTime;
 
@@ -601,15 +626,19 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 				R_RotateForEntity( backEnd.currentEntity, &backEnd.viewParms, &backEnd.or );
 
 				// set up the dynamic lighting if needed
-				if ( backEnd.currentEntity->needDlights ) {
+				if( backEnd.currentEntity->needDlights )
+				{
 					R_TransformDlights( backEnd.refdef.num_dlights, backEnd.refdef.dlights, &backEnd.or );
 				}
 
-				if ( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK ) {
+				if( backEnd.currentEntity->e.renderfx & RF_DEPTHHACK )
+				{
 					// hack the depth range to prevent view model from poking into walls
 					depthRange = qtrue;
 				}
-			} else {
+			}
+			else
+			{
 				backEnd.currentEntity = &tr.worldEntity;
 				backEnd.refdef.floatTime = originalTime;
 				backEnd.or = backEnd.viewParms.world;
@@ -621,11 +650,15 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 			//
 			// change depthrange if needed
 			//
-			if ( oldDepthRange != depthRange ) {
-				if ( depthRange ) {
-					qglDepthRange (0, 0.3);
-				} else {
-					qglDepthRange (0, 1);
+			if( oldDepthRange != depthRange )
+			{
+				if( depthRange )
+				{
+					qglDepthRange( 0, 0.3 );
+				}
+				else
+				{
+					qglDepthRange( 0, 1 );
 				}
 				oldDepthRange = depthRange;
 			}
@@ -640,30 +673,31 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	backEnd.refdef.floatTime = originalTime;
 
 	// draw the contents of the last shader batch
-	if (oldShader != NULL) {
+	if( oldShader != NULL )
+	{
 		RB_EndSurface();
 	}
 
 	// go back to the world modelview matrix
 	qglLoadMatrixf( backEnd.viewParms.world.modelMatrix );
-	if ( depthRange ) {
-		qglDepthRange (0, 1);
+	if( depthRange )
+	{
+		qglDepthRange( 0, 1 );
 	}
 
 #if 0
 	RB_DrawSun();
 #endif
 	// darken down any stencil shadows
-	RB_ShadowFinish();		
+	RB_ShadowFinish();
 
 	// add light flares on lights that aren't obscured
 	RB_RenderFlares();
 
 #ifdef __MACOS__
-	Sys_PumpEvents();		// crutch up the mac's limited buffer queue size
+	Sys_PumpEvents(); // crutch up the mac's limited buffer queue size
 #endif
 }
-
 
 /*
 ============================================================================
@@ -679,21 +713,22 @@ RB_SetGL2D
 
 ================
 */
-void	RB_SetGL2D (void) {
+void RB_SetGL2D( void )
+{
 	backEnd.projection2D = qtrue;
 
 	// set 2D virtual screen size
 	qglViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	qglScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
-	qglOrtho (0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1);
-	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
+	qglMatrixMode( GL_PROJECTION );
+	qglLoadIdentity();
+	qglOrtho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 );
+	qglMatrixMode( GL_MODELVIEW );
+	qglLoadIdentity();
 
-	GL_State( GLS_DEPTHTEST_DISABLE |
-			  GLS_SRCBLEND_SRC_ALPHA |
-			  GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	GL_State( GLS_DEPTHTEST_DISABLE
+		  | GLS_SRCBLEND_SRC_ALPHA
+		  | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	qglDisable( GL_CULL_FACE );
 	qglDisable( GL_CLIP_PLANE0 );
@@ -702,7 +737,6 @@ void	RB_SetGL2D (void) {
 	backEnd.refdef.time = ri.Milliseconds();
 	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 }
-
 
 /*
 =============
@@ -715,13 +749,15 @@ Used for cinematics.
 */
 void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *data )
 {
-	int	i, j;
+	int i, j;
 
 	R_SyncRenderThread();
 
 	// make sure rows and cols are powers of 2
-	for( i = 0; ( 1 << i ) < cols; i++ );
-	for( j = 0; ( 1 << j ) < rows; j++ );
+	for( i = 0; ( 1 << i ) < cols; i++ )
+		;
+	for( j = 0; ( 1 << j ) < rows; j++ )
+		;
 
 	if(( 1 << i ) != cols || ( 1 << j ) != rows )
 	{
@@ -747,9 +783,9 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	}
 
 	qglBegin( GL_QUADS );
-	qglTexCoord2f( 0.5f / cols,  0.5f / rows );
+	qglTexCoord2f( 0.5f / cols, 0.5f / rows );
 	qglVertex2f( x, y );
-	qglTexCoord2f(( cols - 0.5f ) / cols ,  0.5f / rows );
+	qglTexCoord2f(( cols - 0.5f ) / cols, 0.5f / rows );
 	qglVertex2f( x + w, y );
 	qglTexCoord2f(( cols - 0.5f ) / cols, ( rows - 0.5f ) / rows );
 	qglVertex2f( x + w, y + h );
@@ -764,11 +800,13 @@ RB_DrawSurfs
 
 =============
 */
-const void	*RB_DrawSurfs( const void *data ) {
-	const drawSurfsCommand_t	*cmd;
+const void *RB_DrawSurfs( const void *data )
+{
+	const drawSurfsCommand_t *cmd;
 
 	// finish any 2D drawing if needed
-	if ( tess.numIndexes ) {
+	if( tess.numIndexes )
+	{
 		RB_EndSurface();
 	}
 
@@ -779,9 +817,8 @@ const void	*RB_DrawSurfs( const void *data ) {
 
 	RB_RenderDrawSurfList( cmd->drawSurfs, cmd->numDrawSurfs );
 
-	return (const void *)(cmd + 1);
+	return (const void *)( cmd + 1 );
 }
-
 
 /*
 =============
@@ -789,20 +826,22 @@ RB_DrawBuffer
 
 =============
 */
-const void	*RB_DrawBuffer( const void *data ) {
-	const drawBufferCommand_t	*cmd;
+const void *RB_DrawBuffer( const void *data )
+{
+	const drawBufferCommand_t *cmd;
 
 	cmd = (const drawBufferCommand_t *)data;
 
 	qglDrawBuffer( cmd->buffer );
 
 	// clear screen for debugging
-	if ( r_clear->integer ) {
+	if( r_clear->integer )
+	{
 		qglClearColor( 1, 0, 0.5, 1 );
 		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	}
 
-	return (const void *)(cmd + 1);
+	return (const void *)( cmd + 1 );
 }
 
 /*
@@ -817,10 +856,10 @@ Also called by RE_EndRegistration
 */
 void RB_ShowImages( qboolean quiet )
 {
-	int		i;
-	image_t	*image;
-	float	x, y, w, h;
-	int		start, end;
+	int     i;
+	image_t *image;
+	float   x, y, w, h;
+	int     start, end;
 
 	RB_SetGL2D();
 
@@ -830,7 +869,8 @@ void RB_ShowImages( qboolean quiet )
 
 	start = ri.Milliseconds();
 
-	for ( i=0 ; i<tr.numImages ; i++ ) {
+	for( i = 0; i < tr.numImages; i++ )
+	{
 		image = &tr.images[i];
 
 		w = glConfig.vidWidth / 20;
@@ -839,13 +879,14 @@ void RB_ShowImages( qboolean quiet )
 		y = i / 20 * h;
 
 		// show in proportional size in mode 2
-		if ( r_showImages->integer == 2 ) {
+		if( r_showImages->integer == 2 )
+		{
 			w *= image->uploadWidth / 512.0f;
 			h *= image->uploadHeight / 512.0f;
 		}
 
 		GL_Bind( image );
-		qglBegin (GL_QUADS);
+		qglBegin( GL_QUADS );
 		qglTexCoord2f( 0, 0 );
 		qglVertex2f( x, y );
 		qglTexCoord2f( 1, 0 );
@@ -865,23 +906,25 @@ void RB_ShowImages( qboolean quiet )
 
 }
 
-
 /*
 =============
 RB_SwapBuffers
 
 =============
 */
-const void	*RB_SwapBuffers( const void *data ) {
-	const swapBuffersCommand_t	*cmd;
+const void *RB_SwapBuffers( const void *data )
+{
+	const swapBuffersCommand_t *cmd;
 
 	// finish any 2D drawing if needed
-	if ( tess.numIndexes ) {
+	if( tess.numIndexes )
+	{
 		RB_EndSurface();
 	}
 
 	// texture swapping test
-	if ( r_showImages->integer ) {
+	if( r_showImages->integer )
+	{
 		RB_ShowImages( qfalse );
 	}
 
@@ -889,15 +932,17 @@ const void	*RB_SwapBuffers( const void *data ) {
 
 	// we measure overdraw by reading back the stencil buffer and
 	// counting up the number of increments that have happened
-	if ( r_measureOverdraw->integer ) {
-		int i;
+	if( r_measureOverdraw->integer )
+	{
+		int  i;
 		long sum = 0;
 		unsigned char *stencilReadback;
 
 		stencilReadback = ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight );
 		qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback );
 
-		for ( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ ) {
+		for( i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++ )
+		{
 			sum += stencilReadback[i];
 		}
 
@@ -906,7 +951,8 @@ const void	*RB_SwapBuffers( const void *data ) {
 	}
 
 
-	if ( !glState.finishCalled ) {
+	if( !glState.finishCalled )
+	{
 		qglFinish();
 	}
 
@@ -916,7 +962,7 @@ const void	*RB_SwapBuffers( const void *data ) {
 
 	backEnd.projection2D = qfalse;
 
-	return (const void *)(cmd + 1);
+	return (const void *)( cmd + 1 );
 }
 
 /*
@@ -927,19 +973,25 @@ This function will be called synchronously if running without
 smp extensions, or asynchronously by another thread.
 ====================
 */
-void RB_ExecuteRenderCommands( const void *data ) {
-	int		t1, t2;
+void RB_ExecuteRenderCommands( const void *data )
+{
+	int t1, t2;
 
-	t1 = ri.Milliseconds ();
+	t1 = ri.Milliseconds();
 
-	if ( !r_smp->integer || data == backEndData[0]->commands.cmds ) {
+	if( !r_smp->integer || data == backEndData[0]->commands.cmds )
+	{
 		backEnd.smpFrame = 0;
-	} else {
+	}
+	else
+	{
 		backEnd.smpFrame = 1;
 	}
 
-	while ( 1 ) {
-		switch ( *(const int *)data ) {
+	while( 1 )
+	{
+		switch( *(const int *)data )
+		{
 		case RC_DRAW_SURFS:
 			data = RB_DrawSurfs( data );
 			break;
@@ -955,7 +1007,7 @@ void RB_ExecuteRenderCommands( const void *data ) {
 
 		case RC_END_OF_LIST:
 			// stop rendering on this thread
-			t2 = ri.Milliseconds ();
+			t2 = ri.Milliseconds();
 			backEnd.pc.msec = t2 - t1;
 			return;
 		default:
@@ -965,22 +1017,24 @@ void RB_ExecuteRenderCommands( const void *data ) {
 
 }
 
-
 /*
 ================
 RB_RenderThread
 ================
 */
-void RB_RenderThread( void ) {
-	const void	*data;
+void RB_RenderThread( void )
+{
+	const void *data;
 
 	// wait for either a rendering command or a quit command
-	while ( 1 ) {
+	while( 1 )
+	{
 		// sleep until we have work to do
 		data = GLimp_RendererSleep();
 
-		if ( !data ) {
-			return;	// all done, renderer is shutting down
+		if( !data )
+		{
+			return; // all done, renderer is shutting down
 		}
 
 		renderThreadActive = qtrue;
@@ -990,4 +1044,3 @@ void RB_RenderThread( void ) {
 		renderThreadActive = qfalse;
 	}
 }
-

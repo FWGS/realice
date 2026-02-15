@@ -36,12 +36,12 @@ and one exported function: Perform
 #include "vm_local.h"
 
 
-vm_t	*currentVM = NULL; // bk001212
-vm_t	*lastVM    = NULL; // bk001212
-int		vm_debugLevel;
+vm_t *currentVM = NULL; // bk001212
+vm_t *lastVM = NULL;    // bk001212
+int  vm_debugLevel;
 
-#define	MAX_VM		3
-vm_t	vmTable[MAX_VM];
+#define MAX_VM 3
+vm_t vmTable[MAX_VM];
 
 
 void VM_VmInfo_f( void );
@@ -50,11 +50,13 @@ void VM_VmProfile_f( void );
 
 // converts a VM pointer to a C pointer and
 // checks to make sure that the range is acceptable
-void	*VM_VM2C( vmptr_t p, int length ) {
+void *VM_VM2C( vmptr_t p, int length )
+{
 	return (void *)p;
 }
 
-void VM_Debug( int level ) {
+void VM_Debug( int level )
+{
 	vm_debugLevel = level;
 }
 
@@ -63,17 +65,17 @@ void VM_Debug( int level ) {
 VM_Init
 ==============
 */
-void VM_Init( void ) {
-	Cvar_Get( "vm_cgame", "2", CVAR_ARCHIVE );	// !@# SHIP WITH SET TO 2
-	Cvar_Get( "vm_game", "2", CVAR_ARCHIVE );	// !@# SHIP WITH SET TO 2
-	Cvar_Get( "vm_ui", "2", CVAR_ARCHIVE );		// !@# SHIP WITH SET TO 2
+void VM_Init( void )
+{
+	Cvar_Get( "vm_cgame", "2", CVAR_ARCHIVE ); // !@# SHIP WITH SET TO 2
+	Cvar_Get( "vm_game", "2", CVAR_ARCHIVE );  // !@# SHIP WITH SET TO 2
+	Cvar_Get( "vm_ui", "2", CVAR_ARCHIVE );    // !@# SHIP WITH SET TO 2
 
-	Cmd_AddCommand ("vmprofile", VM_VmProfile_f );
-	Cmd_AddCommand ("vminfo", VM_VmInfo_f );
+	Cmd_AddCommand( "vmprofile", VM_VmProfile_f );
+	Cmd_AddCommand( "vminfo", VM_VmInfo_f );
 
-	Com_Memset( vmTable, 0, sizeof( vmTable ) );
+	Com_Memset( vmTable, 0, sizeof( vmTable ));
 }
-
 
 /*
 ===============
@@ -82,21 +84,25 @@ VM_ValueToSymbol
 Assumes a program counter value
 ===============
 */
-const char *VM_ValueToSymbol( vm_t *vm, int value ) {
-	vmSymbol_t	*sym;
-	static char		text[MAX_TOKEN_CHARS];
+const char *VM_ValueToSymbol( vm_t *vm, int value )
+{
+	vmSymbol_t  *sym;
+	static char text[MAX_TOKEN_CHARS];
 
 	sym = vm->symbols;
-	if ( !sym ) {
+	if( !sym )
+	{
 		return "NO SYMBOLS";
 	}
 
 	// find the symbol
-	while ( sym->next && sym->next->symValue <= value ) {
+	while( sym->next && sym->next->symValue <= value )
+	{
 		sym = sym->next;
 	}
 
-	if ( value == sym->symValue ) {
+	if( value == sym->symValue )
+	{
 		return sym->symName;
 	}
 
@@ -112,58 +118,67 @@ VM_ValueToFunctionSymbol
 For profiling, find the symbol behind this value
 ===============
 */
-vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value ) {
-	vmSymbol_t	*sym;
-	static vmSymbol_t	nullSym;
+vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value )
+{
+	vmSymbol_t *sym;
+	static vmSymbol_t nullSym;
 
 	sym = vm->symbols;
-	if ( !sym ) {
+	if( !sym )
+	{
 		return &nullSym;
 	}
 
-	while ( sym->next && sym->next->symValue <= value ) {
+	while( sym->next && sym->next->symValue <= value )
+	{
 		sym = sym->next;
 	}
 
 	return sym;
 }
 
-
 /*
 ===============
 VM_SymbolToValue
 ===============
 */
-int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
-	vmSymbol_t	*sym;
+int VM_SymbolToValue( vm_t *vm, const char *symbol )
+{
+	vmSymbol_t *sym;
 
-	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !strcmp( symbol, sym->symName ) ) {
+	for( sym = vm->symbols; sym; sym = sym->next )
+	{
+		if( !strcmp( symbol, sym->symName ))
+		{
 			return sym->symValue;
 		}
 	}
 	return 0;
 }
 
-
 /*
 =====================
 VM_SymbolForCompiledPointer
 =====================
 */
-const char *VM_SymbolForCompiledPointer( vm_t *vm, void *code ) {
-	int			i;
+const char *VM_SymbolForCompiledPointer( vm_t *vm, void *code )
+{
+	int i;
 
-	if ( code < (void *)vm->codeBase ) {
+	if( code < (void *)vm->codeBase )
+	{
 		return "Before code block";
 	}
-	if ( code >= (void *)(vm->codeBase + vm->codeLength) ) {
+	if( code >= (void *)( vm->codeBase + vm->codeLength ))
+	{
 		return "After code block";
 	}
 
 	// find which original instruction it is after
-	for ( i = 0 ; i < vm->codeLength ; i++ ) {
-		if ( (void *)vm->instructionPointers[i] > code ) {
+	for( i = 0; i < vm->codeLength; i++ )
+	{
+		if((void *)vm->instructionPointers[i] > code )
+		{
 			break;
 		}
 	}
@@ -173,28 +188,31 @@ const char *VM_SymbolForCompiledPointer( vm_t *vm, void *code ) {
 	return VM_ValueToSymbol( vm, i );
 }
 
-
-
 /*
 ===============
 ParseHex
 ===============
 */
-int	ParseHex( const char *text ) {
-	int		value;
-	int		c;
+int ParseHex( const char *text )
+{
+	int value;
+	int c;
 
 	value = 0;
-	while ( ( c = *text++ ) != 0 ) {
-		if ( c >= '0' && c <= '9' ) {
+	while(( c = *text++ ) != 0 )
+	{
+		if( c >= '0' && c <= '9' )
+		{
 			value = value * 16 + c - '0';
 			continue;
 		}
-		if ( c >= 'a' && c <= 'f' ) {
+		if( c >= 'a' && c <= 'f' )
+		{
 			value = value * 16 + 10 + c - 'a';
 			continue;
 		}
-		if ( c >= 'A' && c <= 'F' ) {
+		if( c >= 'A' && c <= 'F' )
+		{
 			value = value * 16 + 10 + c - 'A';
 			continue;
 		}
@@ -208,27 +226,30 @@ int	ParseHex( const char *text ) {
 VM_LoadSymbols
 ===============
 */
-void VM_LoadSymbols( vm_t *vm ) {
-	int		len;
-	char	*mapfile, *text_p, *token;
-	char	name[MAX_QPATH];
-	char	symbols[MAX_QPATH];
-	vmSymbol_t	**prev, *sym;
-	int		count;
-	int		value;
-	int		chars;
-	int		segment;
-	int		numInstructions;
+void VM_LoadSymbols( vm_t *vm )
+{
+	int  len;
+	char *mapfile, *text_p, *token;
+	char name[MAX_QPATH];
+	char symbols[MAX_QPATH];
+	vmSymbol_t **prev, *sym;
+	int  count;
+	int  value;
+	int  chars;
+	int  segment;
+	int  numInstructions;
 
 	// don't load symbols if not developer
-	if ( !com_developer->integer ) {
+	if( !com_developer->integer )
+	{
 		return;
 	}
 
 	COM_StripExtension( vm->name, name );
 	Com_sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
 	len = FS_ReadFile( symbols, (void **)&mapfile );
-	if ( !mapfile ) {
+	if( !mapfile )
+	{
 		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
 		return;
 	}
@@ -240,27 +261,32 @@ void VM_LoadSymbols( vm_t *vm ) {
 	prev = &vm->symbols;
 	count = 0;
 
-	while ( 1 ) {
+	while( 1 )
+	{
 		token = COM_Parse( &text_p );
-		if ( !token[0] ) {
+		if( !token[0] )
+		{
 			break;
 		}
 		segment = ParseHex( token );
-		if ( segment ) {
+		if( segment )
+		{
 			COM_Parse( &text_p );
 			COM_Parse( &text_p );
-			continue;		// only load code segment values
+			continue; // only load code segment values
 		}
 
 		token = COM_Parse( &text_p );
-		if ( !token[0] ) {
+		if( !token[0] )
+		{
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		value = ParseHex( token );
 
 		token = COM_Parse( &text_p );
-		if ( !token[0] ) {
+		if( !token[0] )
+		{
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
@@ -271,7 +297,8 @@ void VM_LoadSymbols( vm_t *vm ) {
 		sym->next = NULL;
 
 		// convert value from an instruction number to a code offset
-		if ( value >= 0 && value < numInstructions ) {
+		if( value >= 0 && value < numInstructions )
+		{
 			value = vm->instructionPointers[value];
 		}
 
@@ -321,24 +348,25 @@ Dlls will call this directly
 
   For speed, we just grab 15 arguments, and don't worry about exactly
    how many the syscall actually needs; the extra is thrown away.
- 
+
 ============
 */
-int QDECL VM_DllSyscall( int arg, ... ) {
-#if ((defined __linux__) && (defined __powerpc__))
-  // rcg010206 - see commentary above
-  int args[16];
-  int i;
-  va_list ap;
-  
-  args[0] = arg;
-  
-  va_start(ap, arg);
-  for (i = 1; i < sizeof (args) / sizeof (args[i]); i++)
-    args[i] = va_arg(ap, int);
-  va_end(ap);
-  
-  return currentVM->systemCall( args );
+int QDECL VM_DllSyscall( int arg, ... )
+{
+#if (( defined __linux__ ) && ( defined __powerpc__ ))
+	// rcg010206 - see commentary above
+	int     args[16];
+	int     i;
+	va_list ap;
+
+	args[0] = arg;
+
+	va_start( ap, arg );
+	for( i = 1; i < sizeof( args ) / sizeof( args[i] ); i++ )
+		args[i] = va_arg( ap, int );
+	va_end( ap );
+
+	return currentVM->systemCall( args );
 #else // original id code
 	return currentVM->systemCall( &arg );
 #endif
@@ -352,13 +380,14 @@ Reload the data, but leave everything else in place
 This allows a server to do a map_restart without changing memory allocation
 =================
 */
-vm_t *VM_Restart( vm_t *vm ) {
+vm_t *VM_Restart( vm_t *vm )
+{
 	// DLL's can't be restarted in place
-	char	name[MAX_QPATH];
-	int     (*systemCall)( int *parms );
+	char name[MAX_QPATH];
+	int  (*systemCall)( int *parms );
 
-	systemCall = vm->systemCall;	
-	Q_strncpyz( name, vm->name, sizeof( name ) );
+	systemCall = vm->systemCall;
+	Q_strncpyz( name, vm->name, sizeof( name ));
 
 	VM_Free( vm );
 
@@ -374,49 +403,56 @@ it will attempt to load as a system dll
 ================
 */
 
-vm_t *VM_Create( const char *module, int (*systemCalls)(int *), 
-				vmInterpret_t interpret ) {
-	vm_t		*vm;
-	vmHeader_t	*header;
-	int			length;
-	int			dataLength;
-	int			i, remaining;
-	char		filename[MAX_QPATH];
+vm_t *VM_Create( const char *module, int (*systemCalls)( int * ), vmInterpret_t interpret )
+{
+	vm_t *vm;
+	vmHeader_t *header;
+	int  length;
+	int  dataLength;
+	int  i, remaining;
+	char filename[MAX_QPATH];
 
-	if ( !module || !module[0] || !systemCalls ) {
+	if( !module || !module[0] || !systemCalls )
+	{
 		Com_Error( ERR_FATAL, "VM_Create: bad parms" );
 	}
 
 	remaining = Hunk_MemoryRemaining();
 
 	// see if we already have the VM
-	for ( i = 0 ; i < MAX_VM ; i++ ) {
-		if (!Q_stricmp(vmTable[i].name, module)) {
+	for( i = 0; i < MAX_VM; i++ )
+	{
+		if( !Q_stricmp( vmTable[i].name, module ))
+		{
 			vm = &vmTable[i];
 			return vm;
 		}
 	}
 
 	// find a free vm
-	for ( i = 0 ; i < MAX_VM ; i++ ) {
-		if ( !vmTable[i].name[0] ) {
+	for( i = 0; i < MAX_VM; i++ )
+	{
+		if( !vmTable[i].name[0] )
+		{
 			break;
 		}
 	}
 
-	if ( i == MAX_VM ) {
+	if( i == MAX_VM )
+	{
 		Com_Error( ERR_FATAL, "VM_Create: no free vm_t" );
 	}
 
 	vm = &vmTable[i];
 
-	Q_strncpyz( vm->name, module, sizeof( vm->name ) );
+	Q_strncpyz( vm->name, module, sizeof( vm->name ));
 	vm->systemCall = systemCalls;
 
 	// try to load as a system dll
 	Com_Printf( "Loading dll file %s.\n", vm->name );
-	vm->dllHandle = Sys_LoadDll( module, vm->fqpath , &vm->entryPoint, VM_DllSyscall );
-	if ( vm->dllHandle ) {
+	vm->dllHandle = Sys_LoadDll( module, vm->fqpath, &vm->entryPoint, VM_DllSyscall );
+	if( vm->dllHandle )
+	{
 		return vm;
 	}
 
@@ -429,75 +465,90 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 VM_Free
 ==============
 */
-void VM_Free( vm_t *vm ) {
+void VM_Free( vm_t *vm )
+{
 
-	if ( vm->dllHandle ) {
+	if( vm->dllHandle )
+	{
 		Sys_UnloadDll( vm->dllHandle );
-		Com_Memset( vm, 0, sizeof( *vm ) );
+		Com_Memset( vm, 0, sizeof( *vm ));
 	}
-#if 0	// now automatically freed by hunk
-	if ( vm->codeBase ) {
+#if 0 // now automatically freed by hunk
+	if( vm->codeBase )
+	{
 		Z_Free( vm->codeBase );
 	}
-	if ( vm->dataBase ) {
+	if( vm->dataBase )
+	{
 		Z_Free( vm->dataBase );
 	}
-	if ( vm->instructionPointers ) {
+	if( vm->instructionPointers )
+	{
 		Z_Free( vm->instructionPointers );
 	}
 #endif
-	Com_Memset( vm, 0, sizeof( *vm ) );
+	Com_Memset( vm, 0, sizeof( *vm ));
 
 	currentVM = NULL;
 	lastVM = NULL;
 }
 
-void VM_Clear(void) {
+void VM_Clear( void )
+{
 	int i;
-	for (i=0;i<MAX_VM; i++) {
-		if ( vmTable[i].dllHandle ) {
+	for( i = 0; i < MAX_VM; i++ )
+	{
+		if( vmTable[i].dllHandle )
+		{
 			Sys_UnloadDll( vmTable[i].dllHandle );
 		}
-		Com_Memset( &vmTable[i], 0, sizeof( vm_t ) );
+		Com_Memset( &vmTable[i], 0, sizeof( vm_t ));
 	}
 	currentVM = NULL;
 	lastVM = NULL;
 }
 
-void *VM_ArgPtr( int intValue ) {
-	if ( !intValue ) {
+void *VM_ArgPtr( int intValue )
+{
+	if( !intValue )
+	{
 		return NULL;
 	}
 	// bk001220 - currentVM is missing on reconnect
-	if ( currentVM==NULL )
-	  return NULL;
+	if( currentVM == NULL )
+		return NULL;
 
-	if ( currentVM->entryPoint ) {
-		return (void *)(currentVM->dataBase + intValue);
+	if( currentVM->entryPoint )
+	{
+		return (void *)( currentVM->dataBase + intValue );
 	}
-	else {
-		return (void *)(currentVM->dataBase + (intValue & currentVM->dataMask));
+	else
+	{
+		return (void *)( currentVM->dataBase + ( intValue & currentVM->dataMask ));
 	}
 }
 
-void *VM_ExplicitArgPtr( vm_t *vm, int intValue ) {
-	if ( !intValue ) {
+void *VM_ExplicitArgPtr( vm_t *vm, int intValue )
+{
+	if( !intValue )
+	{
 		return NULL;
 	}
 
 	// bk010124 - currentVM is missing on reconnect here as well?
-	if ( currentVM==NULL )
-	  return NULL;
+	if( currentVM == NULL )
+		return NULL;
 
 	//
-	if ( vm->entryPoint ) {
-		return (void *)(vm->dataBase + intValue);
+	if( vm->entryPoint )
+	{
+		return (void *)( vm->dataBase + intValue );
 	}
-	else {
-		return (void *)(vm->dataBase + (intValue & vm->dataMask));
+	else
+	{
+		return (void *)( vm->dataBase + ( intValue & vm->dataMask ));
 	}
 }
-
 
 /*
 ==============
@@ -522,17 +573,19 @@ an OP_ENTER instruction, which will subtract space for
 locals from sp
 ==============
 */
-#define	MAX_STACK	256
-#define	STACK_MASK	(MAX_STACK-1)
+#define MAX_STACK  256
+#define STACK_MASK ( MAX_STACK - 1 )
 
-int	QDECL VM_Call( vm_t *vm, int callnum, ... ) {
-	vm_t	*oldVM;
-	int		r;
-	int i;
-	int args[16];
+int QDECL VM_Call( vm_t *vm, int callnum, ... )
+{
+	vm_t    *oldVM;
+	int     r;
+	int     i;
+	int     args[16];
 	va_list ap;
 
-	if ( !vm || !vm->entryPoint ) {
+	if( !vm || !vm->entryPoint )
+	{
 		Com_Error( ERR_FATAL, "VM_Call with NULL vm" );
 	}
 
@@ -540,40 +593,45 @@ int	QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 	currentVM = vm;
 	lastVM = vm;
 
-	if ( vm_debugLevel ) {
+	if( vm_debugLevel )
+	{
 		Com_Printf( "VM_Call( %i )\n", callnum );
 	}
 
 	// if we have a dll loaded, call it directly
-	//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
-	va_start(ap, callnum);
-	for (i = 0; i < sizeof (args) / sizeof (args[i]); i++) {
-		args[i] = va_arg(ap, int);
+	// rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
+	va_start( ap, callnum );
+	for( i = 0; i < sizeof( args ) / sizeof( args[i] ); i++ )
+	{
+		args[i] = va_arg( ap, int );
 	}
-	va_end(ap);
+	va_end( ap );
 
-	r = vm->entryPoint( callnum,  args[0],  args[1],  args[2], args[3],
-		args[4],  args[5],  args[6], args[7],
-		args[8],  args[9], args[10], args[11],
-		args[12], args[13], args[14], args[15]);
+	r = vm->entryPoint( callnum, args[0], args[1], args[2], args[3],
+			    args[4], args[5], args[6], args[7],
+			    args[8], args[9], args[10], args[11],
+			    args[12], args[13], args[14], args[15] );
 
-	if ( oldVM != NULL ) // bk001220 - assert(currentVM!=NULL) for oldVM==NULL
+	if( oldVM != NULL )  // bk001220 - assert(currentVM!=NULL) for oldVM==NULL
 		currentVM = oldVM;
 	return r;
 }
 
-//=================================================================
+// =================================================================
 
-static int QDECL VM_ProfileSort( const void *a, const void *b ) {
-	vmSymbol_t	*sa, *sb;
+static int QDECL VM_ProfileSort( const void *a, const void *b )
+{
+	vmSymbol_t *sa, *sb;
 
 	sa = *(vmSymbol_t **)a;
 	sb = *(vmSymbol_t **)b;
 
-	if ( sa->profileCount < sb->profileCount ) {
+	if( sa->profileCount < sb->profileCount )
+	{
 		return -1;
 	}
-	if ( sa->profileCount > sb->profileCount ) {
+	if( sa->profileCount > sb->profileCount )
+	{
 		return 1;
 	}
 	return 0;
@@ -585,34 +643,39 @@ VM_VmProfile_f
 
 ==============
 */
-void VM_VmProfile_f( void ) {
-	vm_t		*vm;
-	vmSymbol_t	**sorted, *sym;
-	int			i;
-	double		total;
+void VM_VmProfile_f( void )
+{
+	vm_t   *vm;
+	vmSymbol_t **sorted, *sym;
+	int    i;
+	double total;
 
-	if ( !lastVM ) {
+	if( !lastVM )
+	{
 		return;
 	}
 
 	vm = lastVM;
 
-	if ( !vm->numSymbols ) {
+	if( !vm->numSymbols )
+	{
 		return;
 	}
 
-	sorted = Z_Malloc( vm->numSymbols * sizeof( *sorted ) );
+	sorted = Z_Malloc( vm->numSymbols * sizeof( *sorted ));
 	sorted[0] = vm->symbols;
 	total = sorted[0]->profileCount;
-	for ( i = 1 ; i < vm->numSymbols ; i++ ) {
-		sorted[i] = sorted[i-1]->next;
+	for( i = 1; i < vm->numSymbols; i++ )
+	{
+		sorted[i] = sorted[i - 1]->next;
 		total += sorted[i]->profileCount;
 	}
 
 	qsort( sorted, vm->numSymbols, sizeof( *sorted ), VM_ProfileSort );
 
-	for ( i = 0 ; i < vm->numSymbols ; i++ ) {
-		int		perc;
+	for( i = 0; i < vm->numSymbols; i++ )
+	{
+		int perc;
 
 		sym = sorted[i];
 
@@ -621,7 +684,7 @@ void VM_VmProfile_f( void ) {
 		sym->profileCount = 0;
 	}
 
-	Com_Printf("    %9.0f total\n", total );
+	Com_Printf( "    %9.0f total\n", total );
 
 	Z_Free( sorted );
 }
@@ -632,24 +695,31 @@ VM_VmInfo_f
 
 ==============
 */
-void VM_VmInfo_f( void ) {
-	vm_t	*vm;
-	int		i;
+void VM_VmInfo_f( void )
+{
+	vm_t *vm;
+	int  i;
 
 	Com_Printf( "Registered virtual machines:\n" );
-	for ( i = 0 ; i < MAX_VM ; i++ ) {
+	for( i = 0; i < MAX_VM; i++ )
+	{
 		vm = &vmTable[i];
-		if ( !vm->name[0] ) {
+		if( !vm->name[0] )
+		{
 			break;
 		}
 		Com_Printf( "%s : ", vm->name );
-		if ( vm->dllHandle ) {
+		if( vm->dllHandle )
+		{
 			Com_Printf( "native\n" );
 			continue;
 		}
-		if ( vm->compiled ) {
+		if( vm->compiled )
+		{
 			Com_Printf( "compiled on load\n" );
-		} else {
+		}
+		else
+		{
 			Com_Printf( "interpreted\n" );
 		}
 		Com_Printf( "    code length : %7i\n", vm->codeLength );
@@ -665,14 +735,16 @@ VM_LogSyscalls
 Insert calls to this while debugging the vm compiler
 ===============
 */
-void VM_LogSyscalls( int *args ) {
-	static	int		callnum;
-	static	FILE	*f;
+void VM_LogSyscalls( int *args )
+{
+	static int  callnum;
+	static FILE *f;
 
-	if ( !f ) {
-		f = fopen("syscalls.log", "w" );
+	if( !f )
+	{
+		f = fopen( "syscalls.log", "w" );
 	}
 	callnum++;
-	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, args - (int *)currentVM->dataBase,
-		args[0], args[1], args[2], args[3], args[4] );
+	fprintf( f, "%i: %i (%i) = %i %i %i %i\n", callnum, args - (int *)currentVM->dataBase,
+		 args[0], args[1], args[2], args[3], args[4] );
 }

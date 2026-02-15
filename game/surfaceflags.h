@@ -27,43 +27,43 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // these definitions also need to be in q_shared.h!
 
-#define CONTENTS_SOLID           BIT( 0 ) // an eye is never valid in a solid
-#define CONTENTS_LAVA            BIT( 3 )
-#define CONTENTS_SLIME           BIT( 4 )
-#define CONTENTS_WATER           BIT( 5 )
-#define CONTENTS_FOG             BIT( 6 )
-#define CONTENTS_AREAPORTAL      BIT( 15 )
-#define CONTENTS_PLAYERCLIP      BIT( 16 )
-#define CONTENTS_MONSTERCLIP     BIT( 17 )
-#define CONTENTS_CAMERACLIP      BIT( 18 ) // (fakk2)
-#define CONTENTS_WEAPONCLIP      BIT( 19 ) // (fakk2) blocks projectiles and weapon attacks as well
-#define CONTENTS_SHOOTABLE_ONLY  BIT( 20 ) // (fakk2) player can walk through this but can shoot it as well
-#define CONTENTS_ORIGIN          BIT( 24 ) // removed before bsping an entity
-#define CONTENTS_BODY            BIT( 25 ) // should never be on a brush, only in game
-#define CONTENTS_CORPSE          BIT( 26 )
-#define CONTENTS_DETAIL          BIT( 27 ) // brushes not used for the bsp
-#define CONTENTS_STRUCTURAL      BIT( 28 ) // brushes used for the bsp
-#define CONTENTS_TRANSLUCENT     BIT( 29 ) // don't consume surface fragments inside
-#define CONTENTS_NODROP          BIT( 31 ) // don't leave bodies or items (death fog, lava)
+#define CONTENTS_SOLID          BIT( 0 )  // an eye is never valid in a solid
+#define CONTENTS_LAVA           BIT( 3 )
+#define CONTENTS_SLIME          BIT( 4 )
+#define CONTENTS_WATER          BIT( 5 )
+#define CONTENTS_FOG            BIT( 6 )
+#define CONTENTS_AREAPORTAL     BIT( 15 )
+#define CONTENTS_PLAYERCLIP     BIT( 16 )
+#define CONTENTS_MONSTERCLIP    BIT( 17 )
+#define CONTENTS_CAMERACLIP     BIT( 18 ) // (fakk2)
+#define CONTENTS_WEAPONCLIP     BIT( 19 ) // (fakk2) blocks projectiles and weapon attacks as well
+#define CONTENTS_SHOOTABLE_ONLY BIT( 20 ) // (fakk2) player can walk through this but can shoot it as well
+#define CONTENTS_ORIGIN         BIT( 24 ) // removed before bsping an entity
+#define CONTENTS_BODY           BIT( 25 ) // should never be on a brush, only in game
+#define CONTENTS_CORPSE         BIT( 26 )
+#define CONTENTS_DETAIL         BIT( 27 )  // brushes not used for the bsp
+#define CONTENTS_STRUCTURAL     BIT( 28 )  // brushes used for the bsp
+#define CONTENTS_TRANSLUCENT    BIT( 29 )  // don't consume surface fragments inside
+#define CONTENTS_NODROP         BIT( 31 )  // don't leave bodies or items (death fog, lava)
 
 #define CONTENTS_KEEP ( CONTENTS_DETAIL )
 
 #define MASK_CLIP ( CONTENTS_PLAYERCLIP | CONTENTS_MONSTERCLIP | CONTENTS_CAMERACLIP | CONTENTS_WEAPONCLIP )
 
 
-#define SURF_NODAMAGE     BIT( 0 )   // never give falling damage
-#define SURF_SLICK        BIT( 1 )   // effects game physics
-#define SURF_SKY          BIT( 2 )   // lighting from environment map
-#define SURF_LADDER       BIT( 3 )   // ladder surface
-#define SURF_NOIMPACT     BIT( 4 )   // don't make missile explosions
-#define SURF_NOMARKS      BIT( 5 )   // don't leave missile marks
-#define SURF_CASTSHADOW   BIT( 6 )   // used in conjunction with nodraw allows surface to be not drawn but still cast shadows
-#define SURF_NODRAW       BIT( 7 )   // don't generate a drawsurface at all
-#define SURF_NOLIGHTMAP   BIT( 10 )  // surface doesn't need a lightmap
-#define SURF_ALPHASHADOW  BIT( 11 )  // do per-pixel shadow tests based on the texture
-#define SURF_NOSTEPS      BIT( 13 )  // no footstep sounds
-#define SURF_NONSOLID     BIT( 14 )  // don't collide against curves with this set
-#define SURF_RICOCHET     BIT( 15 )  // ricochet bullets
+#define SURF_NODAMAGE    BIT( 0 )  // never give falling damage
+#define SURF_SLICK       BIT( 1 )  // effects game physics
+#define SURF_SKY         BIT( 2 )  // lighting from environment map
+#define SURF_LADDER      BIT( 3 )  // ladder surface
+#define SURF_NOIMPACT    BIT( 4 )  // don't make missile explosions
+#define SURF_NOMARKS     BIT( 5 )  // don't leave missile marks
+#define SURF_CASTSHADOW  BIT( 6 )  // used in conjunction with nodraw allows surface to be not drawn but still cast shadows
+#define SURF_NODRAW      BIT( 7 )  // don't generate a drawsurface at all
+#define SURF_NOLIGHTMAP  BIT( 10 ) // surface doesn't need a lightmap
+#define SURF_ALPHASHADOW BIT( 11 ) // do per-pixel shadow tests based on the texture
+#define SURF_NOSTEPS     BIT( 13 ) // no footstep sounds
+#define SURF_NONSOLID    BIT( 14 ) // don't collide against curves with this set
+#define SURF_RICOCHET    BIT( 15 ) // ricochet bullets
 
 #define SURF_TYPE_WOOD    BIT( 16 ) // wood surface
 #define SURF_TYPE_METAL   BIT( 17 ) // metal surface
@@ -73,8 +73,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SURF_TYPE_ORGANIC BIT( 21 ) // oraganic (grass, loamy dirt)
 #define SURF_TYPE_SQUISHY BIT( 22 ) // squishy (swamp dirt, flesh)
 
-#define SURF_NODLIGHT BIT( 23 )                // don't dlight even if solid (solid lava, skies)
-#define SURF_HINT     BIT( 24 )                // choose this plane as a partitioner
+#define SURF_NODLIGHT BIT( 23 ) // don't dlight even if solid (solid lava, skies)
+#define SURF_HINT     BIT( 24 ) // choose this plane as a partitioner
 
 #define SURF_PATCH BIT( 29 )
 #define SURF_KEEP  ( SURF_PATCH )

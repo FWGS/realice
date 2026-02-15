@@ -22,10 +22,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-typedef enum {
-	OP_UNDEF, 
+typedef enum
+{
+	OP_UNDEF,
 
-	OP_IGNORE, 
+	OP_IGNORE,
 
 	OP_BREAK,
 
@@ -40,7 +41,7 @@ typedef enum {
 
 	OP_JUMP,
 
-	//-------------------
+	// -------------------
 
 	OP_EQ,
 	OP_NE,
@@ -63,19 +64,19 @@ typedef enum {
 	OP_GTF,
 	OP_GEF,
 
-	//-------------------
+	// -------------------
 
 	OP_LOAD1,
 	OP_LOAD2,
 	OP_LOAD4,
 	OP_STORE1,
 	OP_STORE2,
-	OP_STORE4,				// *(stack[top-1]) = stack[top]
+	OP_STORE4, // *(stack[top-1]) = stack[top]
 	OP_ARG,
 
 	OP_BLOCK_COPY,
 
-	//-------------------
+	// -------------------
 
 	OP_SEX8,
 	OP_SEX16,
@@ -111,67 +112,69 @@ typedef enum {
 
 
 
-typedef int	vmptr_t;
+typedef int vmptr_t;
 
-typedef struct vmSymbol_s {
-	struct vmSymbol_s	*next;
-	int		symValue;
-	int		profileCount;
-	char	symName[1];		// variable sized
+typedef struct vmSymbol_s
+{
+	struct vmSymbol_s *next;
+	int  symValue;
+	int  profileCount;
+	char symName[1]; // variable sized
 } vmSymbol_t;
 
-#define	VM_OFFSET_PROGRAM_STACK		0
-#define	VM_OFFSET_SYSTEM_CALL		4
+#define VM_OFFSET_PROGRAM_STACK 0
+#define VM_OFFSET_SYSTEM_CALL   4
 
-struct vm_s {
-    // DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
-    // USED BY THE ASM CODE
-    int			programStack;		// the vm may be recursively entered
-    int			(*systemCall)( int *parms );
+struct vm_s
+{
+	// DO NOT MOVE OR CHANGE THESE WITHOUT CHANGING THE VM_OFFSET_* DEFINES
+	// USED BY THE ASM CODE
+	int programStack;                       // the vm may be recursively entered
+	int (*systemCall)( int *parms );
 
-	//------------------------------------
-   
-    char		name[MAX_QPATH];
+	// ------------------------------------
+
+	char name[MAX_QPATH];
 
 	// for dynamic linked modules
-	void		*dllHandle;
-	int			(QDECL *entryPoint)( int callNum, ... );
+	void *dllHandle;
+	int( QDECL * entryPoint )( int callNum, ... );
 
 	// for interpreted modules
-	qboolean	currentlyInterpreting;
+	qboolean currentlyInterpreting;
 
-	qboolean	compiled;
-	byte		*codeBase;
-	int			codeLength;
+	qboolean compiled;
+	byte     *codeBase;
+	int      codeLength;
 
-	int			*instructionPointers;
-	int			instructionPointersLength;
+	int      *instructionPointers;
+	int      instructionPointersLength;
 
-	byte		*dataBase;
-	int			dataMask;
+	byte     *dataBase;
+	int      dataMask;
 
-	int			stackBottom;		// if programStack < stackBottom, error
+	int      stackBottom;                           // if programStack < stackBottom, error
 
-	int			numSymbols;
-	struct vmSymbol_s	*symbols;
+	int      numSymbols;
+	struct vmSymbol_s *symbols;
 
-	int			callLevel;			// for debug indenting
-	int			breakFunction;		// increment breakCount on function entry to this
-	int			breakCount;
+	int      callLevel;                             // for debug indenting
+	int      breakFunction;                         // increment breakCount on function entry to this
+	int      breakCount;
 
 // fqpath member added 7/20/02 by T.Ray
-	char		fqpath[MAX_QPATH+1] ;
+	char     fqpath[MAX_QPATH + 1];
 };
 
 
-extern	vm_t	*currentVM;
-extern	int		vm_debugLevel;
+extern vm_t *currentVM;
+extern int  vm_debugLevel;
 
 void VM_Compile( vm_t *vm, vmHeader_t *header );
-int	VM_CallCompiled( vm_t *vm, int *args );
+int VM_CallCompiled( vm_t *vm, int *args );
 
 void VM_PrepareInterpreter( vm_t *vm, vmHeader_t *header );
-int	VM_CallInterpreted( vm_t *vm, int *args );
+int VM_CallInterpreted( vm_t *vm, int *args );
 
 vmSymbol_t *VM_ValueToFunctionSymbol( vm_t *vm, int value );
 int VM_SymbolToValue( vm_t *vm, const char *symbol );

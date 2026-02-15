@@ -41,22 +41,22 @@ An item fires all of its targets when it is picked up.  If the toucher can't car
 "count" override quantity or duration on most items.
 */
 
-gitem_t	bg_itemlist[] = 
+gitem_t bg_itemlist[] =
 {
 	{
 		NULL,
 		NULL,
 		{ NULL,
-		NULL,
-		0, 0} ,
-/* icon */		NULL,
-/* pickup */	NULL,
+		  NULL,
+		  0, 0},
+/* icon */              NULL,
+/* pickup */    NULL,
 		0,
 		0,
 		0,
 /* precache */ "",
 /* sounds */ ""
-	},	// leave index 0 alone
+	}, // leave index 0 alone
 
 	//
 	// ARMOR
@@ -65,13 +65,13 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_shard", 
+		"item_armor_shard",
 		"sound/misc/ar1_pkup.wav",
-		{ "models/powerups/armor/shard.md3", 
-		"models/powerups/armor/shard_sphere.md3",
-		0, 0} ,
-/* icon */		"icons/iconr_shard",
-/* pickup */	"Armor Shard",
+		{ "models/powerups/armor/shard.md3",
+		  "models/powerups/armor/shard_sphere.md3",
+		  0, 0},
+/* icon */              "icons/iconr_shard",
+/* pickup */    "Armor Shard",
 		5,
 		IT_ARMOR,
 		0,
@@ -82,12 +82,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_combat", 
+		"item_armor_combat",
 		"sound/misc/ar2_pkup.wav",
-        { "models/powerups/armor/armor_yel.md3",
-		0, 0, 0},
-/* icon */		"icons/iconr_yellow",
-/* pickup */	"Armor",
+		{ "models/powerups/armor/armor_yel.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconr_yellow",
+/* pickup */    "Armor",
 		50,
 		IT_ARMOR,
 		0,
@@ -98,12 +98,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_armor_body", 
+		"item_armor_body",
 		"sound/misc/ar2_pkup.wav",
-        { "models/powerups/armor/armor_red.md3",
-		0, 0, 0},
-/* icon */		"icons/iconr_red",
-/* pickup */	"Heavy Armor",
+		{ "models/powerups/armor/armor_red.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconr_red",
+/* pickup */    "Heavy Armor",
 		100,
 		IT_ARMOR,
 		0,
@@ -119,11 +119,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health_small",
 		"sound/items/s_health.wav",
-        { "models/powerups/health/small_cross.md3", 
-		"models/powerups/health/small_sphere.md3", 
-		0, 0 },
-/* icon */		"icons/iconh_green",
-/* pickup */	"5 Health",
+		{ "models/powerups/health/small_cross.md3",
+		  "models/powerups/health/small_sphere.md3",
+		  0, 0 },
+/* icon */              "icons/iconh_green",
+/* pickup */    "5 Health",
 		5,
 		IT_HEALTH,
 		0,
@@ -136,11 +136,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health",
 		"sound/items/n_health.wav",
-        { "models/powerups/health/medium_cross.md3", 
-		"models/powerups/health/medium_sphere.md3", 
-		0, 0 },
-/* icon */		"icons/iconh_yellow",
-/* pickup */	"25 Health",
+		{ "models/powerups/health/medium_cross.md3",
+		  "models/powerups/health/medium_sphere.md3",
+		  0, 0 },
+/* icon */              "icons/iconh_yellow",
+/* pickup */    "25 Health",
 		25,
 		IT_HEALTH,
 		0,
@@ -153,11 +153,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health_large",
 		"sound/items/l_health.wav",
-        { "models/powerups/health/large_cross.md3", 
-		"models/powerups/health/large_sphere.md3", 
-		0, 0 },
-/* icon */		"icons/iconh_red",
-/* pickup */	"50 Health",
+		{ "models/powerups/health/large_cross.md3",
+		  "models/powerups/health/large_sphere.md3",
+		  0, 0 },
+/* icon */              "icons/iconh_red",
+/* pickup */    "50 Health",
 		50,
 		IT_HEALTH,
 		0,
@@ -170,11 +170,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_health_mega",
 		"sound/items/m_health.wav",
-        { "models/powerups/health/mega_cross.md3", 
-		"models/powerups/health/mega_sphere.md3", 
-		0, 0 },
-/* icon */		"icons/iconh_mega",
-/* pickup */	"Mega Health",
+		{ "models/powerups/health/mega_cross.md3",
+		  "models/powerups/health/mega_sphere.md3",
+		  0, 0 },
+/* icon */              "icons/iconh_mega",
+/* pickup */    "Mega Health",
 		100,
 		IT_HEALTH,
 		0,
@@ -184,18 +184,18 @@ gitem_t	bg_itemlist[] =
 
 
 	//
-	// WEAPONS 
+	// WEAPONS
 	//
 
 /*QUAKED weapon_gauntlet (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_gauntlet", 
+		"weapon_gauntlet",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/gauntlet/gauntlet.md3",
-		0, 0, 0},
-/* icon */		"icons/iconw_gauntlet",
-/* pickup */	"Gauntlet",
+		{ "models/weapons2/gauntlet/gauntlet.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_gauntlet",
+/* pickup */    "Gauntlet",
 		0,
 		IT_WEAPON,
 		WP_GAUNTLET,
@@ -206,12 +206,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_shotgun", 
+		"weapon_shotgun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/shotgun/shotgun.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_shotgun",
-/* pickup */	"Shotgun",
+		{ "models/weapons2/shotgun/shotgun.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_shotgun",
+/* pickup */    "Shotgun",
 		10,
 		IT_WEAPON,
 		WP_SHOTGUN,
@@ -222,12 +222,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_machinegun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_machinegun", 
+		"weapon_machinegun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/machinegun/machinegun.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_machinegun",
-/* pickup */	"Machinegun",
+		{ "models/weapons2/machinegun/machinegun.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_machinegun",
+/* pickup */    "Machinegun",
 		40,
 		IT_WEAPON,
 		WP_MACHINEGUN,
@@ -240,10 +240,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_grenadelauncher",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/grenadel/grenadel.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_grenade",
-/* pickup */	"Grenade Launcher",
+		{ "models/weapons2/grenadel/grenadel.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_grenade",
+/* pickup */    "Grenade Launcher",
 		10,
 		IT_WEAPON,
 		WP_GRENADE_LAUNCHER,
@@ -256,10 +256,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_rocketlauncher",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/rocketl/rocketl.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_rocket",
-/* pickup */	"Rocket Launcher",
+		{ "models/weapons2/rocketl/rocketl.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_rocket",
+/* pickup */    "Rocket Launcher",
 		10,
 		IT_WEAPON,
 		WP_ROCKET_LAUNCHER,
@@ -270,12 +270,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_lightning (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_lightning", 
+		"weapon_lightning",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/lightning/lightning.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_lightning",
-/* pickup */	"Lightning Gun",
+		{ "models/weapons2/lightning/lightning.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_lightning",
+/* pickup */    "Lightning Gun",
 		100,
 		IT_WEAPON,
 		WP_LIGHTNING,
@@ -286,12 +286,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_railgun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_railgun", 
+		"weapon_railgun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/railgun/railgun.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_railgun",
-/* pickup */	"Railgun",
+		{ "models/weapons2/railgun/railgun.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_railgun",
+/* pickup */    "Railgun",
 		10,
 		IT_WEAPON,
 		WP_RAILGUN,
@@ -302,12 +302,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED weapon_plasmagun (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"weapon_plasmagun", 
+		"weapon_plasmagun",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/plasma/plasma.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_plasma",
-/* pickup */	"Plasma Gun",
+		{ "models/weapons2/plasma/plasma.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_plasma",
+/* pickup */    "Plasma Gun",
 		50,
 		IT_WEAPON,
 		WP_PLASMAGUN,
@@ -320,10 +320,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_bfg",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/bfg/bfg.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_bfg",
-/* pickup */	"BFG10K",
+		{ "models/weapons2/bfg/bfg.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_bfg",
+/* pickup */    "BFG10K",
 		20,
 		IT_WEAPON,
 		WP_BFG,
@@ -336,10 +336,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"weapon_grapplinghook",
 		"sound/misc/w_pkup.wav",
-        { "models/weapons2/grapple/grapple.md3", 
-		0, 0, 0},
-/* icon */		"icons/iconw_grapple",
-/* pickup */	"Grappling Hook",
+		{ "models/weapons2/grapple/grapple.md3",
+		  0, 0, 0},
+/* icon */              "icons/iconw_grapple",
+/* pickup */    "Grappling Hook",
 		0,
 		IT_WEAPON,
 		WP_GRAPPLING_HOOK,
@@ -356,10 +356,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_shells",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/shotgunam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_shotgun",
-/* pickup */	"Shells",
+		{ "models/powerups/ammo/shotgunam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_shotgun",
+/* pickup */    "Shells",
 		10,
 		IT_AMMO,
 		WP_SHOTGUN,
@@ -372,10 +372,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_bullets",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/machinegunam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_machinegun",
-/* pickup */	"Bullets",
+		{ "models/powerups/ammo/machinegunam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_machinegun",
+/* pickup */    "Bullets",
 		50,
 		IT_AMMO,
 		WP_MACHINEGUN,
@@ -388,10 +388,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_grenades",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/grenadeam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_grenade",
-/* pickup */	"Grenades",
+		{ "models/powerups/ammo/grenadeam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_grenade",
+/* pickup */    "Grenades",
 		5,
 		IT_AMMO,
 		WP_GRENADE_LAUNCHER,
@@ -404,10 +404,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_cells",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/plasmaam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_plasma",
-/* pickup */	"Cells",
+		{ "models/powerups/ammo/plasmaam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_plasma",
+/* pickup */    "Cells",
 		30,
 		IT_AMMO,
 		WP_PLASMAGUN,
@@ -420,10 +420,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_lightning",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/lightningam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_lightning",
-/* pickup */	"Lightning",
+		{ "models/powerups/ammo/lightningam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_lightning",
+/* pickup */    "Lightning",
 		60,
 		IT_AMMO,
 		WP_LIGHTNING,
@@ -436,10 +436,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_rockets",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/rocketam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_rocket",
-/* pickup */	"Rockets",
+		{ "models/powerups/ammo/rocketam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_rocket",
+/* pickup */    "Rockets",
 		5,
 		IT_AMMO,
 		WP_ROCKET_LAUNCHER,
@@ -452,10 +452,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_slugs",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/railgunam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_railgun",
-/* pickup */	"Slugs",
+		{ "models/powerups/ammo/railgunam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_railgun",
+/* pickup */    "Slugs",
 		10,
 		IT_AMMO,
 		WP_RAILGUN,
@@ -468,10 +468,10 @@ gitem_t	bg_itemlist[] =
 	{
 		"ammo_bfg",
 		"sound/misc/am_pkup.wav",
-        { "models/powerups/ammo/bfgam.md3", 
-		0, 0, 0},
-/* icon */		"icons/icona_bfg",
-/* pickup */	"Bfg Ammo",
+		{ "models/powerups/ammo/bfgam.md3",
+		  0, 0, 0},
+/* icon */              "icons/icona_bfg",
+/* pickup */    "Bfg Ammo",
 		15,
 		IT_AMMO,
 		WP_BFG,
@@ -485,12 +485,12 @@ gitem_t	bg_itemlist[] =
 /*QUAKED holdable_teleporter (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"holdable_teleporter", 
+		"holdable_teleporter",
 		"sound/items/holdable.wav",
-        { "models/powerups/holdable/teleporter.md3", 
-		0, 0, 0},
-/* icon */		"icons/teleporter",
-/* pickup */	"Personal Teleporter",
+		{ "models/powerups/holdable/teleporter.md3",
+		  0, 0, 0},
+/* icon */              "icons/teleporter",
+/* pickup */    "Personal Teleporter",
 		60,
 		IT_HOLDABLE,
 		HI_TELEPORTER,
@@ -500,14 +500,15 @@ gitem_t	bg_itemlist[] =
 /*QUAKED holdable_medkit (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"holdable_medkit", 
+		"holdable_medkit",
 		"sound/items/holdable.wav",
-        { 
-		"models/powerups/holdable/medkit.md3", 
-		"models/powerups/holdable/medkit_sphere.md3",
-		0, 0},
-/* icon */		"icons/medkit",
-/* pickup */	"Medkit",
+		{
+			"models/powerups/holdable/medkit.md3",
+			"models/powerups/holdable/medkit_sphere.md3",
+			0, 0
+		},
+/* icon */              "icons/medkit",
+/* pickup */    "Medkit",
 		60,
 		IT_HOLDABLE,
 		HI_MEDKIT,
@@ -521,13 +522,13 @@ gitem_t	bg_itemlist[] =
 /*QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16) suspended
 */
 	{
-		"item_quad", 
+		"item_quad",
 		"sound/items/quaddamage.wav",
-        { "models/powerups/instant/quad.md3", 
-        "models/powerups/instant/quad_ring.md3",
-		0, 0 },
-/* icon */		"icons/quad",
-/* pickup */	"Quad Damage",
+		{ "models/powerups/instant/quad.md3",
+		  "models/powerups/instant/quad_ring.md3",
+		  0, 0 },
+/* icon */              "icons/quad",
+/* pickup */    "Quad Damage",
 		30,
 		IT_POWERUP,
 		PW_QUAD,
@@ -540,11 +541,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_enviro",
 		"sound/items/protect.wav",
-        { "models/powerups/instant/enviro.md3", 
-		"models/powerups/instant/enviro_ring.md3", 
-		0, 0 },
-/* icon */		"icons/envirosuit",
-/* pickup */	"Battle Suit",
+		{ "models/powerups/instant/enviro.md3",
+		  "models/powerups/instant/enviro_ring.md3",
+		  0, 0 },
+/* icon */              "icons/envirosuit",
+/* pickup */    "Battle Suit",
 		30,
 		IT_POWERUP,
 		PW_BATTLESUIT,
@@ -557,11 +558,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_haste",
 		"sound/items/haste.wav",
-        { "models/powerups/instant/haste.md3", 
-		"models/powerups/instant/haste_ring.md3", 
-		0, 0 },
-/* icon */		"icons/haste",
-/* pickup */	"Speed",
+		{ "models/powerups/instant/haste.md3",
+		  "models/powerups/instant/haste_ring.md3",
+		  0, 0 },
+/* icon */              "icons/haste",
+/* pickup */    "Speed",
 		30,
 		IT_POWERUP,
 		PW_HASTE,
@@ -574,11 +575,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_invis",
 		"sound/items/invisibility.wav",
-        { "models/powerups/instant/invis.md3", 
-		"models/powerups/instant/invis_ring.md3", 
-		0, 0 },
-/* icon */		"icons/invis",
-/* pickup */	"Invisibility",
+		{ "models/powerups/instant/invis.md3",
+		  "models/powerups/instant/invis_ring.md3",
+		  0, 0 },
+/* icon */              "icons/invis",
+/* pickup */    "Invisibility",
 		30,
 		IT_POWERUP,
 		PW_INVIS,
@@ -591,11 +592,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_regen",
 		"sound/items/regeneration.wav",
-        { "models/powerups/instant/regen.md3", 
-		"models/powerups/instant/regen_ring.md3", 
-		0, 0 },
-/* icon */		"icons/regen",
-/* pickup */	"Regeneration",
+		{ "models/powerups/instant/regen.md3",
+		  "models/powerups/instant/regen_ring.md3",
+		  0, 0 },
+/* icon */              "icons/regen",
+/* pickup */    "Regeneration",
 		30,
 		IT_POWERUP,
 		PW_REGEN,
@@ -608,11 +609,11 @@ gitem_t	bg_itemlist[] =
 	{
 		"item_flight",
 		"sound/items/flight.wav",
-        { "models/powerups/instant/flight.md3", 
-		"models/powerups/instant/flight_ring.md3", 
-		0, 0 },
-/* icon */		"icons/flight",
-/* pickup */	"Flight",
+		{ "models/powerups/instant/flight.md3",
+		  "models/powerups/instant/flight_ring.md3",
+		  0, 0 },
+/* icon */              "icons/flight",
+/* pickup */    "Flight",
 		60,
 		IT_POWERUP,
 		PW_FLIGHT,
@@ -626,10 +627,10 @@ Only in CTF games
 	{
 		"team_CTF_redflag",
 		NULL,
-        { "models/flags/r_flag.md3",
-		0, 0, 0 },
-/* icon */		"icons/iconf_red1",
-/* pickup */	"Red Flag",
+		{ "models/flags/r_flag.md3",
+		  0, 0, 0 },
+/* icon */              "icons/iconf_red1",
+/* pickup */    "Red Flag",
 		0,
 		IT_TEAM,
 		PW_REDFLAG,
@@ -643,10 +644,10 @@ Only in CTF games
 	{
 		"team_CTF_blueflag",
 		NULL,
-        { "models/flags/b_flag.md3",
-		0, 0, 0 },
-/* icon */		"icons/iconf_blu1",
-/* pickup */	"Blue Flag",
+		{ "models/flags/b_flag.md3",
+		  0, 0, 0 },
+/* icon */              "icons/iconf_blu1",
+/* pickup */    "Blue Flag",
 		0,
 		IT_TEAM,
 		PW_BLUEFLAG,
@@ -658,7 +659,7 @@ Only in CTF games
 	{NULL}
 };
 
-int		bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
+int     bg_numItems = sizeof( bg_itemlist ) / sizeof( bg_itemlist[0] ) - 1;
 
 
 /*
@@ -666,14 +667,17 @@ int		bg_numItems = sizeof(bg_itemlist) / sizeof(bg_itemlist[0]) - 1;
 BG_FindItemForPowerup
 ==============
 */
-gitem_t	*BG_FindItemForPowerup( powerup_t pw ) {
-	int		i;
+gitem_t *BG_FindItemForPowerup( powerup_t pw )
+{
+	int i;
 
-	for ( i = 0 ; i < bg_numItems ; i++ ) {
-		if ( (bg_itemlist[i].giType == IT_POWERUP || 
-					bg_itemlist[i].giType == IT_TEAM ||
-					bg_itemlist[i].giType == IT_PERSISTANT_POWERUP) && 
-			bg_itemlist[i].giTag == pw ) {
+	for( i = 0; i < bg_numItems; i++ )
+	{
+		if(( bg_itemlist[i].giType == IT_POWERUP
+		     || bg_itemlist[i].giType == IT_TEAM
+		     || bg_itemlist[i].giType == IT_PERSISTANT_POWERUP )
+		   && bg_itemlist[i].giTag == pw )
+		{
 			return &bg_itemlist[i];
 		}
 	}
@@ -681,17 +685,19 @@ gitem_t	*BG_FindItemForPowerup( powerup_t pw ) {
 	return NULL;
 }
 
-
 /*
 ==============
 BG_FindItemForHoldable
 ==============
 */
-gitem_t	*BG_FindItemForHoldable( holdable_t pw ) {
-	int		i;
+gitem_t *BG_FindItemForHoldable( holdable_t pw )
+{
+	int i;
 
-	for ( i = 0 ; i < bg_numItems ; i++ ) {
-		if ( bg_itemlist[i].giType == IT_HOLDABLE && bg_itemlist[i].giTag == pw ) {
+	for( i = 0; i < bg_numItems; i++ )
+	{
+		if( bg_itemlist[i].giType == IT_HOLDABLE && bg_itemlist[i].giTag == pw )
+		{
 			return &bg_itemlist[i];
 		}
 	}
@@ -701,23 +707,25 @@ gitem_t	*BG_FindItemForHoldable( holdable_t pw ) {
 	return NULL;
 }
 
-
 /*
 ===============
 BG_FindItemForWeapon
 
 ===============
 */
-gitem_t	*BG_FindItemForWeapon( weapon_t weapon ) {
-	gitem_t	*it;
-	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++) {
-		if ( it->giType == IT_WEAPON && it->giTag == weapon ) {
+gitem_t *BG_FindItemForWeapon( weapon_t weapon )
+{
+	gitem_t *it;
+
+	for( it = bg_itemlist + 1; it->classname; it++ )
+	{
+		if( it->giType == IT_WEAPON && it->giTag == weapon )
+		{
 			return it;
 		}
 	}
 
-	Com_Error( ERR_DROP, "Couldn't find item for weapon %i", weapon);
+	Com_Error( ERR_DROP, "Couldn't find item for weapon %i", weapon );
 	return NULL;
 }
 
@@ -727,11 +735,13 @@ BG_FindItem
 
 ===============
 */
-gitem_t	*BG_FindItem( const char *pickupName ) {
-	gitem_t	*it;
-	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
-		if ( !Q_stricmp( it->pickup_name, pickupName ) )
+gitem_t *BG_FindItem( const char *pickupName )
+{
+	gitem_t *it;
+
+	for( it = bg_itemlist + 1; it->classname; it++ )
+	{
+		if( !Q_stricmp( it->pickup_name, pickupName ))
 			return it;
 	}
 
@@ -746,25 +756,25 @@ Items can be picked up without actually touching their physical bounds to make
 grabbing them easier
 ============
 */
-qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime ) {
-	vec3_t		origin;
+qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime )
+{
+	vec3_t origin;
 
 	BG_EvaluateTrajectory( &item->pos, atTime, origin );
 
 	// we are ignoring ducked differences here
-	if ( ps->origin[0] - origin[0] > 44
-		|| ps->origin[0] - origin[0] < -50
-		|| ps->origin[1] - origin[1] > 36
-		|| ps->origin[1] - origin[1] < -36
-		|| ps->origin[2] - origin[2] > 36
-		|| ps->origin[2] - origin[2] < -36 ) {
+	if( ps->origin[0] - origin[0] > 44
+	    || ps->origin[0] - origin[0] < -50
+	    || ps->origin[1] - origin[1] > 36
+	    || ps->origin[1] - origin[1] < -36
+	    || ps->origin[2] - origin[2] > 36
+	    || ps->origin[2] - origin[2] < -36 )
+	{
 		return qfalse;
 	}
 
 	return qtrue;
 }
-
-
 
 /*
 ================
@@ -774,27 +784,32 @@ Returns false if the item should not be picked up.
 This needs to be the same for client side prediction and server use.
 ================
 */
-qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps ) {
-	gitem_t	*item;
+qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const playerState_t *ps )
+{
+	gitem_t *item;
 
-	if ( ent->modelindex < 1 || ent->modelindex >= bg_numItems ) {
+	if( ent->modelindex < 1 || ent->modelindex >= bg_numItems )
+	{
 		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: index out of range" );
 	}
 
 	item = &bg_itemlist[ent->modelindex];
 
-	switch( item->giType ) {
+	switch( item->giType )
+	{
 	case IT_WEAPON:
-		return qtrue;	// weapons are always picked up
+		return qtrue; // weapons are always picked up
 
 	case IT_AMMO:
-		if ( ps->ammo[ item->giTag ] >= 200 ) {
-			return qfalse;		// can't hold any more
+		if( ps->ammo[ item->giTag ] >= 200 )
+		{
+			return qfalse; // can't hold any more
 		}
 		return qtrue;
 
 	case IT_ARMOR:
-		if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
+		if( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH] * 2 )
+		{
 			return qfalse;
 		}
 		return qtrue;
@@ -802,35 +817,42 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 	case IT_HEALTH:
 		// small and mega healths will go over the max, otherwise
 		// don't pick up if already at max
-		if ( item->quantity == 5 || item->quantity == 100 ) {
-			if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 ) {
+		if( item->quantity == 5 || item->quantity == 100 )
+		{
+			if( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] * 2 )
+			{
 				return qfalse;
 			}
 			return qtrue;
 		}
 
-		if ( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] ) {
+		if( ps->stats[STAT_HEALTH] >= ps->stats[STAT_MAX_HEALTH] )
+		{
 			return qfalse;
 		}
 		return qtrue;
 
 	case IT_POWERUP:
-		return qtrue;	// powerups are always picked up
+		return qtrue; // powerups are always picked up
 
 	case IT_TEAM: // team items, such as flags
-		if( gametype == GT_CTF ) {
+		if( gametype == GT_CTF )
+		{
 			// ent->modelindex2 is non-zero on items if they are dropped
 			// we need to know this because we can pick up our dropped flag (and return it)
 			// but we can't pick up our flag at base
-			if (ps->persistant[PERS_TEAM] == TEAM_RED) {
-				if (item->giTag == PW_BLUEFLAG ||
-					(item->giTag == PW_REDFLAG && ent->modelindex2) ||
-					(item->giTag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG]) )
+			if( ps->persistant[PERS_TEAM] == TEAM_RED )
+			{
+				if( item->giTag == PW_BLUEFLAG
+				    || ( item->giTag == PW_REDFLAG && ent->modelindex2 )
+				    || ( item->giTag == PW_REDFLAG && ps->powerups[PW_BLUEFLAG] ))
 					return qtrue;
-			} else if (ps->persistant[PERS_TEAM] == TEAM_BLUE) {
-				if (item->giTag == PW_REDFLAG ||
-					(item->giTag == PW_BLUEFLAG && ent->modelindex2) ||
-					(item->giTag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG]) )
+			}
+			else if( ps->persistant[PERS_TEAM] == TEAM_BLUE )
+			{
+				if( item->giTag == PW_REDFLAG
+				    || ( item->giTag == PW_BLUEFLAG && ent->modelindex2 )
+				    || ( item->giTag == PW_BLUEFLAG && ps->powerups[PW_REDFLAG] ))
 					return qtrue;
 			}
 		}
@@ -838,24 +860,25 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 
 	case IT_HOLDABLE:
 		// can only hold one item at a time
-		if ( ps->stats[STAT_HOLDABLE_ITEM] ) {
+		if( ps->stats[STAT_HOLDABLE_ITEM] )
+		{
 			return qfalse;
 		}
 		return qtrue;
 
-        case IT_BAD:
-            Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
-        default:
+	case IT_BAD:
+		Com_Error( ERR_DROP, "BG_CanItemBeGrabbed: IT_BAD" );
+	default:
 #ifndef NDEBUG // bk0001204
-          Com_Printf("BG_CanItemBeGrabbed: unknown enum %d\n", item->giType );
+		Com_Printf( "BG_CanItemBeGrabbed: unknown enum %d\n", item->giType );
 #endif
-         break;
+		break;
 	}
 
 	return qfalse;
 }
 
-//======================================================================
+// ======================================================================
 
 /*
 ================
@@ -863,17 +886,19 @@ BG_EvaluateTrajectory
 
 ================
 */
-void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) {
-	float		deltaTime;
-	float		phase;
+void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result )
+{
+	float deltaTime;
+	float phase;
 
-	switch( tr->trType ) {
+	switch( tr->trType )
+	{
 	case TR_STATIONARY:
 	case TR_INTERPOLATE:
 		VectorCopy( tr->trBase, result );
 		break;
 	case TR_LINEAR:
-		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
+		deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 		break;
 	case TR_SINE:
@@ -882,19 +907,21 @@ void BG_EvaluateTrajectory( const trajectory_t *tr, int atTime, vec3_t result ) 
 		VectorMA( tr->trBase, phase, tr->trDelta, result );
 		break;
 	case TR_LINEAR_STOP:
-		if ( atTime > tr->trTime + tr->trDuration ) {
+		if( atTime > tr->trTime + tr->trDuration )
+		{
 			atTime = tr->trTime + tr->trDuration;
 		}
-		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
-		if ( deltaTime < 0 ) {
+		deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
+		if( deltaTime < 0 )
+		{
 			deltaTime = 0;
 		}
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
 		break;
 	case TR_GRAVITY:
-		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
+		deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 		VectorMA( tr->trBase, deltaTime, tr->trDelta, result );
-		result[2] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime;		// FIXME: local gravity...
+		result[2] -= 0.5 * DEFAULT_GRAVITY * deltaTime * deltaTime; // FIXME: local gravity...
 		break;
 	default:
 		Com_Error( ERR_DROP, "BG_EvaluateTrajectory: unknown trType: %i", tr->trTime );
@@ -909,11 +936,13 @@ BG_EvaluateTrajectoryDelta
 For determining velocity at a given time
 ================
 */
-void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result ) {
-	float	deltaTime;
-	float	phase;
+void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t result )
+{
+	float deltaTime;
+	float phase;
 
-	switch( tr->trType ) {
+	switch( tr->trType )
+	{
 	case TR_STATIONARY:
 	case TR_INTERPOLATE:
 		VectorClear( result );
@@ -923,21 +952,22 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 		break;
 	case TR_SINE:
 		deltaTime = ( atTime - tr->trTime ) / (float) tr->trDuration;
-		phase = cos( deltaTime * M_PI * 2 );	// derivative of sin = cos
+		phase = cos( deltaTime * M_PI * 2 ); // derivative of sin = cos
 		phase *= 0.5;
 		VectorScale( tr->trDelta, phase, result );
 		break;
 	case TR_LINEAR_STOP:
-		if ( atTime > tr->trTime + tr->trDuration ) {
+		if( atTime > tr->trTime + tr->trDuration )
+		{
 			VectorClear( result );
 			return;
 		}
 		VectorCopy( tr->trDelta, result );
 		break;
 	case TR_GRAVITY:
-		deltaTime = ( atTime - tr->trTime ) * 0.001;	// milliseconds to seconds
+		deltaTime = ( atTime - tr->trTime ) * 0.001; // milliseconds to seconds
 		VectorCopy( tr->trDelta, result );
-		result[2] -= DEFAULT_GRAVITY * deltaTime;		// FIXME: local gravity...
+		result[2] -= DEFAULT_GRAVITY * deltaTime; // FIXME: local gravity...
 		break;
 	default:
 		Com_Error( ERR_DROP, "BG_EvaluateTrajectoryDelta: unknown trType: %i", tr->trTime );
@@ -963,16 +993,16 @@ char *eventnames[] = {
 	"EV_FALL_MEDIUM",
 	"EV_FALL_FAR",
 
-	"EV_JUMP_PAD",			// boing sound at origin", jump sound on player
+	"EV_JUMP_PAD", // boing sound at origin", jump sound on player
 
 	"EV_JUMP",
-	"EV_WATER_TOUCH",	// foot touches
-	"EV_WATER_LEAVE",	// foot leaves
-	"EV_WATER_UNDER",	// head touches
-	"EV_WATER_CLEAR",	// head leaves
+	"EV_WATER_TOUCH", // foot touches
+	"EV_WATER_LEAVE", // foot leaves
+	"EV_WATER_UNDER", // head touches
+	"EV_WATER_CLEAR", // head leaves
 
-	"EV_ITEM_PICKUP",			// normal item pickups are predictable
-	"EV_GLOBAL_ITEM_PICKUP",	// powerup / team sounds are broadcast to everyone
+	"EV_ITEM_PICKUP",        // normal item pickups are predictable
+	"EV_GLOBAL_ITEM_PICKUP", // powerup / team sounds are broadcast to everyone
 
 	"EV_NOAMMO",
 	"EV_CHANGE_WEAPON",
@@ -1000,10 +1030,10 @@ char *eventnames[] = {
 	"EV_PLAYER_TELEPORT_IN",
 	"EV_PLAYER_TELEPORT_OUT",
 
-	"EV_GRENADE_BOUNCE",		// eventParm will be the soundindex
+	"EV_GRENADE_BOUNCE", // eventParm will be the soundindex
 
 	"EV_GENERAL_SOUND",
-	"EV_GLOBAL_SOUND",		// no attenuation
+	"EV_GLOBAL_SOUND", // no attenuation
 	"EV_GLOBAL_TEAM_SOUND",
 
 	"EV_BULLET_HIT_FLESH",
@@ -1014,7 +1044,7 @@ char *eventnames[] = {
 	"EV_MISSILE_MISS_METAL",
 	"EV_RAILTRAIL",
 	"EV_SHOTGUN",
-	"EV_BULLET",				// otherEntity is the shooter
+	"EV_BULLET", // otherEntity is the shooter
 
 	"EV_PAIN",
 	"EV_DEATH1",
@@ -1026,8 +1056,8 @@ char *eventnames[] = {
 	"EV_POWERUP_BATTLESUIT",
 	"EV_POWERUP_REGEN",
 
-	"EV_GIB_PLAYER",			// gib a previously living player
-	"EV_SCOREPLUM",			// score plum
+	"EV_GIB_PLAYER", // gib a previously living player
+	"EV_SCOREPLUM",  // score plum
 
 	"EV_DEBUG_LINE",
 	"EV_STOPLOOPINGSOUND",
@@ -1043,25 +1073,27 @@ Handles the sequence numbers
 ===============
 */
 
-void	trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
+void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 
-void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps ) {
+void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps )
+{
 
 #ifdef _DEBUG
 	{
 		char buf[256];
-		trap_Cvar_VariableStringBuffer("showevents", buf, sizeof(buf));
-		if ( atof(buf) != 0 ) {
+		trap_Cvar_VariableStringBuffer( "showevents", buf, sizeof( buf ));
+		if( atof( buf ) != 0 )
+		{
 #ifdef QAGAME
-			Com_Printf(" game event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm);
+			Com_Printf( " game event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm );
 #else
-			Com_Printf("Cgame event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount/*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm);
+			Com_Printf( "Cgame event svt %5d -> %5d: num = %20s parm %d\n", ps->pmove_framecount /*ps->commandTime*/, ps->eventSequence, eventnames[newEvent], eventParm );
 #endif
 		}
 	}
 #endif
-	ps->events[ps->eventSequence & (MAX_PS_EVENTS-1)] = newEvent;
-	ps->eventParms[ps->eventSequence & (MAX_PS_EVENTS-1)] = eventParm;
+	ps->events[ps->eventSequence & ( MAX_PS_EVENTS - 1 )] = newEvent;
+	ps->eventParms[ps->eventSequence & ( MAX_PS_EVENTS - 1 )] = eventParm;
 	ps->eventSequence++;
 }
 
@@ -1070,30 +1102,37 @@ void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerSta
 BG_TouchJumpPad
 ========================
 */
-void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad ) {
-	vec3_t	angles;
-	float p;
-	int effectNum;
+void BG_TouchJumpPad( playerState_t *ps, entityState_t *jumppad )
+{
+	vec3_t angles;
+	float  p;
+	int    effectNum;
 
 	// spectators don't use jump pads
-	if ( ps->pm_type != PM_NORMAL ) {
+	if( ps->pm_type != PM_NORMAL )
+	{
 		return;
 	}
 
 	// flying characters don't hit bounce pads
-	if ( ps->powerups[PW_FLIGHT] ) {
+	if( ps->powerups[PW_FLIGHT] )
+	{
 		return;
 	}
 
 	// if we didn't hit this same jumppad the previous frame
 	// then don't play the event sound again if we are in a fat trigger
-	if ( ps->jumppad_ent != jumppad->number ) {
+	if( ps->jumppad_ent != jumppad->number )
+	{
 
-		vectoangles( jumppad->origin2, angles);
-		p = fabs( AngleNormalize180( angles[PITCH] ) );
-		if( p < 45 ) {
+		vectoangles( jumppad->origin2, angles );
+		p = fabs( AngleNormalize180( angles[PITCH] ));
+		if( p < 45 )
+		{
 			effectNum = 0;
-		} else {
+		}
+		else
+		{
 			effectNum = 1;
 		}
 		BG_AddPredictableEventToPlayerstate( EV_JUMP_PAD, effectNum, ps );
@@ -1113,14 +1152,20 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap ) {
-	int		i;
+void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap )
+{
+	int i;
 
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR ) {
+	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR )
+	{
 		s->eType = ET_INVISIBLE;
-	} else if ( ps->stats[STAT_HEALTH] <= GIB_HEALTH ) {
+	}
+	else if( ps->stats[STAT_HEALTH] <= GIB_HEALTH )
+	{
 		s->eType = ET_INVISIBLE;
-	} else {
+	}
+	else
+	{
 		s->eType = ET_PLAYER;
 	}
 
@@ -1128,7 +1173,8 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 
 	s->pos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->origin, s->pos.trBase );
-	if ( snap ) {
+	if( snap )
+	{
 		SnapVector( s->pos.trBase );
 	}
 	// set the trDelta for flag direction
@@ -1136,33 +1182,41 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 
 	s->apos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
-	if ( snap ) {
+	if( snap )
+	{
 		SnapVector( s->apos.trBase );
 	}
 
 	s->angles2[YAW] = ps->movementDir;
 	s->legsAnim = ps->legsAnim;
 	s->torsoAnim = ps->torsoAnim;
-	s->clientNum = ps->clientNum;		// ET_PLAYER looks here instead of at number
-										// so corpses can also reference the proper config
+	s->clientNum = ps->clientNum; // ET_PLAYER looks here instead of at number
+	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
-	if ( ps->stats[STAT_HEALTH] <= 0 ) {
+	if( ps->stats[STAT_HEALTH] <= 0 )
+	{
 		s->eFlags |= EF_DEAD;
-	} else {
+	}
+	else
+	{
 		s->eFlags &= ~EF_DEAD;
 	}
 
-	if ( ps->externalEvent ) {
+	if( ps->externalEvent )
+	{
 		s->event = ps->externalEvent;
 		s->eventParm = ps->externalEventParm;
-	} else if ( ps->entityEventSequence < ps->eventSequence ) {
-		int		seq;
+	}
+	else if( ps->entityEventSequence < ps->eventSequence )
+	{
+		int seq;
 
-		if ( ps->entityEventSequence < ps->eventSequence - MAX_PS_EVENTS) {
+		if( ps->entityEventSequence < ps->eventSequence - MAX_PS_EVENTS )
+		{
 			ps->entityEventSequence = ps->eventSequence - MAX_PS_EVENTS;
 		}
-		seq = ps->entityEventSequence & (MAX_PS_EVENTS-1);
-		s->event = ps->events[ seq ] | ( ( ps->entityEventSequence & 3 ) << 8 );
+		seq = ps->entityEventSequence & ( MAX_PS_EVENTS - 1 );
+		s->event = ps->events[ seq ] | (( ps->entityEventSequence & 3 ) << 8 );
 		s->eventParm = ps->eventParms[ seq ];
 		ps->entityEventSequence++;
 	}
@@ -1171,8 +1225,10 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;
-	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
-		if ( ps->powerups[ i ] ) {
+	for( i = 0; i < MAX_POWERUPS; i++ )
+	{
+		if( ps->powerups[ i ] )
+		{
 			s->powerups |= 1 << i;
 		}
 	}
@@ -1189,14 +1245,20 @@ This is done after each set of usercmd_t on the server,
 and after local prediction on the client
 ========================
 */
-void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap ) {
-	int		i;
+void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap )
+{
+	int i;
 
-	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR ) {
+	if( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_SPECTATOR )
+	{
 		s->eType = ET_INVISIBLE;
-	} else if ( ps->stats[STAT_HEALTH] <= GIB_HEALTH ) {
+	}
+	else if( ps->stats[STAT_HEALTH] <= GIB_HEALTH )
+	{
 		s->eType = ET_INVISIBLE;
-	} else {
+	}
+	else
+	{
 		s->eType = ET_PLAYER;
 	}
 
@@ -1204,7 +1266,8 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 	s->pos.trType = TR_LINEAR_STOP;
 	VectorCopy( ps->origin, s->pos.trBase );
-	if ( snap ) {
+	if( snap )
+	{
 		SnapVector( s->pos.trBase );
 	}
 	// set the trDelta for flag direction and linear prediction
@@ -1216,33 +1279,41 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 	s->apos.trType = TR_INTERPOLATE;
 	VectorCopy( ps->viewangles, s->apos.trBase );
-	if ( snap ) {
+	if( snap )
+	{
 		SnapVector( s->apos.trBase );
 	}
 
 	s->angles2[YAW] = ps->movementDir;
 	s->legsAnim = ps->legsAnim;
 	s->torsoAnim = ps->torsoAnim;
-	s->clientNum = ps->clientNum;		// ET_PLAYER looks here instead of at number
-										// so corpses can also reference the proper config
+	s->clientNum = ps->clientNum; // ET_PLAYER looks here instead of at number
+	// so corpses can also reference the proper config
 	s->eFlags = ps->eFlags;
-	if ( ps->stats[STAT_HEALTH] <= 0 ) {
+	if( ps->stats[STAT_HEALTH] <= 0 )
+	{
 		s->eFlags |= EF_DEAD;
-	} else {
+	}
+	else
+	{
 		s->eFlags &= ~EF_DEAD;
 	}
 
-	if ( ps->externalEvent ) {
+	if( ps->externalEvent )
+	{
 		s->event = ps->externalEvent;
 		s->eventParm = ps->externalEventParm;
-	} else if ( ps->entityEventSequence < ps->eventSequence ) {
-		int		seq;
+	}
+	else if( ps->entityEventSequence < ps->eventSequence )
+	{
+		int seq;
 
-		if ( ps->entityEventSequence < ps->eventSequence - MAX_PS_EVENTS) {
+		if( ps->entityEventSequence < ps->eventSequence - MAX_PS_EVENTS )
+		{
 			ps->entityEventSequence = ps->eventSequence - MAX_PS_EVENTS;
 		}
-		seq = ps->entityEventSequence & (MAX_PS_EVENTS-1);
-		s->event = ps->events[ seq ] | ( ( ps->entityEventSequence & 3 ) << 8 );
+		seq = ps->entityEventSequence & ( MAX_PS_EVENTS - 1 );
+		s->event = ps->events[ seq ] | (( ps->entityEventSequence & 3 ) << 8 );
 		s->eventParm = ps->eventParms[ seq ];
 		ps->entityEventSequence++;
 	}
@@ -1251,8 +1322,10 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 	s->groundEntityNum = ps->groundEntityNum;
 
 	s->powerups = 0;
-	for ( i = 0 ; i < MAX_POWERUPS ; i++ ) {
-		if ( ps->powerups[ i ] ) {
+	for( i = 0; i < MAX_POWERUPS; i++ )
+	{
+		if( ps->powerups[ i ] )
+		{
 			s->powerups |= 1 << i;
 		}
 	}
